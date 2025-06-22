@@ -1,10 +1,6 @@
-// codec.h
 #pragma once
 
-#include <cstring>
-#include <folly/io/Cursor.h>
-#include <folly/io/IOBuf.h>
-#include <stdexcept>
+#include "bytebuf.h"
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -15,85 +11,92 @@ namespace codec {
 // BinaryCodec Interface
 // ----------------------------
 struct BinaryCodec {
-  virtual void encode(folly::io::RWPrivateCursor &cursor) const = 0;
-  virtual void decode(folly::io::Cursor &cursor) = 0;
+  virtual void encode(ByteBuf &buf) const = 0;
+  virtual void decode(ByteBuf &buf) = 0;
   virtual ~BinaryCodec() = default;
 };
 
 // ----------------------------
-// Helpers for writing strings
+// put/get String LE
 // ----------------------------
-template <typename T>
-void putStringLE(folly::io::RWPrivateCursor &cursor, const std::string &s) {
+template <typename T> void putStringLE(ByteBuf &buf, const std::string &s) {
   static_assert(std::is_unsigned<T>::value, "T must be unsigned integral");
-  cursor.writeLE<T>(static_cast<T>(s.size()));
-  cursor.push(reinterpret_cast<const uint8_t *>(s.data()), s.size());
+  buf.writeLE<T>(static_cast<T>(s.size()));
+  buf.writeBytes(reinterpret_cast<const uint8_t *>(s.data()), s.size());
 }
 
-template <typename T> std::string getStringLE(folly::io::Cursor &cursor) {
+template <typename T> std::string getStringLE(ByteBuf &buf) {
   static_assert(std::is_unsigned<T>::value, "T must be unsigned integral");
-  T length = cursor.readLE<T>();
-  std::string result(reinterpret_cast<const char *>(cursor.data()), length);
-  cursor.skip(length);
-  return result;
+  T length = buf.readLE<T>();
+  std::vector<uint8_t> bytes(length);
+  buf.readBytes(bytes.data(), length);
+  return std::string(reinterpret_cast<char *>(bytes.data()), length);
 }
 
-inline void putFixedString(folly::io::RWPrivateCursor &cursor,
-                           const std::string &s, size_t fixedLen) {
+// ----------------------------
+// Fixed-length string
+// ----------------------------
+inline void putFixedString(ByteBuf &buf, const std::string &s,
+                           size_t fixedLen) {
   if (s.size() >= fixedLen) {
-    cursor.push(reinterpret_cast<const uint8_t *>(s.data()), fixedLen);
+    buf.writeBytes(reinterpret_cast<const uint8_t *>(s.data()), fixedLen);
   } else {
-    cursor.push(reinterpret_cast<const uint8_t *>(s.data()), s.size());
+    buf.writeBytes(reinterpret_cast<const uint8_t *>(s.data()), s.size());
     std::vector<uint8_t> padding(fixedLen - s.size(), 0);
-    cursor.push(padding.data(), padding.size());
+    buf.writeBytes(padding.data(), padding.size());
   }
 }
 
-inline std::string getFixedString(folly::io::Cursor &cursor, size_t fixedLen) {
-  std::string result(reinterpret_cast<const char *>(cursor.data()), fixedLen);
-  cursor.skip(fixedLen);
-  result.erase(result.find_last_not_of('\0') + 1);
-  return result;
+inline std::string getFixedString(ByteBuf &buf, size_t fixedLen) {
+  std::vector<uint8_t> bytes(fixedLen);
+  buf.readBytes(bytes.data(), fixedLen);
+  std::string s(reinterpret_cast<char *>(bytes.data()), fixedLen);
+  size_t end = s.find_last_not_of('\0');
+  if (end != std::string::npos) {
+    s.erase(end + 1);
+  } else {
+    s.clear();
+  }
+  return s;
 }
 
 // ----------------------------
-// List of Strings
+// String List
 // ----------------------------
 template <typename T, typename K>
-void putStringListLE(folly::io::RWPrivateCursor &cursor,
-                     const std::vector<std::string> &values) {
+void putStringListLE(ByteBuf &buf, const std::vector<std::string> &list) {
   static_assert(std::is_unsigned<T>::value && std::is_unsigned<K>::value,
                 "T and K must be unsigned");
-  cursor.writeLE<T>(static_cast<T>(values.size()));
-  for (const auto &s : values) {
-    cursor.writeLE<K>(static_cast<K>(s.size()));
-    cursor.push(reinterpret_cast<const uint8_t *>(s.data()), s.size());
+  buf.writeLE<T>(static_cast<T>(list.size()));
+  for (const auto &s : list) {
+    buf.writeLE<K>(static_cast<K>(s.size()));
+    buf.writeBytes(reinterpret_cast<const uint8_t *>(s.data()), s.size());
   }
 }
 
 template <typename T, typename K>
-std::vector<std::string> getStringListLE(folly::io::Cursor &cursor) {
+std::vector<std::string> getStringListLE(ByteBuf &buf) {
   static_assert(std::is_unsigned<T>::value && std::is_unsigned<K>::value,
                 "T and K must be unsigned");
-  T count = cursor.readLE<T>();
+  T count = buf.readLE<T>();
   std::vector<std::string> result;
   result.reserve(count);
 
   for (size_t i = 0; i < count; ++i) {
-    K len = cursor.readLE<K>();
-    std::string s(reinterpret_cast<const char *>(cursor.data()), len);
-    cursor.skip(len);
-    result.push_back(std::move(s));
+    K len = buf.readLE<K>();
+    std::vector<uint8_t> bytes(len);
+    buf.readBytes(bytes.data(), len);
+    result.emplace_back(reinterpret_cast<char *>(bytes.data()), len);
   }
   return result;
 }
 
 // ----------------------------
-// BasicType Read
+// Basic Type Read
 // ----------------------------
-template <typename T> T getBasicType(folly::io::Cursor &cursor) {
+template <typename T> T getBasicType(ByteBuf &buf) {
   static_assert(std::is_arithmetic<T>::value, "T must be a basic type");
-  return cursor.readLE<T>();
+  return buf.readLE<T>();
 }
 
 } // namespace codec
