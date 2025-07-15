@@ -25,6 +25,42 @@ TEST(ByteBufTest, BasicWriteReadU64) {
   EXPECT_EQ(buf.read_u64(), 0x1122334455667788);
 }
 
+TEST(ByteBufTest, BasicWriteReadI8) {
+  ByteBuf buf;
+  buf.write_i8(123);
+  EXPECT_EQ(buf.read_i8(), 123);
+}
+
+TEST(ByteBufTest, BasicWriteReadI16) {
+  ByteBuf buf;
+  buf.write_i16(0xABC);
+  EXPECT_EQ(buf.read_i16(), 0xABC);
+}
+
+TEST(ByteBufTest, BasicWriteReadI32) {
+  ByteBuf buf;
+  buf.write_i32(0xDEADBEEF);
+  EXPECT_EQ(buf.read_i32(), 0xDEADBEEF);
+}
+
+TEST(ByteBufTest, BasicWriteReadI64) {
+  ByteBuf buf;
+  buf.write_i64(0x1122334455667788);
+  EXPECT_EQ(buf.read_i64(), 0x1122334455667788);
+}
+
+TEST(ByteBufTest, BasicWriteReadF32) {
+  ByteBuf buf;
+  buf.write_f32(0.5);
+  EXPECT_EQ(buf.read_f32(), 0.5);
+}
+
+TEST(ByteBufTest, BasicWriteReadF64) {
+  ByteBuf buf;
+  buf.write_f64(0.8);
+  EXPECT_EQ(buf.read_f64(), 0.8);
+}
+
 TEST(ByteBufTest, MultipleWritesAndReads) {
   ByteBuf buf;
   buf.write_u8(1);
