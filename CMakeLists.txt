@@ -8,8 +8,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(FETCHCONTENT_BASE_DIR "$ENV{HOME}/_deps" CACHE PATH "Base directory for FetchContent downloads")
 include(FetchContent)
 
-add_library(bin-codec ./include/codec.h ./src/bytebuf.cpp)
-target_include_directories(bin-codec PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
 FetchContent_Declare(
   googletest
@@ -22,11 +20,11 @@ enable_testing()
 
 add_executable(bytebuf_test ./test/bytebuf_test.cpp)
 target_include_directories(bytebuf_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
-target_link_libraries(bytebuf_test PRIVATE bin-codec gtest gtest_main)
+target_link_libraries(bytebuf_test PRIVATE gtest gtest_main)
 
 add_executable(codec_test ./test/codec_test.cpp)
 target_include_directories(codec_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
-target_link_libraries(codec_test PRIVATE bin-codec gtest gtest_main)
+target_link_libraries(codec_test PRIVATE gtest gtest_main)
 
 include(GoogleTest)
 gtest_discover_tests(bytebuf_test)
