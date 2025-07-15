@@ -9,102 +9,194 @@
 
 class ByteBuf {
 public:
-  ByteBuf(size_t capacity = 256);
-
-  void writeU8(uint8_t val);
-  uint8_t readU8();
-
-  void writeU16(uint16_t val);
-  uint16_t readU16();
-
-  void writeU32(uint32_t val);
-  uint32_t readU32();
-
-  void writeU64(uint64_t val);
-  uint64_t readU64();
-
-  void writeBytes(const void *data, size_t len);
-  void readBytes(void *dst, size_t len);
-
-  template <typename T> void writeLE(T val) {
-    static_assert(std::is_arithmetic_v<T>, "T must be arithmetic");
-
-    if constexpr (sizeof(T) == 1) {
-      // int8_t and uint8_t are the same in memory, write as byte
-      writeU8(static_cast<uint8_t>(val));
-    } else if constexpr (sizeof(T) == 2) {
-      // Signed or unsigned 16-bit
-      using U = std::make_unsigned_t<T>;
-      writeU16(static_cast<U>(val));
-    } else if constexpr (sizeof(T) == 4) {
-      if constexpr (std::is_same_v<T, float>) {
-        // Bitwise write for float
-        uint32_t bits;
-        std::memcpy(&bits, &val, sizeof(bits));
-        writeU32(bits);
-      } else {
-        using U = std::make_unsigned_t<T>;
-        writeU32(static_cast<U>(val));
-      }
-    } else if constexpr (sizeof(T) == 8) {
-      if constexpr (std::is_same_v<T, double>) {
-        // Bitwise write for double
-        uint64_t bits;
-        std::memcpy(&bits, &val, sizeof(bits));
-        writeU64(bits);
-      } else {
-        using U = std::make_unsigned_t<T>;
-        writeU64(static_cast<U>(val));
-      }
-    } else {
-      static_assert(sizeof(T) == 0, "Unsupported type size");
-    }
+  ByteBuf(size_t capacity = 256)
+      : buffer_(), reader_index_(0), writer_index_(0) {
+    buffer_.reserve(capacity);
   }
 
-  template <typename T> T readLE() {
-    static_assert(std::is_arithmetic_v<T>, "T must be arithmetic");
+  void write_u8(uint8_t val) { buffer_.push_back(val); }
+  uint8_t read_u8() {
+    check_read(1);
+    return buffer_[reader_index_++];
+  }
 
-    if constexpr (sizeof(T) == 1) {
-      return static_cast<T>(readU8());
-    } else if constexpr (sizeof(T) == 2) {
-      uint16_t val = readU16();
-      return static_cast<T>(val);
-    } else if constexpr (sizeof(T) == 4) {
-      if constexpr (std::is_same_v<T, float>) {
-        uint32_t bits = readU32();
-        float val;
-        std::memcpy(&val, &bits, sizeof(val));
-        return val;
-      } else {
-        uint32_t val = readU32();
-        return static_cast<T>(val);
-      }
-    } else if constexpr (sizeof(T) == 8) {
-      if constexpr (std::is_same_v<T, double>) {
-        uint64_t bits = readU64();
-        double val;
-        std::memcpy(&val, &bits, sizeof(val));
-        return val;
-      } else {
-        uint64_t val = readU64();
-        return static_cast<T>(val);
-      }
-    } else {
-      static_assert(sizeof(T) == 0, "Unsupported type size");
-    }
+  void write_u16(uint16_t val) { write(val); }
+  uint16_t read_u16() {
+    check_read(2);
+    return read<uint16_t>();
+  }
+
+  void write_u32(uint32_t val) { write(val); }
+  uint32_t read_u32() {
+    check_read(4);
+    return read<uint32_t>();
+  }
+
+  void write_u64(uint64_t val) { write(val); }
+  uint64_t read_u64() {
+    check_read(8);
+    return read<uint64_t>();
+  }
+
+  void write_i8(int8_t val) { buffer_.push_back(static_cast<uint8_t>(val)); }
+  int8_t read_i8() {
+    check_read(1);
+    return static_cast<int8_t>(buffer_[reader_index_++]);
+  }
+  void write_i16(int16_t val) { write(val); }
+  int16_t read_i16() {
+    check_read(2);
+    return read<int16_t>();
+  }
+
+  void write_i32(int32_t val) { write(val); }
+  int32_t read_i32() {
+    check_read(4);
+    return read<int32_t>();
+  }
+
+  void write_i64(int64_t val) { write(val); }
+  int64_t read_i64() {
+    check_read(8);
+    return read<int64_t>();
+  }
+
+  void write_f32(float val) { write(val); }
+  float read_f32() {
+    check_read(4);
+    return read<float>();
+  }
+
+  void write_f64(double val) { write(val); }
+  double read_f64() {
+    check_read(8);
+    return read<double>();
+  }
+
+  void write_bytes(const void *data, size_t len) {
+    const uint8_t *bytes = static_cast<const uint8_t *>(data);
+    buffer_.insert(buffer_.end(), bytes, bytes + len);
+  }
+  void read_bytes(void *dest, size_t len) {
+    check_read(len);
+    std::memcpy(dest, &buffer_[reader_index_], len);
+    reader_index_ += len;
   }
 
   const std::vector<uint8_t> &data() const { return buffer_; }
 
-  void reset();
+  void reset() {
+    buffer_.clear();
+    reader_index_ = 0;
+    writer_index_ = 0;
+  }
 
-  size_t readableBytes() const;
-  size_t writableBytes() const;
+  size_t readable_bytes() const { return buffer_.size() - reader_index_; }
+
+  // 修改后的模板函数
+  template <typename T> void write_le(T value) {
+    static_assert(std::is_arithmetic<T>::value, "T must be arithmetic type");
+    if constexpr (std::is_floating_point_v<T>) {
+      // 浮点数的处理方式
+      uint8_t bytes[sizeof(T)];
+      std::memcpy(bytes, &value, sizeof(T));
+      write_bytes(bytes, sizeof(T));
+    } else {
+      // 整数的处理方式
+      uint8_t bytes[sizeof(T)];
+      for (size_t i = 0; i < sizeof(T); ++i) {
+        bytes[i] = static_cast<uint8_t>(value >> (i * 8));
+      }
+      write_bytes(bytes, sizeof(T));
+    }
+  }
+
+  template <typename T> void write_be(T value) {
+    static_assert(std::is_arithmetic<T>::value, "T must be arithmetic type");
+    if constexpr (std::is_floating_point_v<T>) {
+      // 浮点数的处理方式
+      uint8_t bytes[sizeof(T)];
+      std::memcpy(bytes, &value, sizeof(T));
+      write_bytes(bytes, sizeof(T));
+    } else {
+      // 整数的处理方式
+      uint8_t bytes[sizeof(T)];
+      for (size_t i = 0; i < sizeof(T); ++i) {
+        bytes[i] = static_cast<uint8_t>(value >> ((sizeof(T) - 1 - i) * 8));
+      }
+      write_bytes(bytes, sizeof(T));
+    }
+  }
+
+  template <typename T> T read_le() {
+    static_assert(std::is_arithmetic<T>::value, "T must be arithmetic type");
+    check_read(sizeof(T));
+    if constexpr (std::is_floating_point_v<T>) {
+      // 浮点数的处理方式
+      T value;
+      std::memcpy(&value, &buffer_[reader_index_], sizeof(T));
+      reader_index_ += sizeof(T);
+      return value;
+    } else {
+      // 整数的处理方式
+      T value = 0;
+      for (size_t i = 0; i < sizeof(T); ++i) {
+        value |= static_cast<T>(buffer_[reader_index_ + i]) << (i * 8);
+      }
+      reader_index_ += sizeof(T);
+      return value;
+    }
+  }
+
+  template <typename T> T read_be() {
+    static_assert(std::is_arithmetic<T>::value, "T must be arithmetic type");
+    check_read(sizeof(T));
+    if constexpr (std::is_floating_point_v<T>) {
+      // 浮点数的处理方式
+      T value;
+      uint8_t bytes[sizeof(T)];
+      std::memcpy(bytes, &buffer_[reader_index_], sizeof(T));
+      std::memcpy(&value, bytes, sizeof(T));
+      reader_index_ += sizeof(T);
+      return value;
+    } else {
+      // 整数的处理方式
+      T value = 0;
+      for (size_t i = 0; i < sizeof(T); ++i) {
+        value |= static_cast<T>(buffer_[reader_index_ + i])
+                 << ((sizeof(T) - 1 - i) * 8);
+      }
+      reader_index_ += sizeof(T);
+      return value;
+    }
+  }
+
+  // 通用写入函数，默认小端序
+  template <typename T> void write(T value, bool big_endian = false) {
+    if (big_endian) {
+      write_be(value);
+    } else {
+      write_le(value);
+    }
+  }
+
+  // 通用读取函数，默认小端序
+  template <typename T> T read(bool big_endian = false) {
+    if (big_endian) {
+      return read_be<T>();
+    } else {
+      return read_le<T>();
+    }
+  }
+
+  void check_read(size_t required) {
+    if (readable_bytes() < required) {
+      throw std::out_of_range("Not enough data to read");
+    }
+  }
 
 private:
   std::vector<uint8_t> buffer_;
-  size_t readerIndex_;
-  size_t writerIndex_;
-
-  void ensureWritable(size_t len);
+  size_t reader_index_;
+  size_t writer_index_;
 };

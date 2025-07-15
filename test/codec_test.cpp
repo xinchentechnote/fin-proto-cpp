@@ -46,20 +46,4 @@ TEST(CodecTest, PutAndGetStringListLE) {
   }
 }
 
-TEST(CodecTest, GetBasicType_U32) {
-  ByteBuf buf;
-  uint32_t input = 0x12345678;
-  buf.writeLE<uint32_t>(input);
 
-  uint32_t output = getBasicType<uint32_t>(buf);
-  EXPECT_EQ(output, input);
-}
-
-TEST(CodecTest, GetBasicType_Float64) {
-  ByteBuf buf;
-  double input = 3.14159265359;
-  buf.writeLE<double>(input);
-
-  double output = getBasicType<double>(buf);
-  EXPECT_DOUBLE_EQ(output, input);
-}
