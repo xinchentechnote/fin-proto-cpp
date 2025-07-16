@@ -1,14 +1,17 @@
-#include "codec.h"
+// Copyright 2025 xinchentechnote
+#include "include/codec.hpp"
+
 #include <gtest/gtest.h>
 
-using namespace codec;
+#include <string>
+#include <vector>
 
 TEST(CodecTest, PutAndGetStringLE) {
   ByteBuf buf;
   std::string input = "hello world";
-  putStringLE<uint16_t>(buf, input);
+  codec::putStringLE<uint16_t>(buf, input);
 
-  std::string output = getStringLE<uint16_t>(buf);
+  std::string output = codec::getStringLE<uint16_t>(buf);
 
   EXPECT_EQ(output, input);
 }
@@ -16,9 +19,9 @@ TEST(CodecTest, PutAndGetStringLE) {
 TEST(CodecTest, PutAndGetFixedString) {
   ByteBuf buf;
   std::string input = "hi";
-  putFixedString(buf, input, 8);
+  codec::putFixedString(buf, input, 8);
 
-  std::string output = getFixedString(buf, 8);
+  std::string output = codec::getFixedString(buf, 8);
 
   EXPECT_EQ(output, input);
 }
@@ -26,9 +29,9 @@ TEST(CodecTest, PutAndGetFixedString) {
 TEST(CodecTest, FixedStringTruncation) {
   ByteBuf buf;
   std::string input = "1234567890";
-  putFixedString(buf, input, 5);
+  codec::putFixedString(buf, input, 5);
 
-  std::string output = getFixedString(buf, 5);
+  std::string output = codec::getFixedString(buf, 5);
 
   EXPECT_EQ(output, "12345");
 }
@@ -36,14 +39,12 @@ TEST(CodecTest, FixedStringTruncation) {
 TEST(CodecTest, PutAndGetStringListLE) {
   ByteBuf buf;
   std::vector<std::string> input = {"one", "two", "three"};
-  putStringListLE<uint8_t, uint8_t>(buf, input);
+  codec::putStringListLE<uint8_t, uint8_t>(buf, input);
 
-  auto output = getStringListLE<uint8_t, uint8_t>(buf);
+  auto output = codec::getStringListLE<uint8_t, uint8_t>(buf);
 
   EXPECT_EQ(output.size(), input.size());
   for (size_t i = 0; i < input.size(); ++i) {
     EXPECT_EQ(output[i], input[i]);
   }
 }
-
-

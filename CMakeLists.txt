@@ -19,11 +19,11 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 add_executable(bytebuf_test ./test/bytebuf_test.cpp)
-target_include_directories(bytebuf_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(bytebuf_test PRIVATE ${PROJECT_SOURCE_DIR})
 target_link_libraries(bytebuf_test PRIVATE gtest gtest_main)
 
 add_executable(codec_test ./test/codec_test.cpp)
-target_include_directories(codec_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(codec_test PRIVATE ${PROJECT_SOURCE_DIR})
 target_link_libraries(codec_test PRIVATE gtest gtest_main)
 
 include(GoogleTest)

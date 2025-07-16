@@ -1,7 +1,7 @@
 # Makefile for fin-protoc project
 
 # Variables
-PROTO_DSL := ../submodules/fin-proto/sample/sample.pdsl
+PROTO_DSL := ../submodules/fin-proto/sse/binary/sse_bin_v0.57.pdsl
 PROTO_DIR := proto/
 OUTPUT_DIR := messages/
 BIN_DIR := ~/workspace/fin-protoc/bin/
