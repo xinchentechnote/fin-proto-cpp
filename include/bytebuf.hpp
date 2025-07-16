@@ -1,16 +1,17 @@
+// Copyright 2025 xinchentechnote
 #pragma once
+
+#include <endian.h>
 
 #include <cstdint>
 #include <cstring>
-#include <endian.h>
 #include <stdexcept>
 #include <type_traits>
 #include <vector>
 
 class ByteBuf {
-public:
-  ByteBuf(size_t capacity = 256)
-      : buffer_(), reader_index_(0), writer_index_(0) {
+ public:
+  ByteBuf(size_t capacity = 256) : buffer_(), reader_index_(0), writer_index_(0) {
     buffer_.reserve(capacity);
   }
 
@@ -20,6 +21,7 @@ public:
     return buffer_[reader_index_++];
   }
 
+  void writeU16(uint16_t val) { write(val); }
   void write_u16(uint16_t val) { write(val); }
   uint16_t read_u16() {
     check_read(2);
@@ -73,17 +75,17 @@ public:
     return read<double>();
   }
 
-  void write_bytes(const void *data, size_t len) {
-    const uint8_t *bytes = static_cast<const uint8_t *>(data);
+  void write_bytes(const void* data, size_t len) {
+    const uint8_t* bytes = static_cast<const uint8_t*>(data);
     buffer_.insert(buffer_.end(), bytes, bytes + len);
   }
-  void read_bytes(void *dest, size_t len) {
+  void read_bytes(void* dest, size_t len) {
     check_read(len);
     std::memcpy(dest, &buffer_[reader_index_], len);
     reader_index_ += len;
   }
 
-  const std::vector<uint8_t> &data() const { return buffer_; }
+  const std::vector<uint8_t>& data() const { return buffer_; }
 
   void reset() {
     buffer_.clear();
@@ -94,7 +96,8 @@ public:
   size_t readable_bytes() const { return buffer_.size() - reader_index_; }
 
   // 修改后的模板函数
-  template <typename T> void write_le(T value) {
+  template <typename T>
+  void write_le(T value) {
     static_assert(std::is_arithmetic<T>::value, "T must be arithmetic type");
     if constexpr (std::is_floating_point_v<T>) {
       // 浮点数的处理方式
@@ -111,7 +114,8 @@ public:
     }
   }
 
-  template <typename T> void write_be(T value) {
+  template <typename T>
+  void write_be(T value) {
     static_assert(std::is_arithmetic<T>::value, "T must be arithmetic type");
     if constexpr (std::is_floating_point_v<T>) {
       // 浮点数的处理方式
@@ -128,7 +132,8 @@ public:
     }
   }
 
-  template <typename T> T read_le() {
+  template <typename T>
+  T read_le() {
     static_assert(std::is_arithmetic<T>::value, "T must be arithmetic type");
     check_read(sizeof(T));
     if constexpr (std::is_floating_point_v<T>) {
@@ -148,7 +153,8 @@ public:
     }
   }
 
-  template <typename T> T read_be() {
+  template <typename T>
+  T read_be() {
     static_assert(std::is_arithmetic<T>::value, "T must be arithmetic type");
     check_read(sizeof(T));
     if constexpr (std::is_floating_point_v<T>) {
@@ -163,8 +169,7 @@ public:
       // 整数的处理方式
       T value = 0;
       for (size_t i = 0; i < sizeof(T); ++i) {
-        value |= static_cast<T>(buffer_[reader_index_ + i])
-                 << ((sizeof(T) - 1 - i) * 8);
+        value |= static_cast<T>(buffer_[reader_index_ + i]) << ((sizeof(T) - 1 - i) * 8);
       }
       reader_index_ += sizeof(T);
       return value;
@@ -172,7 +177,8 @@ public:
   }
 
   // 通用写入函数，默认小端序
-  template <typename T> void write(T value, bool big_endian = false) {
+  template <typename T>
+  void write(T value, bool big_endian = false) {
     if (big_endian) {
       write_be(value);
     } else {
@@ -181,7 +187,8 @@ public:
   }
 
   // 通用读取函数，默认小端序
-  template <typename T> T read(bool big_endian = false) {
+  template <typename T>
+  T read(bool big_endian = false) {
     if (big_endian) {
       return read_be<T>();
     } else {
@@ -195,7 +202,7 @@ public:
     }
   }
 
-private:
+ private:
   std::vector<uint8_t> buffer_;
   size_t reader_index_;
   size_t writer_index_;
