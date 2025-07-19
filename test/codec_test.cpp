@@ -9,9 +9,9 @@
 TEST(CodecTest, PutAndGetStringLE) {
   ByteBuf buf;
   std::string input = "hello world";
-  codec::putStringLE<uint16_t>(buf, input);
+  codec::put_string_le<uint16_t>(buf, input);
 
-  std::string output = codec::getStringLE<uint16_t>(buf);
+  std::string output = codec::get_string_le<uint16_t>(buf);
 
   EXPECT_EQ(output, input);
 }
@@ -19,9 +19,9 @@ TEST(CodecTest, PutAndGetStringLE) {
 TEST(CodecTest, PutAndGetFixedString) {
   ByteBuf buf;
   std::string input = "hi";
-  codec::putFixedString(buf, input, 8);
+  codec::put_fixed_string(buf, input, 8);
 
-  std::string output = codec::getFixedString(buf, 8);
+  std::string output = codec::get_fixed_string(buf, 8);
 
   EXPECT_EQ(output, input);
 }
@@ -29,9 +29,9 @@ TEST(CodecTest, PutAndGetFixedString) {
 TEST(CodecTest, FixedStringTruncation) {
   ByteBuf buf;
   std::string input = "1234567890";
-  codec::putFixedString(buf, input, 5);
+  codec::put_fixed_string(buf, input, 5);
 
-  std::string output = codec::getFixedString(buf, 5);
+  std::string output = codec::get_fixed_string(buf, 5);
 
   EXPECT_EQ(output, "12345");
 }
@@ -39,9 +39,9 @@ TEST(CodecTest, FixedStringTruncation) {
 TEST(CodecTest, PutAndGetStringListLE) {
   ByteBuf buf;
   std::vector<std::string> input = {"one", "two", "three"};
-  codec::putStringListLE<uint8_t, uint8_t>(buf, input);
+  codec::put_string_list_le<uint8_t, uint8_t>(buf, input);
 
-  auto output = codec::getStringListLE<uint8_t, uint8_t>(buf);
+  auto output = codec::get_string_list_le<uint8_t, uint8_t>(buf);
 
   EXPECT_EQ(output.size(), input.size());
   for (size_t i = 0; i < input.size(); ++i) {
