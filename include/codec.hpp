@@ -1,6 +1,7 @@
 // Copyright 2025 xinchentechnote
 #pragma once
 
+#include <sstream>
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -102,6 +103,18 @@ template <typename T>
 T getBasicType(ByteBuf& buf) {
   static_assert(std::is_arithmetic<T>::value, "T must be a basic type");
   return buf.read_le<T>();
+}
+
+template <typename T>
+std::string join_vector(const std::vector<T>& vec, const std::string& sep = ", ") {
+  std::ostringstream vss;
+  vss << "[";
+  for (size_t i = 0; i < vec.size(); ++i) {
+    if (i > 0) vss << sep;
+    vss << vec[i];
+  }
+  vss << "]";
+  return vss.str();
 }
 
 }  // namespace codec
