@@ -20,12 +20,23 @@ class ByteBuf {
     check_read(1);
     return buffer_[reader_index_++];
   }
+  
+  void write_u8_le(uint8_t val) { buffer_.push_back(val); }
+  uint8_t read_u8_le() {
+    check_read(1);
+    return buffer_[reader_index_++];
+  }
 
-  void writeU16(uint16_t val) { write(val); }
   void write_u16(uint16_t val) { write(val); }
   uint16_t read_u16() {
     check_read(2);
     return read<uint16_t>();
+  }
+  
+  void write_u16_le(uint16_t val) { write_le(val); }
+  uint16_t read_u16_le() {
+    check_read(2);
+    return read_le<uint16_t>();
   }
 
   void write_u32(uint32_t val) { write(val); }
@@ -34,14 +45,32 @@ class ByteBuf {
     return read<uint32_t>();
   }
 
+  void write_u32_le(uint32_t val) { write_le(val); }
+  uint32_t read_u32_le() {
+    check_read(4);
+    return read_le<uint32_t>();
+  }
+
   void write_u64(uint64_t val) { write(val); }
   uint64_t read_u64() {
     check_read(8);
     return read<uint64_t>();
   }
+  
+  void write_u64_le(uint64_t val) { write_le(val); }
+  uint64_t read_u64_le() {
+    check_read(8);
+    return read_le<uint64_t>();
+  }
 
   void write_i8(int8_t val) { buffer_.push_back(static_cast<uint8_t>(val)); }
   int8_t read_i8() {
+    check_read(1);
+    return static_cast<int8_t>(buffer_[reader_index_++]);
+  }
+
+  void write_i8_le(int8_t val) { buffer_.push_back(static_cast<uint8_t>(val)); }
+  int8_t read_i8_le() {
     check_read(1);
     return static_cast<int8_t>(buffer_[reader_index_++]);
   }
@@ -51,10 +80,22 @@ class ByteBuf {
     return read<int16_t>();
   }
 
+  void write_i16_le(int16_t val) { write_le(val); }
+  int16_t read_i16_le() {
+    check_read(2);
+    return read_le<int16_t>();
+  }
+
   void write_i32(int32_t val) { write(val); }
   int32_t read_i32() {
     check_read(4);
     return read<int32_t>();
+  }
+
+  void write_i32_le(int32_t val) { write_le(val); }
+  int32_t read_i32_le() {
+    check_read(4);
+    return read_le<int32_t>();
   }
 
   void write_i64(int64_t val) { write(val); }
@@ -63,14 +104,32 @@ class ByteBuf {
     return read<int64_t>();
   }
 
+  void write_i64_le(int64_t val) { write_le(val); }
+  int64_t read_i64_le() {
+    check_read(8);
+    return read_le<int64_t>();
+  }
+
   void write_f32(float val) { write(val); }
   float read_f32() {
     check_read(4);
     return read<float>();
   }
 
+  void write_f32_le(float val) { write_le(val); }
+  float read_f32_le() {
+    check_read(4);
+    return read_le<float>();
+  }
+
   void write_f64(double val) { write(val); }
   double read_f64() {
+    check_read(8);
+    return read<double>();
+  }
+
+  void write_f64_le(double val) { write_le(val); }
+  double read_f64_le() {
     check_read(8);
     return read<double>();
   }
