@@ -343,8 +343,11 @@ struct RootPacket : public codec::BinaryCodec {
 
     void encode(ByteBuf& buf) const override {
         buf.write_u16_le(msgType);
-        buf.write_u32_le(payloadLen);
-        payload->encode(buf);
+        ByteBuf payloadBuf;
+        payload->encode(payloadBuf);
+        auto payloadLen_ = static_cast<uint32_t>(payloadBuf.readable_bytes());
+        buf.write_u32_le(payloadLen_);
+        buf.write_bytes(payloadBuf.data().data(), payloadLen_);
         buf.write_i32_le(checksum);
     }
     
