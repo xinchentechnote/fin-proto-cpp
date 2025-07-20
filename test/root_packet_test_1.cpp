@@ -3,7 +3,7 @@
 
 #include "include/root_packet.hpp"
 
-TEST(BasicPacketTest1, ToStringOutput) {
+TEST(BasicPacketTest, ToStringOutput) {
   BasicPacket packet;
   packet.fieldI8 = -1;
   packet.fieldI16 = -12345;
@@ -30,7 +30,6 @@ TEST(BasicPacketTest1, ToStringOutput) {
   packet.fieldF64List = {3.3, 4.4};
 
   std::string str = packet.toString();
-  std::cout << str << std::endl;
   EXPECT_NE(str.find("fieldI8: -1"), std::string::npos);
   EXPECT_NE(str.find("fieldChar: hello"), std::string::npos);
   EXPECT_NE(str.find("fieldU64: 18446744073709551615"), std::string::npos);
