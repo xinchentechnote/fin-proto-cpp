@@ -9,6 +9,139 @@
 #include "include/codec.hpp"
 #include "include/bytebuf.hpp"
 
+struct BasicPacket : public codec::BinaryCodec {
+    int8_t fieldI8;
+    int16_t fieldI16;
+    int32_t fieldI32;
+    int64_t fieldI64;
+    std::string fieldChar;
+    uint8_t fieldU8;
+    uint16_t fieldU16;
+    uint32_t fieldU32;
+    uint64_t fieldU64;
+    float fieldF32;
+    double fieldF64;
+    std::vector<int8_t> fieldI8List;
+    std::vector<int16_t> fieldI16List;
+    std::vector<int32_t> fieldI32List;
+    std::vector<int64_t> fieldI64List;
+    std::vector<std::string> fieldCharList;
+    std::vector<uint8_t> fieldU8List;
+    std::vector<uint16_t> fieldU16List;
+    std::vector<uint32_t> fieldU32List;
+    std::vector<uint64_t> fieldU64List;
+    std::vector<float> fieldF32List;
+    std::vector<double> fieldF64List;
+
+    void encode(ByteBuf& buf) const override {
+        buf.write_i8(fieldI8);
+        buf.write_i16_le(fieldI16);
+        buf.write_i32_le(fieldI32);
+        buf.write_i64_le(fieldI64);
+        codec::put_fixed_string(buf, fieldChar, 1);
+        buf.write_u8(fieldU8);
+        buf.write_u16_le(fieldU16);
+        buf.write_u32_le(fieldU32);
+        buf.write_u64_le(fieldU64);
+        buf.write_f32_le(fieldF32);
+        buf.write_f64_le(fieldF64);
+        codec::put_basic_type_le<uint16_t,int8_t>(buf,fieldI8List);
+        codec::put_basic_type_le<uint16_t,int16_t>(buf,fieldI16List);
+        codec::put_basic_type_le<uint16_t,int32_t>(buf,fieldI32List);
+        codec::put_basic_type_le<uint16_t,int64_t>(buf,fieldI64List);
+        codec::put_fixed_string_list_le<uint16_t>(buf, fieldCharList, 1);
+        codec::put_basic_type_le<uint16_t,uint8_t>(buf,fieldU8List);
+        codec::put_basic_type_le<uint16_t,uint16_t>(buf,fieldU16List);
+        codec::put_basic_type_le<uint16_t,uint32_t>(buf,fieldU32List);
+        codec::put_basic_type_le<uint16_t,uint64_t>(buf,fieldU64List);
+        codec::put_basic_type_le<uint16_t,float>(buf,fieldF32List);
+        codec::put_basic_type_le<uint16_t,double>(buf,fieldF64List);
+    }
+    
+
+    void decode(ByteBuf& buf) override {
+        fieldI8 = buf.read_i8();
+        fieldI16 = buf.read_i16_le();
+        fieldI32 = buf.read_i32_le();
+        fieldI64 = buf.read_i64_le();
+        fieldChar = codec::get_fixed_string(buf, 1);
+        fieldU8 = buf.read_u8();
+        fieldU16 = buf.read_u16_le();
+        fieldU32 = buf.read_u32_le();
+        fieldU64 = buf.read_u64_le();
+        fieldF32 = buf.read_f32_le();
+        fieldF64 = buf.read_f64_le();
+        fieldI8List = codec::get_basic_type_le<uint16_t,int8_t>(buf);
+        fieldI16List = codec::get_basic_type_le<uint16_t,int16_t>(buf);
+        fieldI32List = codec::get_basic_type_le<uint16_t,int32_t>(buf);
+        fieldI64List = codec::get_basic_type_le<uint16_t,int64_t>(buf);
+        fieldCharList = codec::get_fixed_string_list_le<uint16_t>(buf, 1);
+        fieldU8List = codec::get_basic_type_le<uint16_t,uint8_t>(buf);
+        fieldU16List = codec::get_basic_type_le<uint16_t,uint16_t>(buf);
+        fieldU32List = codec::get_basic_type_le<uint16_t,uint32_t>(buf);
+        fieldU64List = codec::get_basic_type_le<uint16_t,uint64_t>(buf);
+        fieldF32List = codec::get_basic_type_le<uint16_t,float>(buf);
+        fieldF64List = codec::get_basic_type_le<uint16_t,double>(buf);
+    }
+    
+
+    std::string toString() const override {
+        std::ostringstream oss;
+        oss << "BasicPacket { "
+        << "fieldI8: " << std::to_string(fieldI8)
+        << ", "
+        << "fieldI16: " << std::to_string(fieldI16)
+        << ", "
+        << "fieldI32: " << std::to_string(fieldI32)
+        << ", "
+        << "fieldI64: " << std::to_string(fieldI64)
+        << ", "
+        << "fieldChar: " << fieldChar
+        << ", "
+        << "fieldU8: " << std::to_string(fieldU8)
+        << ", "
+        << "fieldU16: " << std::to_string(fieldU16)
+        << ", "
+        << "fieldU32: " << std::to_string(fieldU32)
+        << ", "
+        << "fieldU64: " << std::to_string(fieldU64)
+        << ", "
+        << "fieldF32: " << std::to_string(fieldF32)
+        << ", "
+        << "fieldF64: " << std::to_string(fieldF64)
+        << ", "
+        << "fieldI8List: " << codec::join_vector(fieldI8List)
+        << ", "
+        << "fieldI16List: " << codec::join_vector(fieldI16List)
+        << ", "
+        << "fieldI32List: " << codec::join_vector(fieldI32List)
+        << ", "
+        << "fieldI64List: " << codec::join_vector(fieldI64List)
+        << ", "
+        << "fieldCharList: " << codec::join_vector(fieldCharList)
+        << ", "
+        << "fieldU8List: " << codec::join_vector(fieldU8List)
+        << ", "
+        << "fieldU16List: " << codec::join_vector(fieldU16List)
+        << ", "
+        << "fieldU32List: " << codec::join_vector(fieldU32List)
+        << ", "
+        << "fieldU64List: " << codec::join_vector(fieldU64List)
+        << ", "
+        << "fieldF32List: " << codec::join_vector(fieldF32List)
+        << ", "
+        << "fieldF64List: " << codec::join_vector(fieldF64List)
+        << " }";
+        return oss.str();
+    }
+    
+};
+
+inline std::ostream& operator<<(std::ostream& os, const BasicPacket& pkt) {
+    return os << pkt.toString();
+}
+
+
 struct StringPacket : public codec::BinaryCodec {
     std::string fieldDynamicString;
     std::string fieldDynamicString1;
@@ -198,139 +331,6 @@ struct EmptyPacket : public codec::BinaryCodec {
 };
 
 inline std::ostream& operator<<(std::ostream& os, const EmptyPacket& pkt) {
-    return os << pkt.toString();
-}
-
-
-struct BasicPacket : public codec::BinaryCodec {
-    int8_t fieldI8;
-    int16_t fieldI16;
-    int32_t fieldI32;
-    int64_t fieldI64;
-    std::string fieldChar;
-    uint8_t fieldU8;
-    uint16_t fieldU16;
-    uint32_t fieldU32;
-    uint64_t fieldU64;
-    float fieldF32;
-    double fieldF64;
-    std::vector<int8_t> fieldI8List;
-    std::vector<int16_t> fieldI16List;
-    std::vector<int32_t> fieldI32List;
-    std::vector<int64_t> fieldI64List;
-    std::vector<std::string> fieldCharList;
-    std::vector<uint8_t> fieldU8List;
-    std::vector<uint16_t> fieldU16List;
-    std::vector<uint32_t> fieldU32List;
-    std::vector<uint64_t> fieldU64List;
-    std::vector<float> fieldF32List;
-    std::vector<double> fieldF64List;
-
-    void encode(ByteBuf& buf) const override {
-        buf.write_i8(fieldI8);
-        buf.write_i16_le(fieldI16);
-        buf.write_i32_le(fieldI32);
-        buf.write_i64_le(fieldI64);
-        codec::put_fixed_string(buf, fieldChar, 1);
-        buf.write_u8(fieldU8);
-        buf.write_u16_le(fieldU16);
-        buf.write_u32_le(fieldU32);
-        buf.write_u64_le(fieldU64);
-        buf.write_f32_le(fieldF32);
-        buf.write_f64_le(fieldF64);
-        codec::put_basic_type_le<uint16_t,int8_t>(buf,fieldI8List);
-        codec::put_basic_type_le<uint16_t,int16_t>(buf,fieldI16List);
-        codec::put_basic_type_le<uint16_t,int32_t>(buf,fieldI32List);
-        codec::put_basic_type_le<uint16_t,int64_t>(buf,fieldI64List);
-        codec::put_fixed_string_list_le<uint16_t>(buf, fieldCharList, 1);
-        codec::put_basic_type_le<uint16_t,uint8_t>(buf,fieldU8List);
-        codec::put_basic_type_le<uint16_t,uint16_t>(buf,fieldU16List);
-        codec::put_basic_type_le<uint16_t,uint32_t>(buf,fieldU32List);
-        codec::put_basic_type_le<uint16_t,uint64_t>(buf,fieldU64List);
-        codec::put_basic_type_le<uint16_t,float>(buf,fieldF32List);
-        codec::put_basic_type_le<uint16_t,double>(buf,fieldF64List);
-    }
-    
-
-    void decode(ByteBuf& buf) override {
-        fieldI8 = buf.read_i8();
-        fieldI16 = buf.read_i16_le();
-        fieldI32 = buf.read_i32_le();
-        fieldI64 = buf.read_i64_le();
-        fieldChar = codec::get_fixed_string(buf, 1);
-        fieldU8 = buf.read_u8();
-        fieldU16 = buf.read_u16_le();
-        fieldU32 = buf.read_u32_le();
-        fieldU64 = buf.read_u64_le();
-        fieldF32 = buf.read_f32_le();
-        fieldF64 = buf.read_f64_le();
-        fieldI8List = codec::get_basic_type_le<uint16_t,int8_t>(buf);
-        fieldI16List = codec::get_basic_type_le<uint16_t,int16_t>(buf);
-        fieldI32List = codec::get_basic_type_le<uint16_t,int32_t>(buf);
-        fieldI64List = codec::get_basic_type_le<uint16_t,int64_t>(buf);
-        fieldCharList = codec::get_fixed_string_list_le<uint16_t>(buf, 1);
-        fieldU8List = codec::get_basic_type_le<uint16_t,uint8_t>(buf);
-        fieldU16List = codec::get_basic_type_le<uint16_t,uint16_t>(buf);
-        fieldU32List = codec::get_basic_type_le<uint16_t,uint32_t>(buf);
-        fieldU64List = codec::get_basic_type_le<uint16_t,uint64_t>(buf);
-        fieldF32List = codec::get_basic_type_le<uint16_t,float>(buf);
-        fieldF64List = codec::get_basic_type_le<uint16_t,double>(buf);
-    }
-    
-
-    std::string toString() const override {
-        std::ostringstream oss;
-        oss << "BasicPacket { "
-        << "fieldI8: " << std::to_string(fieldI8)
-        << ", "
-        << "fieldI16: " << std::to_string(fieldI16)
-        << ", "
-        << "fieldI32: " << std::to_string(fieldI32)
-        << ", "
-        << "fieldI64: " << std::to_string(fieldI64)
-        << ", "
-        << "fieldChar: " << fieldChar
-        << ", "
-        << "fieldU8: " << std::to_string(fieldU8)
-        << ", "
-        << "fieldU16: " << std::to_string(fieldU16)
-        << ", "
-        << "fieldU32: " << std::to_string(fieldU32)
-        << ", "
-        << "fieldU64: " << std::to_string(fieldU64)
-        << ", "
-        << "fieldF32: " << std::to_string(fieldF32)
-        << ", "
-        << "fieldF64: " << std::to_string(fieldF64)
-        << ", "
-        << "fieldI8List: " << codec::join_vector(fieldI8List)
-        << ", "
-        << "fieldI16List: " << codec::join_vector(fieldI16List)
-        << ", "
-        << "fieldI32List: " << codec::join_vector(fieldI32List)
-        << ", "
-        << "fieldI64List: " << codec::join_vector(fieldI64List)
-        << ", "
-        << "fieldCharList: " << codec::join_vector(fieldCharList)
-        << ", "
-        << "fieldU8List: " << codec::join_vector(fieldU8List)
-        << ", "
-        << "fieldU16List: " << codec::join_vector(fieldU16List)
-        << ", "
-        << "fieldU32List: " << codec::join_vector(fieldU32List)
-        << ", "
-        << "fieldU64List: " << codec::join_vector(fieldU64List)
-        << ", "
-        << "fieldF32List: " << codec::join_vector(fieldF32List)
-        << ", "
-        << "fieldF64List: " << codec::join_vector(fieldF64List)
-        << " }";
-        return oss.str();
-    }
-    
-};
-
-inline std::ostream& operator<<(std::ostream& os, const BasicPacket& pkt) {
     return os << pkt.toString();
 }
 
