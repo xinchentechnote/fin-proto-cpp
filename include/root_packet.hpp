@@ -9,6 +9,199 @@
 #include "include/codec.hpp"
 #include "include/bytebuf.hpp"
 
+struct StringPacket : public codec::BinaryCodec {
+    std::string fieldDynamicString;
+    std::string fieldDynamicString1;
+    std::string fieldFixedString1;
+    std::string fieldFixedString10;
+    std::vector<std::string> fieldDynamicStringList;
+    std::vector<std::string> fieldDynamicString1List;
+    std::vector<std::string> fieldFixedString1List;
+    std::vector<std::string> fieldFixedString10List;
+
+    void encode(ByteBuf& buf) const override {
+        codec::put_string_le<uint16_t>(buf, fieldDynamicString);
+        codec::put_string_le<uint16_t>(buf, fieldDynamicString1);
+        codec::put_fixed_string(buf, fieldFixedString1, 1);
+        codec::put_fixed_string(buf, fieldFixedString10, 10);
+        codec::put_string_list_le<uint16_t,uint16_t>(buf, fieldDynamicStringList);
+        codec::put_string_list_le<uint16_t,uint16_t>(buf, fieldDynamicString1List);
+        codec::put_fixed_string_list_le<uint16_t>(buf, fieldFixedString1List, 1);
+        codec::put_fixed_string_list_le<uint16_t>(buf, fieldFixedString10List, 10);
+    }
+    
+
+    void decode(ByteBuf& buf) override {
+        fieldDynamicString = codec::get_string_le<uint16_t>(buf);
+        fieldDynamicString1 = codec::get_string_le<uint16_t>(buf);
+        fieldFixedString1 = codec::get_fixed_string(buf, 1);
+        fieldFixedString10 = codec::get_fixed_string(buf, 10);
+        fieldDynamicStringList = codec::get_string_list_le<uint16_t,uint16_t>(buf);
+        fieldDynamicString1List = codec::get_string_list_le<uint16_t,uint16_t>(buf);
+        fieldFixedString1List = codec::get_fixed_string_list_le<uint16_t>(buf, 1);
+        fieldFixedString10List = codec::get_fixed_string_list_le<uint16_t>(buf, 10);
+    }
+    
+
+    std::string toString() const override {
+        std::ostringstream oss;
+        oss << "StringPacket { "
+        << "fieldDynamicString: " << fieldDynamicString
+        << ", "
+        << "fieldDynamicString1: " << fieldDynamicString1
+        << ", "
+        << "fieldFixedString1: " << fieldFixedString1
+        << ", "
+        << "fieldFixedString10: " << fieldFixedString10
+        << ", "
+        << "fieldDynamicStringList: " << codec::join_vector(fieldDynamicStringList)
+        << ", "
+        << "fieldDynamicString1List: " << codec::join_vector(fieldDynamicString1List)
+        << ", "
+        << "fieldFixedString1List: " << codec::join_vector(fieldFixedString1List)
+        << ", "
+        << "fieldFixedString10List: " << codec::join_vector(fieldFixedString10List)
+        << " }";
+        return oss.str();
+    }
+    
+};
+
+inline std::ostream& operator<<(std::ostream& os, const StringPacket& pkt) {
+    return os << pkt.toString();
+}
+
+
+struct SubPacket : public codec::BinaryCodec {
+    uint32_t fieldU32;
+    std::vector<int16_t> fieldI16List;
+
+    void encode(ByteBuf& buf) const override {
+        buf.write_u32_le(fieldU32);
+        codec::put_basic_type_le<uint16_t,int16_t>(buf,fieldI16List);
+    }
+    
+
+    void decode(ByteBuf& buf) override {
+        fieldU32 = buf.read_u32_le();
+        fieldI16List = codec::get_basic_type_le<uint16_t,int16_t>(buf);
+    }
+    
+
+    std::string toString() const override {
+        std::ostringstream oss;
+        oss << "SubPacket { "
+        << "fieldU32: " << std::to_string(fieldU32)
+        << ", "
+        << "fieldI16List: " << codec::join_vector(fieldI16List)
+        << " }";
+        return oss.str();
+    }
+    
+};
+
+inline std::ostream& operator<<(std::ostream& os, const SubPacket& pkt) {
+    return os << pkt.toString();
+}
+
+
+
+struct InerPacket : public codec::BinaryCodec {
+    uint32_t fieldU32;
+    std::vector<int16_t> fieldI16List;
+
+    void encode(ByteBuf& buf) const override {
+        buf.write_u32_le(fieldU32);
+        codec::put_basic_type_le<uint16_t,int16_t>(buf,fieldI16List);
+    }
+    
+
+    void decode(ByteBuf& buf) override {
+        fieldU32 = buf.read_u32_le();
+        fieldI16List = codec::get_basic_type_le<uint16_t,int16_t>(buf);
+    }
+    
+
+    std::string toString() const override {
+        std::ostringstream oss;
+        oss << "InerPacket { "
+        << "fieldU32: " << std::to_string(fieldU32)
+        << ", "
+        << "fieldI16List: " << codec::join_vector(fieldI16List)
+        << " }";
+        return oss.str();
+    }
+    
+};
+
+inline std::ostream& operator<<(std::ostream& os, const InerPacket& pkt) {
+    return os << pkt.toString();
+}
+
+
+struct NestedPacket : public codec::BinaryCodec {
+    SubPacket subPacket;
+    std::vector<SubPacket> subPacketList;
+    InerPacket inerPacket;
+
+    void encode(ByteBuf& buf) const override {
+        subPacket.encode(buf);
+        codec::put_object_List_le<uint16_t>(buf,subPacketList);
+        inerPacket.encode(buf);
+    }
+    
+
+    void decode(ByteBuf& buf) override {
+        subPacket.decode(buf);
+        subPacketList = codec::get_object_List_le<uint16_t,SubPacket>(buf);
+        inerPacket.decode(buf);
+    }
+    
+
+    std::string toString() const override {
+        std::ostringstream oss;
+        oss << "NestedPacket { "
+        << "SubPacket: " << subPacket.toString()
+        << ", "
+        << "SubPacketList: " << codec::join_vector(subPacketList)
+        << ", "
+        << "InerPacket: " << inerPacket.toString()
+        << " }";
+        return oss.str();
+    }
+    
+};
+
+inline std::ostream& operator<<(std::ostream& os, const NestedPacket& pkt) {
+    return os << pkt.toString();
+}
+
+
+
+struct EmptyPacket : public codec::BinaryCodec {
+
+    void encode(ByteBuf& buf) const override {
+    }
+    
+
+    void decode(ByteBuf& buf) override {
+    }
+    
+
+    std::string toString() const override {
+        std::ostringstream oss;
+        oss << "EmptyPacket { "
+        << " }";
+        return oss.str();
+    }
+    
+};
+
+inline std::ostream& operator<<(std::ostream& os, const EmptyPacket& pkt) {
+    return os << pkt.toString();
+}
+
+
 struct BasicPacket : public codec::BinaryCodec {
     int8_t fieldI8;
     int16_t fieldI16;
@@ -86,245 +279,58 @@ struct BasicPacket : public codec::BinaryCodec {
     
 
     std::string toString() const override {
-        std::string result = "BasicPacket { ";
-        result += "fieldI8: " + std::to_string(fieldI8);
-        result += ", ";
-        result += "fieldI16: " + std::to_string(fieldI16);
-        result += ", ";
-        result += "fieldI32: " + std::to_string(fieldI32);
-        result += ", ";
-        result += "fieldI64: " + std::to_string(fieldI64);
-        result += ", ";
-        result += "fieldChar: " + fieldChar;
-        result += ", ";
-        result += "fieldU8: " + std::to_string(fieldU8);
-        result += ", ";
-        result += "fieldU16: " + std::to_string(fieldU16);
-        result += ", ";
-        result += "fieldU32: " + std::to_string(fieldU32);
-        result += ", ";
-        result += "fieldU64: " + std::to_string(fieldU64);
-        result += ", ";
-        result += "fieldF32: " + std::to_string(fieldF32);
-        result += ", ";
-        result += "fieldF64: " + std::to_string(fieldF64);
-        result += ", ";
-        result += "fieldI8List: " + codec::join_vector(fieldI8List);
-        result += ", ";
-        result += "fieldI16List: " + codec::join_vector(fieldI16List);
-        result += ", ";
-        result += "fieldI32List: " + codec::join_vector(fieldI32List);
-        result += ", ";
-        result += "fieldI64List: " + codec::join_vector(fieldI64List);
-        result += ", ";
-        result += "fieldCharList: " + codec::join_vector(fieldCharList);
-        result += ", ";
-        result += "fieldU8List: " + codec::join_vector(fieldU8List);
-        result += ", ";
-        result += "fieldU16List: " + codec::join_vector(fieldU16List);
-        result += ", ";
-        result += "fieldU32List: " + codec::join_vector(fieldU32List);
-        result += ", ";
-        result += "fieldU64List: " + codec::join_vector(fieldU64List);
-        result += ", ";
-        result += "fieldF32List: " + codec::join_vector(fieldF32List);
-        result += ", ";
-        result += "fieldF64List: " + codec::join_vector(fieldF64List);
-        result += " }";
-        return result;
+        std::ostringstream oss;
+        oss << "BasicPacket { "
+        << "fieldI8: " << std::to_string(fieldI8)
+        << ", "
+        << "fieldI16: " << std::to_string(fieldI16)
+        << ", "
+        << "fieldI32: " << std::to_string(fieldI32)
+        << ", "
+        << "fieldI64: " << std::to_string(fieldI64)
+        << ", "
+        << "fieldChar: " << fieldChar
+        << ", "
+        << "fieldU8: " << std::to_string(fieldU8)
+        << ", "
+        << "fieldU16: " << std::to_string(fieldU16)
+        << ", "
+        << "fieldU32: " << std::to_string(fieldU32)
+        << ", "
+        << "fieldU64: " << std::to_string(fieldU64)
+        << ", "
+        << "fieldF32: " << std::to_string(fieldF32)
+        << ", "
+        << "fieldF64: " << std::to_string(fieldF64)
+        << ", "
+        << "fieldI8List: " << codec::join_vector(fieldI8List)
+        << ", "
+        << "fieldI16List: " << codec::join_vector(fieldI16List)
+        << ", "
+        << "fieldI32List: " << codec::join_vector(fieldI32List)
+        << ", "
+        << "fieldI64List: " << codec::join_vector(fieldI64List)
+        << ", "
+        << "fieldCharList: " << codec::join_vector(fieldCharList)
+        << ", "
+        << "fieldU8List: " << codec::join_vector(fieldU8List)
+        << ", "
+        << "fieldU16List: " << codec::join_vector(fieldU16List)
+        << ", "
+        << "fieldU32List: " << codec::join_vector(fieldU32List)
+        << ", "
+        << "fieldU64List: " << codec::join_vector(fieldU64List)
+        << ", "
+        << "fieldF32List: " << codec::join_vector(fieldF32List)
+        << ", "
+        << "fieldF64List: " << codec::join_vector(fieldF64List)
+        << " }";
+        return oss.str();
     }
     
 };
 
 inline std::ostream& operator<<(std::ostream& os, const BasicPacket& pkt) {
-    return os << pkt.toString();
-}
-
-
-struct StringPacket : public codec::BinaryCodec {
-    std::string fieldDynamicString;
-    std::string fieldDynamicString1;
-    std::string fieldFixedString1;
-    std::string fieldFixedString10;
-    std::vector<std::string> fieldDynamicStringList;
-    std::vector<std::string> fieldDynamicString1List;
-    std::vector<std::string> fieldFixedString1List;
-    std::vector<std::string> fieldFixedString10List;
-
-    void encode(ByteBuf& buf) const override {
-        codec::put_string_le<uint16_t>(buf, fieldDynamicString);
-        codec::put_string_le<uint16_t>(buf, fieldDynamicString1);
-        codec::put_fixed_string(buf, fieldFixedString1, 1);
-        codec::put_fixed_string(buf, fieldFixedString10, 10);
-        codec::put_string_list_le<uint16_t,uint16_t>(buf, fieldDynamicStringList);
-        codec::put_string_list_le<uint16_t,uint16_t>(buf, fieldDynamicString1List);
-        codec::put_fixed_string_list_le<uint16_t>(buf, fieldFixedString1List, 1);
-        codec::put_fixed_string_list_le<uint16_t>(buf, fieldFixedString10List, 10);
-    }
-    
-
-    void decode(ByteBuf& buf) override {
-        fieldDynamicString = codec::get_string_le<uint16_t>(buf);
-        fieldDynamicString1 = codec::get_string_le<uint16_t>(buf);
-        fieldFixedString1 = codec::get_fixed_string(buf, 1);
-        fieldFixedString10 = codec::get_fixed_string(buf, 10);
-        fieldDynamicStringList = codec::get_string_list_le<uint16_t,uint16_t>(buf);
-        fieldDynamicString1List = codec::get_string_list_le<uint16_t,uint16_t>(buf);
-        fieldFixedString1List = codec::get_fixed_string_list_le<uint16_t>(buf, 1);
-        fieldFixedString10List = codec::get_fixed_string_list_le<uint16_t>(buf, 10);
-    }
-    
-
-    std::string toString() const override {
-        std::string result = "StringPacket { ";
-        result += "fieldDynamicString: " + fieldDynamicString;
-        result += ", ";
-        result += "fieldDynamicString1: " + fieldDynamicString1;
-        result += ", ";
-        result += "fieldFixedString1: " + fieldFixedString1;
-        result += ", ";
-        result += "fieldFixedString10: " + fieldFixedString10;
-        result += ", ";
-        result += "fieldDynamicStringList: " + codec::join_vector(fieldDynamicStringList);
-        result += ", ";
-        result += "fieldDynamicString1List: " + codec::join_vector(fieldDynamicString1List);
-        result += ", ";
-        result += "fieldFixedString1List: " + codec::join_vector(fieldFixedString1List);
-        result += ", ";
-        result += "fieldFixedString10List: " + codec::join_vector(fieldFixedString10List);
-        result += " }";
-        return result;
-    }
-    
-};
-
-inline std::ostream& operator<<(std::ostream& os, const StringPacket& pkt) {
-    return os << pkt.toString();
-}
-
-
-struct SubPacket : public codec::BinaryCodec {
-    uint32_t fieldU32;
-    std::vector<int16_t> fieldI16List;
-
-    void encode(ByteBuf& buf) const override {
-        buf.write_u32_le(fieldU32);
-        codec::put_basic_type_le<uint16_t,int16_t>(buf,fieldI16List);
-    }
-    
-
-    void decode(ByteBuf& buf) override {
-        fieldU32 = buf.read_u32_le();
-        fieldI16List = codec::get_basic_type_le<uint16_t,int16_t>(buf);
-    }
-    
-
-    std::string toString() const override {
-        std::string result = "SubPacket { ";
-        result += "fieldU32: " + std::to_string(fieldU32);
-        result += ", ";
-        result += "fieldI16List: " + codec::join_vector(fieldI16List);
-        result += " }";
-        return result;
-    }
-    
-};
-
-inline std::ostream& operator<<(std::ostream& os, const SubPacket& pkt) {
-    return os << pkt.toString();
-}
-
-
-
-struct InerPacket : public codec::BinaryCodec {
-    uint32_t fieldU32;
-    std::vector<int16_t> fieldI16List;
-
-    void encode(ByteBuf& buf) const override {
-        buf.write_u32_le(fieldU32);
-        codec::put_basic_type_le<uint16_t,int16_t>(buf,fieldI16List);
-    }
-    
-
-    void decode(ByteBuf& buf) override {
-        fieldU32 = buf.read_u32_le();
-        fieldI16List = codec::get_basic_type_le<uint16_t,int16_t>(buf);
-    }
-    
-
-    std::string toString() const override {
-        std::string result = "InerPacket { ";
-        result += "fieldU32: " + std::to_string(fieldU32);
-        result += ", ";
-        result += "fieldI16List: " + codec::join_vector(fieldI16List);
-        result += " }";
-        return result;
-    }
-    
-};
-
-inline std::ostream& operator<<(std::ostream& os, const InerPacket& pkt) {
-    return os << pkt.toString();
-}
-
-
-struct NestedPacket : public codec::BinaryCodec {
-    SubPacket subPacket;
-    std::vector<SubPacket> subPacketList;
-    InerPacket inerPacket;
-
-    void encode(ByteBuf& buf) const override {
-        subPacket.encode(buf);
-        codec::put_object_List_le<uint16_t>(buf,subPacketList);
-        inerPacket.encode(buf);
-    }
-    
-
-    void decode(ByteBuf& buf) override {
-        subPacket.decode(buf);
-        subPacketList = codec::get_object_List_le<uint16_t,SubPacket>(buf);
-        inerPacket.decode(buf);
-    }
-    
-
-    std::string toString() const override {
-        std::string result = "NestedPacket { ";
-        result += "SubPacket: " + subPacket.toString();
-        result += ", ";
-        result += "SubPacketList: " + codec::join_vector(subPacketList);
-        result += ", ";
-        result += "InerPacket: " + inerPacket.toString();
-        result += " }";
-        return result;
-    }
-    
-};
-
-inline std::ostream& operator<<(std::ostream& os, const NestedPacket& pkt) {
-    return os << pkt.toString();
-}
-
-
-
-struct EmptyPacket : public codec::BinaryCodec {
-
-    void encode(ByteBuf& buf) const override {
-    }
-    
-
-    void decode(ByteBuf& buf) override {
-    }
-    
-
-    std::string toString() const override {
-        std::string result = "EmptyPacket { ";
-        result += " }";
-        return result;
-    }
-    
-};
-
-inline std::ostream& operator<<(std::ostream& os, const EmptyPacket& pkt) {
     return os << pkt.toString();
 }
 
@@ -349,12 +355,16 @@ struct RootPacket : public codec::BinaryCodec {
         switch (msgType) {
             case 1:
                 payload = std::make_unique<BasicPacket>();
+                break;
             case 2:
                 payload = std::make_unique<StringPacket>();
+                break;
             case 3:
                 payload = std::make_unique<NestedPacket>();
+                break;
             case 4:
                 payload = std::make_unique<EmptyPacket>();
+                break;
             default:
                 throw std::runtime_error("Unknown match key: " + std::to_string(msgType));
         }
@@ -364,16 +374,17 @@ struct RootPacket : public codec::BinaryCodec {
     
 
     std::string toString() const override {
-        std::string result = "RootPacket { ";
-        result += "MsgType: " + std::to_string(msgType);
-        result += ", ";
-        result += "PayloadLen: " + std::to_string(payloadLen);
-        result += ", ";
-        result += "Payload: " + payload->toString();
-        result += ", ";
-        result += "Checksum: " + std::to_string(checksum);
-        result += " }";
-        return result;
+        std::ostringstream oss;
+        oss << "RootPacket { "
+        << "MsgType: " << std::to_string(msgType)
+        << ", "
+        << "PayloadLen: " << std::to_string(payloadLen)
+        << ", "
+        << "Payload: " << payload->toString()
+        << ", "
+        << "Checksum: " << std::to_string(checksum)
+        << " }";
+        return oss.str();
     }
     
 };
