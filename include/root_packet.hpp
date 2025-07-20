@@ -8,6 +8,7 @@
 #include <iostream>
 #include "include/codec.hpp"
 #include "include/bytebuf.hpp"
+#include <iomanip>
 
 struct BasicPacket : public codec::BinaryCodec {
     int8_t fieldI8;
@@ -115,7 +116,7 @@ struct BasicPacket : public codec::BinaryCodec {
     std::string toString() const override {
         std::ostringstream oss;
         oss << "BasicPacket { "
-        << "fieldI8: " << std::to_string(fieldI8)
+        << "fieldI8: " << static_cast<int>(fieldI8)
         << ", "
         << "fieldI16: " << std::to_string(fieldI16)
         << ", "
@@ -125,7 +126,7 @@ struct BasicPacket : public codec::BinaryCodec {
         << ", "
         << "fieldChar: " << fieldChar
         << ", "
-        << "fieldU8: " << std::to_string(fieldU8)
+        << "fieldU8: " << static_cast<unsigned>(fieldU8)
         << ", "
         << "fieldU16: " << std::to_string(fieldU16)
         << ", "
@@ -133,31 +134,31 @@ struct BasicPacket : public codec::BinaryCodec {
         << ", "
         << "fieldU64: " << std::to_string(fieldU64)
         << ", "
-        << "fieldF32: " << std::to_string(fieldF32)
+        << "fieldF32: " << std::fixed << std::setprecision(6) << fieldF32
         << ", "
-        << "fieldF64: " << std::to_string(fieldF64)
+        << "fieldF64: " << std::fixed << std::setprecision(6) << fieldF64
         << ", "
-        << "fieldI8List: " << codec::join_vector(fieldI8List)
+        << "fieldI8List: " << codec::join_vector<int8_t>(fieldI8List)
         << ", "
-        << "fieldI16List: " << codec::join_vector(fieldI16List)
+        << "fieldI16List: " << codec::join_vector<int16_t>(fieldI16List)
         << ", "
-        << "fieldI32List: " << codec::join_vector(fieldI32List)
+        << "fieldI32List: " << codec::join_vector<int32_t>(fieldI32List)
         << ", "
-        << "fieldI64List: " << codec::join_vector(fieldI64List)
+        << "fieldI64List: " << codec::join_vector<int64_t>(fieldI64List)
         << ", "
-        << "fieldCharList: " << codec::join_vector(fieldCharList)
+        << "fieldCharList: " << codec::join_vector<std::string>(fieldCharList)
         << ", "
-        << "fieldU8List: " << codec::join_vector(fieldU8List)
+        << "fieldU8List: " << codec::join_vector<uint8_t>(fieldU8List)
         << ", "
-        << "fieldU16List: " << codec::join_vector(fieldU16List)
+        << "fieldU16List: " << codec::join_vector<uint16_t>(fieldU16List)
         << ", "
-        << "fieldU32List: " << codec::join_vector(fieldU32List)
+        << "fieldU32List: " << codec::join_vector<uint32_t>(fieldU32List)
         << ", "
-        << "fieldU64List: " << codec::join_vector(fieldU64List)
+        << "fieldU64List: " << codec::join_vector<uint64_t>(fieldU64List)
         << ", "
-        << "fieldF32List: " << codec::join_vector(fieldF32List)
+        << "fieldF32List: " << codec::join_vector<float>(fieldF32List)
         << ", "
-        << "fieldF64List: " << codec::join_vector(fieldF64List)
+        << "fieldF64List: " << codec::join_vector<double>(fieldF64List)
         << " }";
         return oss.str();
     }
@@ -227,13 +228,13 @@ struct StringPacket : public codec::BinaryCodec {
         << ", "
         << "fieldFixedString10: " << fieldFixedString10
         << ", "
-        << "fieldDynamicStringList: " << codec::join_vector(fieldDynamicStringList)
+        << "fieldDynamicStringList: " << codec::join_vector<std::string>(fieldDynamicStringList)
         << ", "
-        << "fieldDynamicString1List: " << codec::join_vector(fieldDynamicString1List)
+        << "fieldDynamicString1List: " << codec::join_vector<std::string>(fieldDynamicString1List)
         << ", "
-        << "fieldFixedString1List: " << codec::join_vector(fieldFixedString1List)
+        << "fieldFixedString1List: " << codec::join_vector<std::string>(fieldFixedString1List)
         << ", "
-        << "fieldFixedString10List: " << codec::join_vector(fieldFixedString10List)
+        << "fieldFixedString10List: " << codec::join_vector<std::string>(fieldFixedString10List)
         << " }";
         return oss.str();
     }
@@ -273,7 +274,7 @@ struct SubPacket : public codec::BinaryCodec {
         oss << "SubPacket { "
         << "fieldU32: " << std::to_string(fieldU32)
         << ", "
-        << "fieldI16List: " << codec::join_vector(fieldI16List)
+        << "fieldI16List: " << codec::join_vector<int16_t>(fieldI16List)
         << " }";
         return oss.str();
     }
@@ -314,7 +315,7 @@ struct InerPacket : public codec::BinaryCodec {
         oss << "InerPacket { "
         << "fieldU32: " << std::to_string(fieldU32)
         << ", "
-        << "fieldI16List: " << codec::join_vector(fieldI16List)
+        << "fieldI16List: " << codec::join_vector<int16_t>(fieldI16List)
         << " }";
         return oss.str();
     }
@@ -358,7 +359,7 @@ struct NestedPacket : public codec::BinaryCodec {
         oss << "NestedPacket { "
         << "SubPacket: " << subPacket.toString()
         << ", "
-        << "SubPacketList: " << codec::join_vector(subPacketList)
+        << "SubPacketList: " << codec::join_vector<SubPacket>(subPacketList)
         << ", "
         << "InerPacket: " << inerPacket.toString()
         << " }";
