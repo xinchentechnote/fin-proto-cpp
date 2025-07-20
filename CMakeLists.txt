@@ -28,7 +28,7 @@ target_include_directories(codec_test PUBLIC ${PROJECT_SOURCE_DIR})
 target_link_libraries(codec_test PUBLIC gtest gtest_main)
 
 
-add_executable(root_packet_test ./test/root_packet_test.cpp)
+add_executable(root_packet_test ./test/root_packet_test.cpp ./test/root_packet_test_1.cpp)
 target_include_directories(root_packet_test PUBLIC ${PROJECT_SOURCE_DIR})
 target_link_libraries(root_packet_test PUBLIC gtest gtest_main)
 

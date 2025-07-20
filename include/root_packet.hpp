@@ -85,6 +85,33 @@ struct BasicPacket : public codec::BinaryCodec {
     }
     
 
+    bool equals(const BinaryCodec& other) const override {
+        const auto* checkType = dynamic_cast<const BasicPacket*>(&other);
+        if(!checkType) return false;
+        return fieldI8 == checkType->fieldI8
+               && fieldI16 == checkType->fieldI16
+               && fieldI32 == checkType->fieldI32
+               && fieldI64 == checkType->fieldI64
+               && fieldChar == checkType->fieldChar
+               && fieldU8 == checkType->fieldU8
+               && fieldU16 == checkType->fieldU16
+               && fieldU32 == checkType->fieldU32
+               && fieldU64 == checkType->fieldU64
+               && fieldF32 == checkType->fieldF32
+               && fieldF64 == checkType->fieldF64
+               && fieldI8List == checkType->fieldI8List
+               && fieldI16List == checkType->fieldI16List
+               && fieldI32List == checkType->fieldI32List
+               && fieldI64List == checkType->fieldI64List
+               && fieldCharList == checkType->fieldCharList
+               && fieldU8List == checkType->fieldU8List
+               && fieldU16List == checkType->fieldU16List
+               && fieldU32List == checkType->fieldU32List
+               && fieldU64List == checkType->fieldU64List
+               && fieldF32List == checkType->fieldF32List
+               && fieldF64List == checkType->fieldF64List;
+    }
+    
     std::string toString() const override {
         std::ostringstream oss;
         oss << "BasicPacket { "
@@ -176,6 +203,19 @@ struct StringPacket : public codec::BinaryCodec {
     }
     
 
+    bool equals(const BinaryCodec& other) const override {
+        const auto* checkType = dynamic_cast<const StringPacket*>(&other);
+        if(!checkType) return false;
+        return fieldDynamicString == checkType->fieldDynamicString
+               && fieldDynamicString1 == checkType->fieldDynamicString1
+               && fieldFixedString1 == checkType->fieldFixedString1
+               && fieldFixedString10 == checkType->fieldFixedString10
+               && fieldDynamicStringList == checkType->fieldDynamicStringList
+               && fieldDynamicString1List == checkType->fieldDynamicString1List
+               && fieldFixedString1List == checkType->fieldFixedString1List
+               && fieldFixedString10List == checkType->fieldFixedString10List;
+    }
+    
     std::string toString() const override {
         std::ostringstream oss;
         oss << "StringPacket { "
@@ -221,6 +261,13 @@ struct SubPacket : public codec::BinaryCodec {
     }
     
 
+    bool equals(const BinaryCodec& other) const override {
+        const auto* checkType = dynamic_cast<const SubPacket*>(&other);
+        if(!checkType) return false;
+        return fieldU32 == checkType->fieldU32
+               && fieldI16List == checkType->fieldI16List;
+    }
+    
     std::string toString() const override {
         std::ostringstream oss;
         oss << "SubPacket { "
@@ -255,6 +302,13 @@ struct InerPacket : public codec::BinaryCodec {
     }
     
 
+    bool equals(const BinaryCodec& other) const override {
+        const auto* checkType = dynamic_cast<const InerPacket*>(&other);
+        if(!checkType) return false;
+        return fieldU32 == checkType->fieldU32
+               && fieldI16List == checkType->fieldI16List;
+    }
+    
     std::string toString() const override {
         std::ostringstream oss;
         oss << "InerPacket { "
@@ -291,6 +345,14 @@ struct NestedPacket : public codec::BinaryCodec {
     }
     
 
+    bool equals(const BinaryCodec& other) const override {
+        const auto* checkType = dynamic_cast<const NestedPacket*>(&other);
+        if(!checkType) return false;
+        return subPacket == checkType->subPacket
+               && subPacketList == checkType->subPacketList
+               && inerPacket == checkType->inerPacket;
+    }
+    
     std::string toString() const override {
         std::ostringstream oss;
         oss << "NestedPacket { "
@@ -321,6 +383,12 @@ struct EmptyPacket : public codec::BinaryCodec {
     }
     
 
+    bool equals(const BinaryCodec& other) const override {
+        const auto* checkType = dynamic_cast<const EmptyPacket*>(&other);
+        if(!checkType) return false;
+        return true;
+    }
+    
     std::string toString() const override {
         std::ostringstream oss;
         oss << "EmptyPacket { "
@@ -376,6 +444,15 @@ struct RootPacket : public codec::BinaryCodec {
     }
     
 
+    bool equals(const BinaryCodec& other) const override {
+        const auto* checkType = dynamic_cast<const RootPacket*>(&other);
+        if(!checkType) return false;
+        return msgType == checkType->msgType
+               && payloadLen == checkType->payloadLen
+               && payload->equals(*checkType->payload)
+               && checksum == checkType->checksum;
+    }
+    
     std::string toString() const override {
         std::ostringstream oss;
         oss << "RootPacket { "
