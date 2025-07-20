@@ -14,10 +14,15 @@ namespace codec {
 // BinaryCodec Interface
 // ----------------------------
 struct BinaryCodec {
+  virtual ~BinaryCodec() = default;
   virtual void encode(ByteBuf& buf) const = 0;
   virtual void decode(ByteBuf& buf) = 0;
   virtual std::string toString() const = 0;
-  virtual ~BinaryCodec() = default;
+  // Add virtual equality comparison
+  virtual bool equals(const BinaryCodec& other) const = 0;
+  // Non-virtual helper for derived classes
+  bool operator==(const BinaryCodec& other) const { return equals(other); }
+  bool operator!=(const BinaryCodec& other) const { return !(*this == other); }
 };
 
 // ----------------------------
