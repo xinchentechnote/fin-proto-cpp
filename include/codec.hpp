@@ -261,6 +261,29 @@ std::string join_vector(const std::vector<T>& vec, const std::string& sep = ", "
 // object List
 // ----------------------------
 template <typename T, typename K>
+void put_object_List(ByteBuf& buf, const std::vector<K>& list) {
+  static_assert(std::is_unsigned<T>::value, "T must be unsigned");
+  buf.write<T>(static_cast<T>(list.size()));
+  for (const auto& obj : list) {
+    obj.encode(buf);
+  }
+}
+
+template <typename T, typename K>
+std::vector<K> get_object_List(ByteBuf& buf) {
+  static_assert(std::is_unsigned<T>::value, "T must be unsigned");
+  T count = buf.read<T>();
+  std::vector<K> result;
+  result.reserve(count);
+  for (size_t i = 0; i < count; ++i) {
+    K obj;
+    obj.decode(buf);
+    result.push_back(obj);
+  }
+  return result;
+}
+
+template <typename T, typename K>
 void put_object_List_le(ByteBuf& buf, const std::vector<K>& list) {
   static_assert(std::is_unsigned<T>::value, "T must be unsigned");
   buf.write_le<T>(static_cast<T>(list.size()));
