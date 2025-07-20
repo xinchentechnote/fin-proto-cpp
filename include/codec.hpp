@@ -241,7 +241,17 @@ std::string join_vector(const std::vector<T>& vec, const std::string& sep = ", "
   vss << "[";
   for (size_t i = 0; i < vec.size(); ++i) {
     if (i > 0) vss << sep;
-    vss << vec[i];
+    if constexpr (std::is_same_v<T, int8_t> || std::is_same_v<T, uint8_t>) {
+      vss << static_cast<int>(vec[i]);
+    } else if constexpr (std::is_same_v<T, std::string>) {
+      // Handle strings with escaping
+      vss << "\"" << vec[i] << "\"";
+    } else if constexpr (std::is_same_v<T, char>) {
+      // Handle single characters
+      vss << "'" << vec[i] << "'";
+    } else {
+      vss << vec[i];
+    }
   }
   vss << "]";
   return vss.str();

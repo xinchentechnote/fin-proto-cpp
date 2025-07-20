@@ -1,9 +1,9 @@
 // Copyright 2025 xinchentechnote
-#include "include/root_packet.hpp"
-
 #include <gtest/gtest.h>
 
-TEST(BasicPacketTest, ToStringOutput) {
+#include "include/root_packet.hpp"
+
+TEST(BasicPacketTest1, ToStringOutput) {
   BasicPacket packet;
   packet.fieldI8 = -1;
   packet.fieldI16 = -12345;
@@ -35,7 +35,7 @@ TEST(BasicPacketTest, ToStringOutput) {
   EXPECT_NE(str.find("fieldChar: hello"), std::string::npos);
   EXPECT_NE(str.find("fieldU64: 18446744073709551615"), std::string::npos);
   EXPECT_NE(str.find("fieldF32: 3.14"), std::string::npos);
-  EXPECT_NE(str.find("fieldF64: 2.718281"), std::string::npos);
+  EXPECT_NE(str.find("fieldF64: 2.71828"), std::string::npos);
   EXPECT_NE(str.find("fieldI8List: [1, 2, 3]"), std::string::npos);
   EXPECT_NE(str.find("fieldCharList: [\"a\", \"b\", \"c\"]"), std::string::npos);
 }

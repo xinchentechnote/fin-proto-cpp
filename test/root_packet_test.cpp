@@ -29,8 +29,8 @@ TEST(RootPacketTest, EncodeAndDeocde) {
     payload->fieldF64List = {8};
     
     RootPacket original;
-    original.msgType = 1;
     original.payloadLen = 4;
+    original.msgType = 1;
     original.payload = std::move(payload);
     original.checksum = 4;
     
