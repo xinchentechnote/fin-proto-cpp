@@ -11,6 +11,7 @@
 #include <iostream>
 #include "include/codec.hpp"
 #include "include/bytebuf.hpp"
+#include "include/checksum.hpp"
 
 struct BasicPacket : public codec::BinaryCodec {
     int8_t fieldI8;
@@ -420,7 +421,7 @@ struct RootPacket : public codec::BinaryCodec {
     uint16_t msgType;
     uint32_t payloadLen;
     std::unique_ptr<codec::BinaryCodec> payload;
-    int32_t checksum;
+    uint32_t checksum;
 
     void encode(ByteBuf& buf) const override {
         buf.write_u16_le(msgType);
@@ -429,7 +430,13 @@ struct RootPacket : public codec::BinaryCodec {
         auto payloadLen_ = static_cast<uint32_t>(payloadBuf.readable_bytes());
         buf.write_u32_le(payloadLen_);
         buf.write_bytes(payloadBuf.data().data(), payloadLen_);
-        buf.write_i32_le(checksum);
+        auto service = ChecksumServiceContext::instance().get<ByteBuf, uint32_t>("CRC32");
+        if(service != nullptr){
+            auto cs = service->calc(buf);
+            buf.write_u32_le(cs);
+        } else {
+            buf.write_u32_le(checksum);
+        }
     }
     
 
@@ -443,7 +450,7 @@ struct RootPacket : public codec::BinaryCodec {
             throw std::runtime_error("Unknow match key:" + msgType);
         }
         payload->decode(buf);
-        checksum = buf.read_i32_le();
+        checksum = buf.read_u32_le();
     }
     
 

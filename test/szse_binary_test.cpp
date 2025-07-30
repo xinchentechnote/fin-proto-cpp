@@ -22,6 +22,8 @@ TEST(SzseBinaryTest, EncodeAndDeocde) {
     SzseBinary decoded;
     decoded.decode(buf);
     original.bodyLength = decoded.bodyLength;
+    original.checksum = decoded.checksum;
+
     EXPECT_TRUE(original == decoded);
 }
 

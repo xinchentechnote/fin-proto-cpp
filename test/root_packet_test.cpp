@@ -39,6 +39,8 @@ TEST(RootPacketTest, EncodeAndDeocde) {
     RootPacket decoded;
     decoded.decode(buf);
     original.payloadLen = decoded.payloadLen;
+    original.checksum = decoded.checksum;
+
     EXPECT_TRUE(original == decoded);
 }
 
