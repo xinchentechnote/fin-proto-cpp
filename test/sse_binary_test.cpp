@@ -18,7 +18,8 @@ TEST(SseBinaryTest, EncodeAndDeocde) {
     SseBinary decoded;
     decoded.decode(buf);
     original.msgBodyLen = decoded.msgBodyLen;
-    original.checksum= decoded.checksum;
+    original.checksum = decoded.checksum;
+
     EXPECT_TRUE(original == decoded);
 }
 

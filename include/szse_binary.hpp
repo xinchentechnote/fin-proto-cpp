@@ -11,6 +11,7 @@
 #include <iostream>
 #include "include/codec.hpp"
 #include "include/bytebuf.hpp"
+#include "include/checksum.hpp"
 
 struct Logon : public codec::BinaryCodec {
     std::string senderCompId;
@@ -4207,7 +4208,6 @@ inline std::ostream& operator<<(std::ostream& os, const TradingSessionStatus& pk
 
 
 
-
 static const std::unordered_map<uint32_t,std::function<std::unique_ptr<codec::BinaryCodec>()>> SzseBinaryMsgTypeFactoryMap = {
     {1, [] { return std::make_unique<Logon>(); }},
     {2, [] { return std::make_unique<Logout>(); }},
@@ -4264,7 +4264,6 @@ static const std::unordered_map<uint32_t,std::function<std::unique_ptr<codec::Bi
     {202302, [] { return std::make_unique<ExecutionConfirm>(); }},
     {202702, [] { return std::make_unique<ExecutionConfirm>(); }},
     {202802, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {202802, [] { return std::make_unique<ExecutionConfirm>(); }},
     {202902, [] { return std::make_unique<ExecutionConfirm>(); }},
     {203102, [] { return std::make_unique<ExecutionConfirm>(); }},
     {206302, [] { return std::make_unique<ExecutionConfirm>(); }},
@@ -4301,7 +4300,13 @@ struct SzseBinary : public codec::BinaryCodec {
         auto bodyLen_ = static_cast<uint32_t>(bodyBuf.readable_bytes());
         buf.write_u32(bodyLen_);
         buf.write_bytes(bodyBuf.data().data(), bodyLen_);
-        buf.write_i32(checksum);
+        auto service = ChecksumServiceContext::instance().get<ByteBuf, int32_t>("SZSE_BIN");
+        if(service != nullptr){
+            auto cs = service->calc(buf);
+            buf.write_i32(cs);
+        } else {
+            buf.write_i32(checksum);
+        }
     }
     
 
