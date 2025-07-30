@@ -11,6 +11,7 @@
 #include <iostream>
 #include "include/codec.hpp"
 #include "include/bytebuf.hpp"
+#include "include/checksum.hpp"
 
 struct Heartbeat : public codec::BinaryCodec {
 
@@ -1293,7 +1294,13 @@ struct SseBinary : public codec::BinaryCodec {
         auto bodyLen_ = static_cast<uint32_t>(bodyBuf.readable_bytes());
         buf.write_u32(bodyLen_);
         buf.write_bytes(bodyBuf.data().data(), bodyLen_);
-        buf.write_u32(checksum);
+        auto service = ChecksumServiceContext::instance().get<ByteBuf, uint32_t>("SSE_BIN");
+        if(service != nullptr){
+            auto cs = service->calc(buf);
+            buf.write_u32(cs);
+        } else {
+            buf.write_u32(checksum);
+        }
     }
     
 
