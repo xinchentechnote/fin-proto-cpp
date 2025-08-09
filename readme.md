@@ -131,6 +131,41 @@ decoded.decode(buffer);
 
 This library is generated using the `fin-protoc` protocol compiler, which transforms protocol definition files (.pdsl) into C++ code. Manual modifications to generated files should be avoided as they will be overwritten during regeneration.
 
+## Related Repositories
+
+- [`fin-proto`](https://github.com/xinchentechnote/fin-proto)
+
+  - A comprehensive financial protocol library
+  - Supports SSE, SZSE, and risk protocols
+  - Includes Lua dissectors for Wireshark
+
+- [`fin-proto-rs`](https://github.com/xinchentechnote/fin-proto-rs)
+
+  - High-performance binary codec in Rust
+  - Zero-copy serialization/deserialization
+  - Supports SSE, SZSE, and risk protocols
+  - Includes unit testing infrastructure
+
+- [`fin-proto-go`](https://github.com/xinchentechnote/fin-proto-go)
+
+  - Native Go implementation of the protocols
+  - Standardized codec interface
+  - Modular, exchange-specific architecture
+  - This repository has been integrated into the [`gt-auto`](https://github.com/xinchentechnote/gt-auto) repository, an automated testing tool for financial systems(gateway,engine and so on)
+
+- [`fin-proto-java`](https://github.com/xinchentechnote/fin-proto-java)
+
+  - Binary protocol codec for Java
+  - Netty ByteBuf integration
+  - Gradle build system
+  - Java 17+ compatible
+
+- [`fin-proto-py`](https://github.com/xinchentechnote/fin-proto-py)
+
+  - Python implementation for financial protocols
+  - SSE, SZSE, and risk protocol support
+  - Easy-to-use parsing and serialization API
+
 ## License
 
 Copyright 2025 xinchentechnote
