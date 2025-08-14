@@ -1293,8 +1293,9 @@ struct SseBinary : public codec::BinaryCodec {
         buf.write_u32(0);
         auto bodyStart = buf.writer_index();
         body->encode(buf);
-        auto endStart = buf.writer_index();
-        buf.wirte_u32_at(msgBodyLenPos, endStart - bodyStart);
+        auto bodyEnd = buf.writer_index();
+        auto bodyLen_ = static_cast<unsigned int>(bodyEnd - bodyStart);
+        buf.write_u32_at(msgBodyLenPos, bodyLen_);
         auto service = ChecksumServiceContext::instance().get<ByteBuf, uint32_t>("SSE_BIN");
         if(service != nullptr){
             auto cs = service->calc(buf);

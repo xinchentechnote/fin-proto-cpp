@@ -11,8 +11,10 @@
 #include <iostream>
 #include "include/codec.hpp"
 #include "include/bytebuf.hpp"
+#include "include/checksum.hpp"
 
 struct NewOrder : public codec::BinaryCodec {
+    std::string uniqueOrderId;
     std::string clOrdId;
     std::string securityId;
     std::string side;
@@ -22,6 +24,7 @@ struct NewOrder : public codec::BinaryCodec {
     std::string account;
 
     void encode(ByteBuf& buf) const override {
+        codec::put_string<uint32_t>(buf, uniqueOrderId);
         codec::put_string<uint32_t>(buf, clOrdId);
         codec::put_string<uint32_t>(buf, securityId);
         codec::put_fixed_string(buf, side, 1);
@@ -33,6 +36,7 @@ struct NewOrder : public codec::BinaryCodec {
     
 
     void decode(ByteBuf& buf) override {
+        uniqueOrderId = codec::get_string<uint32_t>(buf);
         clOrdId = codec::get_string<uint32_t>(buf);
         securityId = codec::get_string<uint32_t>(buf);
         side = codec::get_fixed_string(buf, 1);
@@ -46,7 +50,8 @@ struct NewOrder : public codec::BinaryCodec {
     bool equals(const BinaryCodec& other) const override {
         const auto* checkType = dynamic_cast<const NewOrder*>(&other);
         if(!checkType) return false;
-        return clOrdId == checkType->clOrdId
+        return uniqueOrderId == checkType->uniqueOrderId
+               && clOrdId == checkType->clOrdId
                && securityId == checkType->securityId
                && side == checkType->side
                && price == checkType->price
@@ -58,6 +63,8 @@ struct NewOrder : public codec::BinaryCodec {
     std::string toString() const override {
         std::ostringstream oss;
         oss << "NewOrder { "
+        << "UniqueOrderID: " << uniqueOrderId
+        << ", "
         << "ClOrdID: " << clOrdId
         << ", "
         << "SecurityID: " << securityId
@@ -83,12 +90,16 @@ inline std::ostream& operator<<(std::ostream& os, const NewOrder& pkt) {
 
 
 struct OrderConfirm : public codec::BinaryCodec {
+    std::string uniqueOrderId;
+    std::string uniqueOrigOrderId;
     std::string clOrdId;
     std::string execType;
     uint32_t ordRejReason;
     std::string ordCnfmId;
 
     void encode(ByteBuf& buf) const override {
+        codec::put_string<uint32_t>(buf, uniqueOrderId);
+        codec::put_string<uint32_t>(buf, uniqueOrigOrderId);
         codec::put_string<uint32_t>(buf, clOrdId);
         codec::put_fixed_string(buf, execType, 1);
         buf.write_u32(ordRejReason);
@@ -97,6 +108,8 @@ struct OrderConfirm : public codec::BinaryCodec {
     
 
     void decode(ByteBuf& buf) override {
+        uniqueOrderId = codec::get_string<uint32_t>(buf);
+        uniqueOrigOrderId = codec::get_string<uint32_t>(buf);
         clOrdId = codec::get_string<uint32_t>(buf);
         execType = codec::get_fixed_string(buf, 1);
         ordRejReason = buf.read_u32();
@@ -107,7 +120,9 @@ struct OrderConfirm : public codec::BinaryCodec {
     bool equals(const BinaryCodec& other) const override {
         const auto* checkType = dynamic_cast<const OrderConfirm*>(&other);
         if(!checkType) return false;
-        return clOrdId == checkType->clOrdId
+        return uniqueOrderId == checkType->uniqueOrderId
+               && uniqueOrigOrderId == checkType->uniqueOrigOrderId
+               && clOrdId == checkType->clOrdId
                && execType == checkType->execType
                && ordRejReason == checkType->ordRejReason
                && ordCnfmId == checkType->ordCnfmId;
@@ -116,6 +131,10 @@ struct OrderConfirm : public codec::BinaryCodec {
     std::string toString() const override {
         std::ostringstream oss;
         oss << "OrderConfirm { "
+        << "UniqueOrderID: " << uniqueOrderId
+        << ", "
+        << "UniqueOrigOrderID: " << uniqueOrigOrderId
+        << ", "
         << "ClOrdID: " << clOrdId
         << ", "
         << "ExecType: " << execType
@@ -135,6 +154,7 @@ inline std::ostream& operator<<(std::ostream& os, const OrderConfirm& pkt) {
 
 
 struct ExecutionReport : public codec::BinaryCodec {
+    std::string uniqueOrderId;
     std::string clOrdId;
     std::string ordCnfmId;
     uint64_t lastPx;
@@ -142,6 +162,7 @@ struct ExecutionReport : public codec::BinaryCodec {
     std::string ordStatus;
 
     void encode(ByteBuf& buf) const override {
+        codec::put_string<uint32_t>(buf, uniqueOrderId);
         codec::put_string<uint32_t>(buf, clOrdId);
         codec::put_string<uint32_t>(buf, ordCnfmId);
         buf.write_u64(lastPx);
@@ -151,6 +172,7 @@ struct ExecutionReport : public codec::BinaryCodec {
     
 
     void decode(ByteBuf& buf) override {
+        uniqueOrderId = codec::get_string<uint32_t>(buf);
         clOrdId = codec::get_string<uint32_t>(buf);
         ordCnfmId = codec::get_string<uint32_t>(buf);
         lastPx = buf.read_u64();
@@ -162,7 +184,8 @@ struct ExecutionReport : public codec::BinaryCodec {
     bool equals(const BinaryCodec& other) const override {
         const auto* checkType = dynamic_cast<const ExecutionReport*>(&other);
         if(!checkType) return false;
-        return clOrdId == checkType->clOrdId
+        return uniqueOrderId == checkType->uniqueOrderId
+               && clOrdId == checkType->clOrdId
                && ordCnfmId == checkType->ordCnfmId
                && lastPx == checkType->lastPx
                && lastQty == checkType->lastQty
@@ -172,6 +195,8 @@ struct ExecutionReport : public codec::BinaryCodec {
     std::string toString() const override {
         std::ostringstream oss;
         oss << "ExecutionReport { "
+        << "UniqueOrderID: " << uniqueOrderId
+        << ", "
         << "ClOrdID: " << clOrdId
         << ", "
         << "OrdCnfmID: " << ordCnfmId
@@ -193,11 +218,15 @@ inline std::ostream& operator<<(std::ostream& os, const ExecutionReport& pkt) {
 
 
 struct OrderCancel : public codec::BinaryCodec {
+    std::string uniqueOrderId;
+    std::string uniqueOrigOrderId;
     std::string clOrdId;
     std::string origClOrdId;
     std::string securityId;
 
     void encode(ByteBuf& buf) const override {
+        codec::put_string<uint32_t>(buf, uniqueOrderId);
+        codec::put_string<uint32_t>(buf, uniqueOrigOrderId);
         codec::put_string<uint32_t>(buf, clOrdId);
         codec::put_string<uint32_t>(buf, origClOrdId);
         codec::put_string<uint32_t>(buf, securityId);
@@ -205,6 +234,8 @@ struct OrderCancel : public codec::BinaryCodec {
     
 
     void decode(ByteBuf& buf) override {
+        uniqueOrderId = codec::get_string<uint32_t>(buf);
+        uniqueOrigOrderId = codec::get_string<uint32_t>(buf);
         clOrdId = codec::get_string<uint32_t>(buf);
         origClOrdId = codec::get_string<uint32_t>(buf);
         securityId = codec::get_string<uint32_t>(buf);
@@ -214,7 +245,9 @@ struct OrderCancel : public codec::BinaryCodec {
     bool equals(const BinaryCodec& other) const override {
         const auto* checkType = dynamic_cast<const OrderCancel*>(&other);
         if(!checkType) return false;
-        return clOrdId == checkType->clOrdId
+        return uniqueOrderId == checkType->uniqueOrderId
+               && uniqueOrigOrderId == checkType->uniqueOrigOrderId
+               && clOrdId == checkType->clOrdId
                && origClOrdId == checkType->origClOrdId
                && securityId == checkType->securityId;
     }
@@ -222,6 +255,10 @@ struct OrderCancel : public codec::BinaryCodec {
     std::string toString() const override {
         std::ostringstream oss;
         oss << "OrderCancel { "
+        << "UniqueOrderID: " << uniqueOrderId
+        << ", "
+        << "UniqueOrigOrderID: " << uniqueOrigOrderId
+        << ", "
         << "ClOrdID: " << clOrdId
         << ", "
         << "OrigClOrdID: " << origClOrdId
@@ -239,11 +276,15 @@ inline std::ostream& operator<<(std::ostream& os, const OrderCancel& pkt) {
 
 
 struct CancelReject : public codec::BinaryCodec {
+    std::string uniqueOrderId;
+    std::string uniqueOrigOrderId;
     std::string clOrdId;
     std::string origClOrdId;
     uint32_t cxlRejReason;
 
     void encode(ByteBuf& buf) const override {
+        codec::put_string<uint32_t>(buf, uniqueOrderId);
+        codec::put_string<uint32_t>(buf, uniqueOrigOrderId);
         codec::put_string<uint32_t>(buf, clOrdId);
         codec::put_string<uint32_t>(buf, origClOrdId);
         buf.write_u32(cxlRejReason);
@@ -251,6 +292,8 @@ struct CancelReject : public codec::BinaryCodec {
     
 
     void decode(ByteBuf& buf) override {
+        uniqueOrderId = codec::get_string<uint32_t>(buf);
+        uniqueOrigOrderId = codec::get_string<uint32_t>(buf);
         clOrdId = codec::get_string<uint32_t>(buf);
         origClOrdId = codec::get_string<uint32_t>(buf);
         cxlRejReason = buf.read_u32();
@@ -260,7 +303,9 @@ struct CancelReject : public codec::BinaryCodec {
     bool equals(const BinaryCodec& other) const override {
         const auto* checkType = dynamic_cast<const CancelReject*>(&other);
         if(!checkType) return false;
-        return clOrdId == checkType->clOrdId
+        return uniqueOrderId == checkType->uniqueOrderId
+               && uniqueOrigOrderId == checkType->uniqueOrigOrderId
+               && clOrdId == checkType->clOrdId
                && origClOrdId == checkType->origClOrdId
                && cxlRejReason == checkType->cxlRejReason;
     }
@@ -268,6 +313,10 @@ struct CancelReject : public codec::BinaryCodec {
     std::string toString() const override {
         std::ostringstream oss;
         oss << "CancelReject { "
+        << "UniqueOrderID: " << uniqueOrderId
+        << ", "
+        << "UniqueOrigOrderID: " << uniqueOrigOrderId
+        << ", "
         << "ClOrdID: " << clOrdId
         << ", "
         << "OrigClOrdID: " << origClOrdId
@@ -284,6 +333,53 @@ inline std::ostream& operator<<(std::ostream& os, const CancelReject& pkt) {
 }
 
 
+struct RiskResult : public codec::BinaryCodec {
+    std::string uniqueOrderId;
+    uint8_t riskStatus;
+    std::string riskReason;
+
+    void encode(ByteBuf& buf) const override {
+        codec::put_string<uint32_t>(buf, uniqueOrderId);
+        buf.write_u8(riskStatus);
+        codec::put_string<uint32_t>(buf, riskReason);
+    }
+    
+
+    void decode(ByteBuf& buf) override {
+        uniqueOrderId = codec::get_string<uint32_t>(buf);
+        riskStatus = buf.read_u8();
+        riskReason = codec::get_string<uint32_t>(buf);
+    }
+    
+
+    bool equals(const BinaryCodec& other) const override {
+        const auto* checkType = dynamic_cast<const RiskResult*>(&other);
+        if(!checkType) return false;
+        return uniqueOrderId == checkType->uniqueOrderId
+               && riskStatus == checkType->riskStatus
+               && riskReason == checkType->riskReason;
+    }
+    
+    std::string toString() const override {
+        std::ostringstream oss;
+        oss << "RiskResult { "
+        << "UniqueOrderID: " << uniqueOrderId
+        << ", "
+        << "RiskStatus: " << static_cast<unsigned>(riskStatus)
+        << ", "
+        << "RiskReason: " << riskReason
+        << " }";
+        return oss.str();
+    }
+    
+};
+
+inline std::ostream& operator<<(std::ostream& os, const RiskResult& pkt) {
+    return os << pkt.toString();
+}
+
+
+
 
 
 
@@ -295,6 +391,7 @@ static const std::unordered_map<uint32_t,std::function<std::unique_ptr<codec::Bi
     {200115, [] { return std::make_unique<ExecutionReport>(); }},
     {190007, [] { return std::make_unique<OrderCancel>(); }},
     {290008, [] { return std::make_unique<CancelReject>(); }},
+    {800001, [] { return std::make_unique<RiskResult>(); }},
 };
 struct RcBinary : public codec::BinaryCodec {
     uint32_t msgType;
@@ -305,11 +402,13 @@ struct RcBinary : public codec::BinaryCodec {
     void encode(ByteBuf& buf) const override {
         buf.write_u32(msgType);
         buf.write_u32(version);
-        ByteBuf bodyBuf;
-        body->encode(bodyBuf);
-        auto bodyLen_ = static_cast<uint32_t>(bodyBuf.readable_bytes());
-        buf.write_u32(bodyLen_);
-        buf.write_bytes(bodyBuf.data().data(), bodyLen_);
+        auto msgBodyLenPos = buf.writer_index();
+        buf.write_u32(0);
+        auto bodyStart = buf.writer_index();
+        body->encode(buf);
+        auto bodyEnd = buf.writer_index();
+        auto bodyLen_ = static_cast<unsigned int>(bodyEnd - bodyStart);
+        buf.write_u32_at(msgBodyLenPos, bodyLen_);
     }
     
 

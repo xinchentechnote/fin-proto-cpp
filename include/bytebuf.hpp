@@ -44,7 +44,7 @@ class ByteBuf {
   }
 
   void write_u32(uint32_t val) { write(val); }
-  void wirte_u32_at(size_t pos, uint32_t val) { write_at(pos, val); }
+  void write_u32_at(size_t pos, uint32_t val) { write_at(pos, val); }
   uint32_t read_u32() {
     check_read(4);
     return read<uint32_t>();
@@ -58,7 +58,7 @@ class ByteBuf {
   }
 
   void write_u64(uint64_t val) { write(val); }
-  void wirte_u64_at(size_t pos, uint64_t val) { write_at(pos, val); }
+  void write_u64_at(size_t pos, uint64_t val) { write_at(pos, val); }
   uint64_t read_u64() {
     check_read(8);
     return read<uint64_t>();

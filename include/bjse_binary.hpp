@@ -4699,8 +4699,13 @@ struct BjseBinary : public codec::BinaryCodec {
 
     void encode(ByteBuf& buf) const override {
         buf.write_u32_le(msgType);
-        buf.write_u32_le(bodyLength);
+        auto bodyLengthPos = buf.writer_index();
+        buf.write_u32_le(0);
+        auto bodyStart = buf.writer_index();
         body->encode(buf);
+        auto bodyEnd = buf.writer_index();
+        auto bodyLen_ = static_cast<unsigned int>(bodyEnd - bodyStart);
+        buf.write_u32_le_at(bodyLengthPos, bodyLen_);
         buf.write_u32_le(checksum);
     }
     
