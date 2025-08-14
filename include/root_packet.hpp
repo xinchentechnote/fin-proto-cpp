@@ -425,11 +425,13 @@ struct RootPacket : public codec::BinaryCodec {
 
     void encode(ByteBuf& buf) const override {
         buf.write_u16_le(msgType);
-        ByteBuf payloadBuf;
-        payload->encode(payloadBuf);
-        auto payloadLen_ = static_cast<uint32_t>(payloadBuf.readable_bytes());
-        buf.write_u32_le(payloadLen_);
-        buf.write_bytes(payloadBuf.data().data(), payloadLen_);
+        auto payloadLenPos = buf.writer_index();
+        buf.write_u32_le(0);
+        auto payloadStart = buf.writer_index();
+        payload->encode(buf);
+        auto payloadEnd = buf.writer_index();
+        auto payloadLen_ = static_cast<unsigned int>(payloadEnd - payloadStart);
+        buf.write_u32_le_at(payloadLenPos, payloadLen_);
         auto service = ChecksumServiceContext::instance().get<ByteBuf, uint32_t>("CRC32");
         if(service != nullptr){
             auto cs = service->calc(buf);

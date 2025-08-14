@@ -5,6 +5,7 @@
 
 TEST(RcBinaryTest, EncodeAndDeocde) {
     auto body = std::make_unique<NewOrder>();
+    body->uniqueOrderId = "hello";
     body->clOrdId = "hello";
     body->securityId = "hello";
     body->side = "x";
@@ -24,11 +25,13 @@ TEST(RcBinaryTest, EncodeAndDeocde) {
     RcBinary decoded;
     decoded.decode(buf);
     original.msgBodyLen = decoded.msgBodyLen;
+
     EXPECT_TRUE(original == decoded);
 }
 
 TEST(NewOrderTest, EncodeAndDeocde) {
     NewOrder original;
+    original.uniqueOrderId = "hello";
     original.clOrdId = "hello";
     original.securityId = "hello";
     original.side = "x";
@@ -47,6 +50,8 @@ TEST(NewOrderTest, EncodeAndDeocde) {
 
 TEST(OrderConfirmTest, EncodeAndDeocde) {
     OrderConfirm original;
+    original.uniqueOrderId = "hello";
+    original.uniqueOrigOrderId = "hello";
     original.clOrdId = "hello";
     original.execType = "x";
     original.ordRejReason = 4;
@@ -62,6 +67,7 @@ TEST(OrderConfirmTest, EncodeAndDeocde) {
 
 TEST(ExecutionReportTest, EncodeAndDeocde) {
     ExecutionReport original;
+    original.uniqueOrderId = "hello";
     original.clOrdId = "hello";
     original.ordCnfmId = "hello";
     original.lastPx = 8;
@@ -78,6 +84,8 @@ TEST(ExecutionReportTest, EncodeAndDeocde) {
 
 TEST(OrderCancelTest, EncodeAndDeocde) {
     OrderCancel original;
+    original.uniqueOrderId = "hello";
+    original.uniqueOrigOrderId = "hello";
     original.clOrdId = "hello";
     original.origClOrdId = "hello";
     original.securityId = "hello";
@@ -92,6 +100,8 @@ TEST(OrderCancelTest, EncodeAndDeocde) {
 
 TEST(CancelRejectTest, EncodeAndDeocde) {
     CancelReject original;
+    original.uniqueOrderId = "hello";
+    original.uniqueOrigOrderId = "hello";
     original.clOrdId = "hello";
     original.origClOrdId = "hello";
     original.cxlRejReason = 4;
@@ -99,6 +109,20 @@ TEST(CancelRejectTest, EncodeAndDeocde) {
     ByteBuf buf;
     original.encode(buf);
     CancelReject decoded;
+    decoded.decode(buf);
+
+    EXPECT_TRUE(original == decoded);
+}
+
+TEST(RiskResultTest, EncodeAndDeocde) {
+    RiskResult original;
+    original.uniqueOrderId = "hello";
+    original.riskStatus = 1;
+    original.riskReason = "hello";
+    
+    ByteBuf buf;
+    original.encode(buf);
+    RiskResult decoded;
     decoded.decode(buf);
 
     EXPECT_TRUE(original == decoded);

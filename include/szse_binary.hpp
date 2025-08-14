@@ -4295,11 +4295,13 @@ struct SzseBinary : public codec::BinaryCodec {
 
     void encode(ByteBuf& buf) const override {
         buf.write_u32(msgType);
-        ByteBuf bodyBuf;
-        body->encode(bodyBuf);
-        auto bodyLen_ = static_cast<uint32_t>(bodyBuf.readable_bytes());
-        buf.write_u32(bodyLen_);
-        buf.write_bytes(bodyBuf.data().data(), bodyLen_);
+        auto bodyLengthPos = buf.writer_index();
+        buf.write_u32(0);
+        auto bodyStart = buf.writer_index();
+        body->encode(buf);
+        auto bodyEnd = buf.writer_index();
+        auto bodyLen_ = static_cast<unsigned int>(bodyEnd - bodyStart);
+        buf.write_u32_at(bodyLengthPos, bodyLen_);
         auto service = ChecksumServiceContext::instance().get<ByteBuf, int32_t>("SZSE_BIN");
         if(service != nullptr){
             auto cs = service->calc(buf);
