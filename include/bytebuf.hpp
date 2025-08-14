@@ -16,95 +16,112 @@ class ByteBuf {
   }
 
   void write_u8(uint8_t val) { buffer_.push_back(val); }
+  void write_u8_at(size_t pos, uint8_t val) { write_at(pos, val); }
   uint8_t read_u8() {
     check_read(1);
     return buffer_[reader_index_++];
   }
-  
+
   void write_u8_le(uint8_t val) { buffer_.push_back(val); }
+  void write_u8_le_at(size_t pos, uint8_t val) { write_le_at(pos, val); }
   uint8_t read_u8_le() {
     check_read(1);
     return buffer_[reader_index_++];
   }
 
   void write_u16(uint16_t val) { write(val); }
+  void write_u16_at(size_t pos, uint16_t val) { write_at(pos, val); }
   uint16_t read_u16() {
     check_read(2);
     return read<uint16_t>();
   }
-  
+
   void write_u16_le(uint16_t val) { write_le(val); }
+  void write_u16_le_at(size_t pos, uint16_t val) { write_le_at(pos, val); }
   uint16_t read_u16_le() {
     check_read(2);
     return read_le<uint16_t>();
   }
 
   void write_u32(uint32_t val) { write(val); }
+  void wirte_u32_at(size_t pos, uint32_t val) { write_at(pos, val); }
   uint32_t read_u32() {
     check_read(4);
     return read<uint32_t>();
   }
 
   void write_u32_le(uint32_t val) { write_le(val); }
+  void write_u32_le_at(size_t pos, uint32_t val) { write_le_at(pos, val); }
   uint32_t read_u32_le() {
     check_read(4);
     return read_le<uint32_t>();
   }
 
   void write_u64(uint64_t val) { write(val); }
+  void wirte_u64_at(size_t pos, uint64_t val) { write_at(pos, val); }
   uint64_t read_u64() {
     check_read(8);
     return read<uint64_t>();
   }
-  
+
   void write_u64_le(uint64_t val) { write_le(val); }
+  void write_u64_le_at(size_t pos, uint64_t val) { write_le_at(pos, val); }
   uint64_t read_u64_le() {
     check_read(8);
     return read_le<uint64_t>();
   }
 
   void write_i8(int8_t val) { buffer_.push_back(static_cast<uint8_t>(val)); }
+  void write_i8_at(size_t pos, int8_t val) { write_at(pos, val); }
   int8_t read_i8() {
     check_read(1);
     return static_cast<int8_t>(buffer_[reader_index_++]);
   }
 
   void write_i8_le(int8_t val) { buffer_.push_back(static_cast<uint8_t>(val)); }
+  void write_i8_le_at(size_t pos, int8_t val) { write_le_at(pos, val); }
   int8_t read_i8_le() {
     check_read(1);
     return static_cast<int8_t>(buffer_[reader_index_++]);
   }
   void write_i16(int16_t val) { write(val); }
+  void write_i6_at(size_t pos, int16_t val) { write_at(pos, val); }
   int16_t read_i16() {
     check_read(2);
     return read<int16_t>();
   }
 
   void write_i16_le(int16_t val) { write_le(val); }
+  void write_i16_le_at(size_t pos, int16_t val) { write_at(pos, val); }
   int16_t read_i16_le() {
     check_read(2);
     return read_le<int16_t>();
   }
 
   void write_i32(int32_t val) { write(val); }
+  void write_i32_at(size_t pos, int32_t val) { write_at(pos, val); }
   int32_t read_i32() {
     check_read(4);
     return read<int32_t>();
   }
 
   void write_i32_le(int32_t val) { write_le(val); }
+
+  void write_i32_le_at(size_t pos, int32_t val) { write_le_at(pos, val); }
   int32_t read_i32_le() {
     check_read(4);
     return read_le<int32_t>();
   }
 
   void write_i64(int64_t val) { write(val); }
+  void write_i64_at(size_t pos, int64_t val) { write_at(pos, val); }
   int64_t read_i64() {
     check_read(8);
     return read<int64_t>();
   }
 
   void write_i64_le(int64_t val) { write_le(val); }
+  void write_i64_le_at(size_t pos, int64_t val) { write_le_at(pos, val); }
   int64_t read_i64_le() {
     check_read(8);
     return read_le<int64_t>();
@@ -163,6 +180,7 @@ class ByteBuf {
       uint8_t bytes[sizeof(T)];
       std::memcpy(bytes, &value, sizeof(T));
       write_bytes(bytes, sizeof(T));
+      writer_index_ += sizeof(T);
     } else {
       // 整数的处理方式
       uint8_t bytes[sizeof(T)];
@@ -170,6 +188,7 @@ class ByteBuf {
         bytes[i] = static_cast<uint8_t>(value >> (i * 8));
       }
       write_bytes(bytes, sizeof(T));
+      writer_index_ += sizeof(T);
     }
   }
 
@@ -181,6 +200,7 @@ class ByteBuf {
       uint8_t bytes[sizeof(T)];
       std::memcpy(bytes, &value, sizeof(T));
       write_bytes(bytes, sizeof(T));
+      writer_index_ += sizeof(T);
     } else {
       // 整数的处理方式
       uint8_t bytes[sizeof(T)];
@@ -188,6 +208,49 @@ class ByteBuf {
         bytes[i] = static_cast<uint8_t>(value >> ((sizeof(T) - 1 - i) * 8));
       }
       write_bytes(bytes, sizeof(T));
+      writer_index_ += sizeof(T);
+    }
+  }
+
+  template <typename T>
+  void write_le_at(size_t pos, T value) {
+    static_assert(std::is_arithmetic<T>::value, "T must be arithmetic type");
+
+    if (pos + sizeof(T) > buffer_.size()) {
+      throw std::out_of_range("Position out of bounds for write_le_at");
+    }
+
+    if constexpr (std::is_floating_point_v<T>) {
+      uint8_t bytes[sizeof(T)];
+      std::memcpy(bytes, &value, sizeof(T));
+      for (size_t i = 0; i < sizeof(T); ++i) {
+        buffer_[pos + i] = bytes[i];
+      }
+    } else {
+      for (size_t i = 0; i < sizeof(T); ++i) {
+        buffer_[pos + i] = static_cast<uint8_t>(value >> (i * 8));
+      }
+    }
+  }
+
+  template <typename T>
+  void write_be_at(size_t pos, T value) {
+    static_assert(std::is_arithmetic<T>::value, "T must be arithmetic type");
+
+    if (pos + sizeof(T) > buffer_.size()) {
+      throw std::out_of_range("Position out of bounds for write_be_at");
+    }
+
+    if constexpr (std::is_floating_point_v<T>) {
+      uint8_t bytes[sizeof(T)];
+      std::memcpy(bytes, &value, sizeof(T));
+      for (size_t i = 0; i < sizeof(T); ++i) {
+        buffer_[pos + i] = bytes[i];
+      }
+    } else {
+      for (size_t i = 0; i < sizeof(T); ++i) {
+        buffer_[pos + i] = static_cast<uint8_t>(value >> ((sizeof(T) - 1 - i) * 8));
+      }
     }
   }
 
@@ -244,6 +307,14 @@ class ByteBuf {
       write_le(value);
     }
   }
+  template <typename T>
+  void write_at(size_t pos, T value, bool big_endian = false) {
+    if (big_endian) {
+      write_be_at(pos, value);
+    } else {
+      write_le_at(pos, value);
+    }
+  }
 
   // 通用读取函数，默认小端序
   template <typename T>
@@ -260,6 +331,8 @@ class ByteBuf {
       throw std::out_of_range("Not enough data to read");
     }
   }
+
+  size_t writer_index() const { return writer_index_; }
 
  private:
   std::vector<uint8_t> buffer_;
