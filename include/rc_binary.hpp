@@ -379,12 +379,6 @@ inline std::ostream& operator<<(std::ostream& os, const RiskResult& pkt) {
 }
 
 
-
-
-
-
-
-
 static const std::unordered_map<uint32_t,std::function<std::unique_ptr<codec::BinaryCodec>()>> RcBinaryMsgTypeFactoryMap = {
     {100101, [] { return std::make_unique<NewOrder>(); }},
     {200102, [] { return std::make_unique<OrderConfirm>(); }},

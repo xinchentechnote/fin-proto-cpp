@@ -407,10 +407,6 @@ inline std::ostream& operator<<(std::ostream& os, const EmptyPacket& pkt) {
 }
 
 
-
-
-
-
 static const std::unordered_map<uint16_t,std::function<std::unique_ptr<codec::BinaryCodec>()>> RootPacketMsgTypeFactoryMap = {
     {1, [] { return std::make_unique<BasicPacket>(); }},
     {2, [] { return std::make_unique<StringPacket>(); }},

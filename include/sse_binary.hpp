@@ -1249,20 +1249,6 @@ inline std::ostream& operator<<(std::ostream& os, const ExecRptEndOfStream& pkt)
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 static const std::unordered_map<uint32_t,std::function<std::unique_ptr<codec::BinaryCodec>()>> SseBinaryMsgTypeFactoryMap = {
     {33, [] { return std::make_unique<Heartbeat>(); }},
     {40, [] { return std::make_unique<Logon>(); }},
