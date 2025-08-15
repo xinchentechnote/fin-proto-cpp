@@ -343,7 +343,6 @@ inline std::ostream& operator<<(std::ostream& os, const Extend100501& pkt) {
 }
 
 
-
 struct Extend100601 : public codec::BinaryCodec {
     std::string cashMargin;
 
@@ -376,7 +375,6 @@ struct Extend100601 : public codec::BinaryCodec {
 inline std::ostream& operator<<(std::ostream& os, const Extend100601& pkt) {
     return os << pkt.toString();
 }
-
 
 
 struct Extend100701 : public codec::BinaryCodec {
@@ -457,8 +455,6 @@ struct Extend101501 : public codec::BinaryCodec {
 inline std::ostream& operator<<(std::ostream& os, const Extend101501& pkt) {
     return os << pkt.toString();
 }
-
-
 
 
 struct Extend101601 : public codec::BinaryCodec {
@@ -563,7 +559,6 @@ inline std::ostream& operator<<(std::ostream& os, const Extend101801& pkt) {
 }
 
 
-
 struct Extend102701 : public codec::BinaryCodec {
     std::string disposalPbu;
     std::string disposalAccountId;
@@ -602,7 +597,6 @@ struct Extend102701 : public codec::BinaryCodec {
 inline std::ostream& operator<<(std::ostream& os, const Extend102701& pkt) {
     return os << pkt.toString();
 }
-
 
 
 struct Extend102801 : public codec::BinaryCodec {
@@ -645,7 +639,6 @@ inline std::ostream& operator<<(std::ostream& os, const Extend102801& pkt) {
 }
 
 
-
 struct Extend102901 : public codec::BinaryCodec {
     std::string deductionPbu;
     std::string deductionAccountId;
@@ -684,7 +677,6 @@ struct Extend102901 : public codec::BinaryCodec {
 inline std::ostream& operator<<(std::ostream& os, const Extend102901& pkt) {
     return os << pkt.toString();
 }
-
 
 
 struct Extend106301 : public codec::BinaryCodec {
@@ -777,7 +769,6 @@ struct Extend103501 : public codec::BinaryCodec {
 inline std::ostream& operator<<(std::ostream& os, const Extend103501& pkt) {
     return os << pkt.toString();
 }
-
 
 
 struct Extend103701 : public codec::BinaryCodec {
@@ -1499,7 +1490,6 @@ inline std::ostream& operator<<(std::ostream& os, const Extend200502& pkt) {
 }
 
 
-
 struct Extend200602 : public codec::BinaryCodec {
     std::string cashMargin;
 
@@ -1532,7 +1522,6 @@ struct Extend200602 : public codec::BinaryCodec {
 inline std::ostream& operator<<(std::ostream& os, const Extend200602& pkt) {
     return os << pkt.toString();
 }
-
 
 
 struct Extend200702 : public codec::BinaryCodec {
@@ -1613,8 +1602,6 @@ struct Extend201502 : public codec::BinaryCodec {
 inline std::ostream& operator<<(std::ostream& os, const Extend201502& pkt) {
     return os << pkt.toString();
 }
-
-
 
 
 struct Extend201602 : public codec::BinaryCodec {
@@ -1719,7 +1706,6 @@ inline std::ostream& operator<<(std::ostream& os, const Extend201802& pkt) {
 }
 
 
-
 struct Extend202702 : public codec::BinaryCodec {
     std::string disposalPbu;
     std::string disposalAccountId;
@@ -1758,7 +1744,6 @@ struct Extend202702 : public codec::BinaryCodec {
 inline std::ostream& operator<<(std::ostream& os, const Extend202702& pkt) {
     return os << pkt.toString();
 }
-
 
 
 struct Extend202802 : public codec::BinaryCodec {
@@ -1801,7 +1786,6 @@ inline std::ostream& operator<<(std::ostream& os, const Extend202802& pkt) {
 }
 
 
-
 struct Extend202902 : public codec::BinaryCodec {
     std::string deductionPbu;
     std::string deductionAccountId;
@@ -1840,7 +1824,6 @@ struct Extend202902 : public codec::BinaryCodec {
 inline std::ostream& operator<<(std::ostream& os, const Extend202902& pkt) {
     return os << pkt.toString();
 }
-
 
 
 struct Extend206302 : public codec::BinaryCodec {
@@ -1951,7 +1934,6 @@ struct Extend203502 : public codec::BinaryCodec {
 inline std::ostream& operator<<(std::ostream& os, const Extend203502& pkt) {
     return os << pkt.toString();
 }
-
 
 
 struct Extend203702 : public codec::BinaryCodec {
@@ -2807,9 +2789,6 @@ inline std::ostream& operator<<(std::ostream& os, const Extend200515& pkt) {
 }
 
 
-
-
-
 struct Extend200615 : public codec::BinaryCodec {
     std::string cashMargin;
 
@@ -2842,7 +2821,6 @@ struct Extend200615 : public codec::BinaryCodec {
 inline std::ostream& operator<<(std::ostream& os, const Extend200615& pkt) {
     return os << pkt.toString();
 }
-
 
 
 struct Extend200715 : public codec::BinaryCodec {
@@ -3039,10 +3017,6 @@ struct Extend204115 : public codec::BinaryCodec {
 inline std::ostream& operator<<(std::ostream& os, const Extend204115& pkt) {
     return os << pkt.toString();
 }
-
-
-
-
 
 
 struct Extend204130 : public codec::BinaryCodec {
@@ -4129,83 +4103,6 @@ struct TradingSessionStatus : public codec::BinaryCodec {
 inline std::ostream& operator<<(std::ostream& os, const TradingSessionStatus& pkt) {
     return os << pkt.toString();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 static const std::unordered_map<uint32_t,std::function<std::unique_ptr<codec::BinaryCodec>()>> SzseBinaryMsgTypeFactoryMap = {

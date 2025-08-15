@@ -4667,17 +4667,6 @@ inline std::ostream& operator<<(std::ostream& os, const PlatformInfo& pkt) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
 static const std::unordered_map<uint32_t,std::function<std::unique_ptr<codec::BinaryCodec>()>> BjseBinaryMsgTypeFactoryMap = {
     {1, [] { return std::make_unique<Logon>(); }},
     {2, [] { return std::make_unique<Logout>(); }},
