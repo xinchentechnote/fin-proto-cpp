@@ -12,6 +12,7 @@
 #include "include/codec.hpp"
 #include "include/bytebuf.hpp"
 #include "include/checksum.hpp"
+#include "message_factory.hpp"
 
 struct NewOrder : public codec::BinaryCodec {
     std::string uniqueOrderId;
@@ -378,15 +379,15 @@ inline std::ostream& operator<<(std::ostream& os, const RiskResult& pkt) {
     return os << pkt.toString();
 }
 
+using RcBinaryMessageFactory = MessageFactory<uint32_t, codec::BinaryCodec>;
+REGISTER_MESSAGE(RcBinaryMessageFactory, 100101, NewOrder);
+REGISTER_MESSAGE(RcBinaryMessageFactory, 200102, OrderConfirm);
+REGISTER_MESSAGE(RcBinaryMessageFactory, 200115, ExecutionReport);
+REGISTER_MESSAGE(RcBinaryMessageFactory, 190007, OrderCancel);
+REGISTER_MESSAGE(RcBinaryMessageFactory, 290008, CancelReject);
+REGISTER_MESSAGE(RcBinaryMessageFactory, 800001, RiskResult);
 
-static const std::unordered_map<uint32_t,std::function<std::unique_ptr<codec::BinaryCodec>()>> RcBinaryMsgTypeFactoryMap = {
-    {100101, [] { return std::make_unique<NewOrder>(); }},
-    {200102, [] { return std::make_unique<OrderConfirm>(); }},
-    {200115, [] { return std::make_unique<ExecutionReport>(); }},
-    {190007, [] { return std::make_unique<OrderCancel>(); }},
-    {290008, [] { return std::make_unique<CancelReject>(); }},
-    {800001, [] { return std::make_unique<RiskResult>(); }},
-};
+
 struct RcBinary : public codec::BinaryCodec {
     uint32_t msgType;
     uint32_t version;
@@ -410,12 +411,7 @@ struct RcBinary : public codec::BinaryCodec {
         msgType = buf.read_u32();
         version = buf.read_u32();
         msgBodyLen = buf.read_u32();
-        auto it = RcBinaryMsgTypeFactoryMap.find(msgType);
-        if(it != RcBinaryMsgTypeFactoryMap.end()) {
-            body = it->second();
-        } else {
-            throw std::runtime_error("Unknow match key:" + msgType);
-        }
+        body = RcBinaryMessageFactory::getInstance().create(msgType);
         body->decode(buf);
     }
     
