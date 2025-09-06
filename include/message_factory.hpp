@@ -1,6 +1,6 @@
 
 
-template <typename Key, typename Message>
+template <typename Key, typename Message, typename Tag>
 class MessageFactory {
  public:
   using Creator = std::function<std::unique_ptr<Message>()>;
@@ -42,6 +42,8 @@ struct AutoRegister {
 };
 
 
-#define REGISTER_MESSAGE(factory, key, type) \
-    static AutoRegister<factory, type> reg_##type(key);
+#define CONCAT_IMPL(x, y) x##y
+#define CONCAT(x, y) CONCAT_IMPL(x, y)
 
+#define REGISTER_MESSAGE(factory, key, type) \
+    static AutoRegister<factory, type> CONCAT(reg_##type##_, __LINE__)(key);

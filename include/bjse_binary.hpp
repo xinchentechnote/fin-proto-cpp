@@ -12,6 +12,7 @@
 #include "include/codec.hpp"
 #include "include/bytebuf.hpp"
 #include "include/checksum.hpp"
+#include "message_factory.hpp"
 
 struct Logon : public codec::BinaryCodec {
     std::string senderCompId;
@@ -465,16 +466,18 @@ inline std::ostream& operator<<(std::ostream& os, const ExtendNewOrder050& pkt) 
 }
 
 
-static const std::unordered_map<std::string,std::function<std::unique_ptr<codec::BinaryCodec>()>> NewOrderApplIDFactoryMap = {
-    {"010", [] { return std::make_unique<ExtendNewOrder010>(); }},
-    {"040", [] { return std::make_unique<ExtendNewOrder040>(); }},
-    {"041", [] { return std::make_unique<ExtendNewOrder041>(); }},
-    {"042", [] { return std::make_unique<ExtendNewOrder042>(); }},
-    {"043", [] { return std::make_unique<ExtendNewOrder043>(); }},
-    {"044", [] { return std::make_unique<ExtendNewOrder044>(); }},
-    {"045", [] { return std::make_unique<ExtendNewOrder045>(); }},
-    {"050", [] { return std::make_unique<ExtendNewOrder050>(); }},
-};
+struct NewOrderTag{};
+using NewOrderMessageFactory = MessageFactory<std::string, codec::BinaryCodec, NewOrderTag>;
+REGISTER_MESSAGE(NewOrderMessageFactory, "010", ExtendNewOrder010);
+REGISTER_MESSAGE(NewOrderMessageFactory, "040", ExtendNewOrder040);
+REGISTER_MESSAGE(NewOrderMessageFactory, "041", ExtendNewOrder041);
+REGISTER_MESSAGE(NewOrderMessageFactory, "042", ExtendNewOrder042);
+REGISTER_MESSAGE(NewOrderMessageFactory, "043", ExtendNewOrder043);
+REGISTER_MESSAGE(NewOrderMessageFactory, "044", ExtendNewOrder044);
+REGISTER_MESSAGE(NewOrderMessageFactory, "045", ExtendNewOrder045);
+REGISTER_MESSAGE(NewOrderMessageFactory, "050", ExtendNewOrder050);
+
+
 struct NewOrder : public codec::BinaryCodec {
     std::string applId;
     std::string submittingPbuid;
@@ -532,12 +535,7 @@ struct NewOrder : public codec::BinaryCodec {
         ordType = codec::get_fixed_string(buf, 1);
         orderQty = buf.read_i64_le();
         price = buf.read_i64_le();
-        auto it = NewOrderApplIDFactoryMap.find(applId);
-        if(it != NewOrderApplIDFactoryMap.end()) {
-            applExtend = it->second();
-        } else {
-            throw std::runtime_error("Unknow match key:" + applId);
-        }
+        applExtend = NewOrderMessageFactory::getInstance().create(applId);
         applExtend->decode(buf);
     }
     
@@ -1185,16 +1183,18 @@ inline std::ostream& operator<<(std::ostream& os, const ConfirmExtend050& pkt) {
 }
 
 
-static const std::unordered_map<std::string,std::function<std::unique_ptr<codec::BinaryCodec>()>> ExecutionConfirmApplIDFactoryMap = {
-    {"010", [] { return std::make_unique<ConfirmExtend010>(); }},
-    {"040", [] { return std::make_unique<ConfirmExtend040>(); }},
-    {"041", [] { return std::make_unique<ConfirmExtend041>(); }},
-    {"042", [] { return std::make_unique<ConfirmExtend042>(); }},
-    {"043", [] { return std::make_unique<ConfirmExtend043>(); }},
-    {"044", [] { return std::make_unique<ConfirmExtend044>(); }},
-    {"045", [] { return std::make_unique<ConfirmExtend045>(); }},
-    {"050", [] { return std::make_unique<ConfirmExtend050>(); }},
-};
+struct ExecutionConfirmTag{};
+using ExecutionConfirmMessageFactory = MessageFactory<std::string, codec::BinaryCodec, ExecutionConfirmTag>;
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "010", ConfirmExtend010);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "040", ConfirmExtend040);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "041", ConfirmExtend041);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "042", ConfirmExtend042);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "043", ConfirmExtend043);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "044", ConfirmExtend044);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "045", ConfirmExtend045);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "050", ConfirmExtend050);
+
+
 struct ExecutionConfirm : public codec::BinaryCodec {
     int32_t partitionNo;
     int64_t reportIndex;
@@ -1285,12 +1285,7 @@ struct ExecutionConfirm : public codec::BinaryCodec {
         accountId = codec::get_fixed_string(buf, 10);
         branchId = codec::get_fixed_string(buf, 2);
         orderRestrictions = codec::get_fixed_string(buf, 4);
-        auto it = ExecutionConfirmApplIDFactoryMap.find(applId);
-        if(it != ExecutionConfirmApplIDFactoryMap.end()) {
-            applExtend = it->second();
-        } else {
-            throw std::runtime_error("Unknow match key:" + applId);
-        }
+        applExtend = ExecutionConfirmMessageFactory::getInstance().create(applId);
         applExtend->decode(buf);
     }
     
@@ -1537,11 +1532,13 @@ inline std::ostream& operator<<(std::ostream& os, const ReportExtend050& pkt) {
 }
 
 
-static const std::unordered_map<std::string,std::function<std::unique_ptr<codec::BinaryCodec>()>> ExecutionReportApplIDFactoryMap = {
-    {"010", [] { return std::make_unique<ReportExtend010>(); }},
-    {"040", [] { return std::make_unique<ReportExtend040>(); }},
-    {"050", [] { return std::make_unique<ReportExtend050>(); }},
-};
+struct ExecutionReportTag{};
+using ExecutionReportMessageFactory = MessageFactory<std::string, codec::BinaryCodec, ExecutionReportTag>;
+REGISTER_MESSAGE(ExecutionReportMessageFactory, "010", ReportExtend010);
+REGISTER_MESSAGE(ExecutionReportMessageFactory, "040", ReportExtend040);
+REGISTER_MESSAGE(ExecutionReportMessageFactory, "050", ReportExtend050);
+
+
 struct ExecutionReport : public codec::BinaryCodec {
     int32_t partitionNo;
     int64_t reportIndex;
@@ -1620,12 +1617,7 @@ struct ExecutionReport : public codec::BinaryCodec {
         side = codec::get_fixed_string(buf, 1);
         accountId = codec::get_fixed_string(buf, 10);
         branchId = codec::get_fixed_string(buf, 2);
-        auto it = ExecutionReportApplIDFactoryMap.find(applId);
-        if(it != ExecutionReportApplIDFactoryMap.end()) {
-            applExtend = it->second();
-        } else {
-            throw std::runtime_error("Unknow match key:" + applId);
-        }
+        applExtend = ExecutionReportMessageFactory::getInstance().create(applId);
         applExtend->decode(buf);
     }
     
@@ -1835,10 +1827,12 @@ inline std::ostream& operator<<(std::ostream& os, const QuoteExtend071& pkt) {
 }
 
 
-static const std::unordered_map<std::string,std::function<std::unique_ptr<codec::BinaryCodec>()>> QuoteApplIDFactoryMap = {
-    {"070", [] { return std::make_unique<QuoteExtend070>(); }},
-    {"071", [] { return std::make_unique<QuoteExtend071>(); }},
-};
+struct QuoteTag{};
+using QuoteMessageFactory = MessageFactory<std::string, codec::BinaryCodec, QuoteTag>;
+REGISTER_MESSAGE(QuoteMessageFactory, "070", QuoteExtend070);
+REGISTER_MESSAGE(QuoteMessageFactory, "071", QuoteExtend071);
+
+
 struct Quote : public codec::BinaryCodec {
     std::string applId;
     std::string submittingPbuid;
@@ -1896,12 +1890,7 @@ struct Quote : public codec::BinaryCodec {
         offerPx = buf.read_i64_le();
         bidSize = buf.read_i64_le();
         offerSize = buf.read_i64_le();
-        auto it = QuoteApplIDFactoryMap.find(applId);
-        if(it != QuoteApplIDFactoryMap.end()) {
-            applExtend = it->second();
-        } else {
-            throw std::runtime_error("Unknow match key:" + applId);
-        }
+        applExtend = QuoteMessageFactory::getInstance().create(applId);
         applExtend->decode(buf);
     }
     
@@ -2123,9 +2112,11 @@ inline std::ostream& operator<<(std::ostream& os, const QuoteStatusReportExtend0
 }
 
 
-static const std::unordered_map<std::string,std::function<std::unique_ptr<codec::BinaryCodec>()>> QuoteStatusReportApplIDFactoryMap = {
-    {"070", [] { return std::make_unique<QuoteStatusReportExtend070>(); }},
-};
+struct QuoteStatusReportTag{};
+using QuoteStatusReportMessageFactory = MessageFactory<std::string, codec::BinaryCodec, QuoteStatusReportTag>;
+REGISTER_MESSAGE(QuoteStatusReportMessageFactory, "070", QuoteStatusReportExtend070);
+
+
 struct QuoteStatusReport : public codec::BinaryCodec {
     int32_t partitionNo;
     int64_t reportIndex;
@@ -2195,12 +2186,7 @@ struct QuoteStatusReport : public codec::BinaryCodec {
         offerPx = buf.read_i64_le();
         bidSize = buf.read_i64_le();
         offerSize = buf.read_i64_le();
-        auto it = QuoteStatusReportApplIDFactoryMap.find(applId);
-        if(it != QuoteStatusReportApplIDFactoryMap.end()) {
-            applExtend = it->second();
-        } else {
-            throw std::runtime_error("Unknow match key:" + applId);
-        }
+        applExtend = QuoteStatusReportMessageFactory::getInstance().create(applId);
         applExtend->decode(buf);
     }
     
@@ -2367,9 +2353,11 @@ inline std::ostream& operator<<(std::ostream& os, const QuoteResponseExtend070& 
 }
 
 
-static const std::unordered_map<std::string,std::function<std::unique_ptr<codec::BinaryCodec>()>> QuoteResponseApplIDFactoryMap = {
-    {"070", [] { return std::make_unique<QuoteResponseExtend070>(); }},
-};
+struct QuoteResponseTag{};
+using QuoteResponseMessageFactory = MessageFactory<std::string, codec::BinaryCodec, QuoteResponseTag>;
+REGISTER_MESSAGE(QuoteResponseMessageFactory, "070", QuoteResponseExtend070);
+
+
 struct QuoteResponse : public codec::BinaryCodec {
     std::string applId;
     std::string reportingPbuid;
@@ -2436,12 +2424,7 @@ struct QuoteResponse : public codec::BinaryCodec {
         quoteType = buf.read_u8();
         priceType = buf.read_u8();
         quote2 = codec::get_object_List_le<uint16_t,Quote2>(buf);
-        auto it = QuoteResponseApplIDFactoryMap.find(applId);
-        if(it != QuoteResponseApplIDFactoryMap.end()) {
-            applExtend = it->second();
-        } else {
-            throw std::runtime_error("Unknow match key:" + applId);
-        }
+        applExtend = QuoteResponseMessageFactory::getInstance().create(applId);
         applExtend->decode(buf);
     }
     
@@ -2565,9 +2548,11 @@ inline std::ostream& operator<<(std::ostream& os, const AllegeQuoteExtend070& pk
 }
 
 
-static const std::unordered_map<std::string,std::function<std::unique_ptr<codec::BinaryCodec>()>> AllegeQuoteApplIDFactoryMap = {
-    {"070", [] { return std::make_unique<AllegeQuoteExtend070>(); }},
-};
+struct AllegeQuoteTag{};
+using AllegeQuoteMessageFactory = MessageFactory<std::string, codec::BinaryCodec, AllegeQuoteTag>;
+REGISTER_MESSAGE(AllegeQuoteMessageFactory, "070", AllegeQuoteExtend070);
+
+
 struct AllegeQuote : public codec::BinaryCodec {
     int32_t partitionNo;
     int64_t reportIndex;
@@ -2658,12 +2643,7 @@ struct AllegeQuote : public codec::BinaryCodec {
         validUntilTime = buf.read_i64_le();
         priceType = buf.read_u8();
         memo = codec::get_fixed_string(buf, 120);
-        auto it = AllegeQuoteApplIDFactoryMap.find(applId);
-        if(it != AllegeQuoteApplIDFactoryMap.end()) {
-            applExtend = it->second();
-        } else {
-            throw std::runtime_error("Unknow match key:" + applId);
-        }
+        applExtend = AllegeQuoteMessageFactory::getInstance().create(applId);
         applExtend->decode(buf);
     }
     
@@ -3159,13 +3139,15 @@ inline std::ostream& operator<<(std::ostream& os, const TradeCaptureReportExtend
 }
 
 
-static const std::unordered_map<std::string,std::function<std::unique_ptr<codec::BinaryCodec>()>> TradeCaptureReportApplIDFactoryMap = {
-    {"031", [] { return std::make_unique<TradeCaptureReportExtend031>(); }},
-    {"051", [] { return std::make_unique<TradeCaptureReportExtend051>(); }},
-    {"060", [] { return std::make_unique<TradeCaptureReportExtend060>(); }},
-    {"061", [] { return std::make_unique<TradeCaptureReportExtend061>(); }},
-    {"062", [] { return std::make_unique<TradeCaptureReportExtend062>(); }},
-};
+struct TradeCaptureReportTag{};
+using TradeCaptureReportMessageFactory = MessageFactory<std::string, codec::BinaryCodec, TradeCaptureReportTag>;
+REGISTER_MESSAGE(TradeCaptureReportMessageFactory, "031", TradeCaptureReportExtend031);
+REGISTER_MESSAGE(TradeCaptureReportMessageFactory, "051", TradeCaptureReportExtend051);
+REGISTER_MESSAGE(TradeCaptureReportMessageFactory, "060", TradeCaptureReportExtend060);
+REGISTER_MESSAGE(TradeCaptureReportMessageFactory, "061", TradeCaptureReportExtend061);
+REGISTER_MESSAGE(TradeCaptureReportMessageFactory, "062", TradeCaptureReportExtend062);
+
+
 struct TradeCaptureReport : public codec::BinaryCodec {
     std::string applId;
     std::string submittingPbuid;
@@ -3250,12 +3232,7 @@ struct TradeCaptureReport : public codec::BinaryCodec {
         counterPartyPbuid = codec::get_fixed_string(buf, 6);
         counterPartyAccountId = codec::get_fixed_string(buf, 10);
         counterPartyBranchId = codec::get_fixed_string(buf, 2);
-        auto it = TradeCaptureReportApplIDFactoryMap.find(applId);
-        if(it != TradeCaptureReportApplIDFactoryMap.end()) {
-            applExtend = it->second();
-        } else {
-            throw std::runtime_error("Unknow match key:" + applId);
-        }
+        applExtend = TradeCaptureReportMessageFactory::getInstance().create(applId);
         applExtend->decode(buf);
     }
     
@@ -3577,13 +3554,15 @@ inline std::ostream& operator<<(std::ostream& os, const TradeCaptureReportAckExt
 }
 
 
-static const std::unordered_map<std::string,std::function<std::unique_ptr<codec::BinaryCodec>()>> TradeCaptureReportAckApplIDFactoryMap = {
-    {"031", [] { return std::make_unique<TradeCaptureReportAckExtend031>(); }},
-    {"051", [] { return std::make_unique<TradeCaptureReportAckExtend051>(); }},
-    {"060", [] { return std::make_unique<TradeCaptureReportAckExtend060>(); }},
-    {"061", [] { return std::make_unique<TradeCaptureReportAckExtend061>(); }},
-    {"062", [] { return std::make_unique<TradeCaptureReportAckExtend062>(); }},
-};
+struct TradeCaptureReportAckTag{};
+using TradeCaptureReportAckMessageFactory = MessageFactory<std::string, codec::BinaryCodec, TradeCaptureReportAckTag>;
+REGISTER_MESSAGE(TradeCaptureReportAckMessageFactory, "031", TradeCaptureReportAckExtend031);
+REGISTER_MESSAGE(TradeCaptureReportAckMessageFactory, "051", TradeCaptureReportAckExtend051);
+REGISTER_MESSAGE(TradeCaptureReportAckMessageFactory, "060", TradeCaptureReportAckExtend060);
+REGISTER_MESSAGE(TradeCaptureReportAckMessageFactory, "061", TradeCaptureReportAckExtend061);
+REGISTER_MESSAGE(TradeCaptureReportAckMessageFactory, "062", TradeCaptureReportAckExtend062);
+
+
 struct TradeCaptureReportAck : public codec::BinaryCodec {
     int32_t partitionNo;
     int64_t reportIndex;
@@ -3692,12 +3671,7 @@ struct TradeCaptureReportAck : public codec::BinaryCodec {
         counterPartyPbuid = codec::get_fixed_string(buf, 6);
         counterPartyAccountId = codec::get_fixed_string(buf, 10);
         counterPartyBranchId = codec::get_fixed_string(buf, 2);
-        auto it = TradeCaptureReportAckApplIDFactoryMap.find(applId);
-        if(it != TradeCaptureReportAckApplIDFactoryMap.end()) {
-            applExtend = it->second();
-        } else {
-            throw std::runtime_error("Unknow match key:" + applId);
-        }
+        applExtend = TradeCaptureReportAckMessageFactory::getInstance().create(applId);
         applExtend->decode(buf);
     }
     
@@ -4049,13 +4023,15 @@ inline std::ostream& operator<<(std::ostream& os, const TradeCaptureConfirmExten
 }
 
 
-static const std::unordered_map<std::string,std::function<std::unique_ptr<codec::BinaryCodec>()>> TradeCaptureConfirmApplIDFactoryMap = {
-    {"031", [] { return std::make_unique<TradeCaptureConfirmExtend031>(); }},
-    {"051", [] { return std::make_unique<TradeCaptureConfirmExtend051>(); }},
-    {"060", [] { return std::make_unique<TradeCaptureConfirmExtend060>(); }},
-    {"061", [] { return std::make_unique<TradeCaptureConfirmExtend061>(); }},
-    {"062", [] { return std::make_unique<TradeCaptureConfirmExtend062>(); }},
-};
+struct TradeCaptureConfirmTag{};
+using TradeCaptureConfirmMessageFactory = MessageFactory<std::string, codec::BinaryCodec, TradeCaptureConfirmTag>;
+REGISTER_MESSAGE(TradeCaptureConfirmMessageFactory, "031", TradeCaptureConfirmExtend031);
+REGISTER_MESSAGE(TradeCaptureConfirmMessageFactory, "051", TradeCaptureConfirmExtend051);
+REGISTER_MESSAGE(TradeCaptureConfirmMessageFactory, "060", TradeCaptureConfirmExtend060);
+REGISTER_MESSAGE(TradeCaptureConfirmMessageFactory, "061", TradeCaptureConfirmExtend061);
+REGISTER_MESSAGE(TradeCaptureConfirmMessageFactory, "062", TradeCaptureConfirmExtend062);
+
+
 struct TradeCaptureConfirm : public codec::BinaryCodec {
     int32_t partitionNo;
     int64_t reportIndex;
@@ -4152,12 +4128,7 @@ struct TradeCaptureConfirm : public codec::BinaryCodec {
         counterPartyPbuid = codec::get_fixed_string(buf, 6);
         counterPartyAccountId = codec::get_fixed_string(buf, 10);
         counterPartyBranchId = codec::get_fixed_string(buf, 2);
-        auto it = TradeCaptureConfirmApplIDFactoryMap.find(applId);
-        if(it != TradeCaptureConfirmApplIDFactoryMap.end()) {
-            applExtend = it->second();
-        } else {
-            throw std::runtime_error("Unknow match key:" + applId);
-        }
+        applExtend = TradeCaptureConfirmMessageFactory::getInstance().create(applId);
         applExtend->decode(buf);
     }
     
@@ -4667,19 +4638,21 @@ inline std::ostream& operator<<(std::ostream& os, const PlatformInfo& pkt) {
 }
 
 
-static const std::unordered_map<uint32_t,std::function<std::unique_ptr<codec::BinaryCodec>()>> BjseBinaryMsgTypeFactoryMap = {
-    {1, [] { return std::make_unique<Logon>(); }},
-    {2, [] { return std::make_unique<Logout>(); }},
-    {3, [] { return std::make_unique<Heartbeat>(); }},
-    {101000, [] { return std::make_unique<NewOrder>(); }},
-    {102000, [] { return std::make_unique<OrderCancelRequest>(); }},
-    {201000, [] { return std::make_unique<CancelReject>(); }},
-    {202010, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {203010, [] { return std::make_unique<ExecutionReport>(); }},
-    {5, [] { return std::make_unique<ReportSynchronization>(); }},
-    {6, [] { return std::make_unique<PlatformStateInfo>(); }},
-    {7, [] { return std::make_unique<ReportFinished>(); }},
-};
+struct BjseBinaryTag{};
+using BjseBinaryMessageFactory = MessageFactory<uint32_t, codec::BinaryCodec, BjseBinaryTag>;
+REGISTER_MESSAGE(BjseBinaryMessageFactory, 1, Logon);
+REGISTER_MESSAGE(BjseBinaryMessageFactory, 2, Logout);
+REGISTER_MESSAGE(BjseBinaryMessageFactory, 3, Heartbeat);
+REGISTER_MESSAGE(BjseBinaryMessageFactory, 101000, NewOrder);
+REGISTER_MESSAGE(BjseBinaryMessageFactory, 102000, OrderCancelRequest);
+REGISTER_MESSAGE(BjseBinaryMessageFactory, 201000, CancelReject);
+REGISTER_MESSAGE(BjseBinaryMessageFactory, 202010, ExecutionConfirm);
+REGISTER_MESSAGE(BjseBinaryMessageFactory, 203010, ExecutionReport);
+REGISTER_MESSAGE(BjseBinaryMessageFactory, 5, ReportSynchronization);
+REGISTER_MESSAGE(BjseBinaryMessageFactory, 6, PlatformStateInfo);
+REGISTER_MESSAGE(BjseBinaryMessageFactory, 7, ReportFinished);
+
+
 struct BjseBinary : public codec::BinaryCodec {
     uint32_t msgType;
     uint32_t bodyLength;
@@ -4702,12 +4675,7 @@ struct BjseBinary : public codec::BinaryCodec {
     void decode(ByteBuf& buf) override {
         msgType = buf.read_u32_le();
         bodyLength = buf.read_u32_le();
-        auto it = BjseBinaryMsgTypeFactoryMap.find(msgType);
-        if(it != BjseBinaryMsgTypeFactoryMap.end()) {
-            body = it->second();
-        } else {
-            throw std::runtime_error("Unknow match key:" + msgType);
-        }
+        body = BjseBinaryMessageFactory::getInstance().create(msgType);
         body->decode(buf);
         checksum = buf.read_u32_le();
     }

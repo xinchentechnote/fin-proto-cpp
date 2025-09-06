@@ -12,6 +12,7 @@
 #include "include/codec.hpp"
 #include "include/bytebuf.hpp"
 #include "include/checksum.hpp"
+#include "message_factory.hpp"
 
 struct BasicPacket : public codec::BinaryCodec {
     int8_t fieldI8;
@@ -407,12 +408,14 @@ inline std::ostream& operator<<(std::ostream& os, const EmptyPacket& pkt) {
 }
 
 
-static const std::unordered_map<uint16_t,std::function<std::unique_ptr<codec::BinaryCodec>()>> RootPacketMsgTypeFactoryMap = {
-    {1, [] { return std::make_unique<BasicPacket>(); }},
-    {2, [] { return std::make_unique<StringPacket>(); }},
-    {3, [] { return std::make_unique<NestedPacket>(); }},
-    {4, [] { return std::make_unique<EmptyPacket>(); }},
-};
+struct RootPacketTag{};
+using RootPacketMessageFactory = MessageFactory<uint16_t, codec::BinaryCodec, RootPacketTag>;
+REGISTER_MESSAGE(RootPacketMessageFactory, 1, BasicPacket);
+REGISTER_MESSAGE(RootPacketMessageFactory, 2, StringPacket);
+REGISTER_MESSAGE(RootPacketMessageFactory, 3, NestedPacket);
+REGISTER_MESSAGE(RootPacketMessageFactory, 4, EmptyPacket);
+
+
 struct RootPacket : public codec::BinaryCodec {
     uint16_t msgType;
     uint32_t payloadLen;
@@ -441,12 +444,7 @@ struct RootPacket : public codec::BinaryCodec {
     void decode(ByteBuf& buf) override {
         msgType = buf.read_u16_le();
         payloadLen = buf.read_u32_le();
-        auto it = RootPacketMsgTypeFactoryMap.find(msgType);
-        if(it != RootPacketMsgTypeFactoryMap.end()) {
-            payload = it->second();
-        } else {
-            throw std::runtime_error("Unknow match key:" + msgType);
-        }
+        payload = RootPacketMessageFactory::getInstance().create(msgType);
         payload->decode(buf);
         checksum = buf.read_u32_le();
     }

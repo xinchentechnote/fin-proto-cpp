@@ -12,6 +12,7 @@
 #include "include/codec.hpp"
 #include "include/bytebuf.hpp"
 #include "include/checksum.hpp"
+#include "message_factory.hpp"
 
 struct Heartbeat : public codec::BinaryCodec {
 
@@ -1249,22 +1250,24 @@ inline std::ostream& operator<<(std::ostream& os, const ExecRptEndOfStream& pkt)
 }
 
 
-static const std::unordered_map<uint32_t,std::function<std::unique_ptr<codec::BinaryCodec>()>> SseBinaryMsgTypeFactoryMap = {
-    {33, [] { return std::make_unique<Heartbeat>(); }},
-    {40, [] { return std::make_unique<Logon>(); }},
-    {41, [] { return std::make_unique<Logout>(); }},
-    {58, [] { return std::make_unique<NewOrderSingle>(); }},
-    {61, [] { return std::make_unique<OrderCancel>(); }},
-    {32, [] { return std::make_unique<Confirm>(); }},
-    {59, [] { return std::make_unique<CancelReject>(); }},
-    {103, [] { return std::make_unique<Report>(); }},
-    {204, [] { return std::make_unique<OrderReject>(); }},
-    {209, [] { return std::make_unique<PlatformState>(); }},
-    {208, [] { return std::make_unique<ExecRptInfo>(); }},
-    {206, [] { return std::make_unique<ExecRptSync>(); }},
-    {207, [] { return std::make_unique<ExecRptSyncRsp>(); }},
-    {210, [] { return std::make_unique<ExecRptEndOfStream>(); }},
-};
+struct SseBinaryTag{};
+using SseBinaryMessageFactory = MessageFactory<uint32_t, codec::BinaryCodec, SseBinaryTag>;
+REGISTER_MESSAGE(SseBinaryMessageFactory, 33, Heartbeat);
+REGISTER_MESSAGE(SseBinaryMessageFactory, 40, Logon);
+REGISTER_MESSAGE(SseBinaryMessageFactory, 41, Logout);
+REGISTER_MESSAGE(SseBinaryMessageFactory, 58, NewOrderSingle);
+REGISTER_MESSAGE(SseBinaryMessageFactory, 61, OrderCancel);
+REGISTER_MESSAGE(SseBinaryMessageFactory, 32, Confirm);
+REGISTER_MESSAGE(SseBinaryMessageFactory, 59, CancelReject);
+REGISTER_MESSAGE(SseBinaryMessageFactory, 103, Report);
+REGISTER_MESSAGE(SseBinaryMessageFactory, 204, OrderReject);
+REGISTER_MESSAGE(SseBinaryMessageFactory, 209, PlatformState);
+REGISTER_MESSAGE(SseBinaryMessageFactory, 208, ExecRptInfo);
+REGISTER_MESSAGE(SseBinaryMessageFactory, 206, ExecRptSync);
+REGISTER_MESSAGE(SseBinaryMessageFactory, 207, ExecRptSyncRsp);
+REGISTER_MESSAGE(SseBinaryMessageFactory, 210, ExecRptEndOfStream);
+
+
 struct SseBinary : public codec::BinaryCodec {
     uint32_t msgType;
     uint64_t msgSeqNum;
@@ -1296,12 +1299,7 @@ struct SseBinary : public codec::BinaryCodec {
         msgType = buf.read_u32();
         msgSeqNum = buf.read_u64();
         msgBodyLen = buf.read_u32();
-        auto it = SseBinaryMsgTypeFactoryMap.find(msgType);
-        if(it != SseBinaryMsgTypeFactoryMap.end()) {
-            body = it->second();
-        } else {
-            throw std::runtime_error("Unknow match key:" + msgType);
-        }
+        body = SseBinaryMessageFactory::getInstance().create(msgType);
         body->decode(buf);
         checksum = buf.read_u32();
     }

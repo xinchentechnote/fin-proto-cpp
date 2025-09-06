@@ -12,6 +12,7 @@
 #include "include/codec.hpp"
 #include "include/bytebuf.hpp"
 #include "include/checksum.hpp"
+#include "message_factory.hpp"
 
 struct Logon : public codec::BinaryCodec {
     std::string senderCompId;
@@ -1027,36 +1028,38 @@ inline std::ostream& operator<<(std::ostream& os, const Extend104701& pkt) {
 }
 
 
-static const std::unordered_map<std::string,std::function<std::unique_ptr<codec::BinaryCodec>()>> NewOrderApplIDFactoryMap = {
-    {"010", [] { return std::make_unique<Extend100101>(); }},
-    {"020", [] { return std::make_unique<Extend100201>(); }},
-    {"030", [] { return std::make_unique<Extend100301>(); }},
-    {"051", [] { return std::make_unique<Extend100501>(); }},
-    {"052", [] { return std::make_unique<Extend100501>(); }},
-    {"060", [] { return std::make_unique<Extend100601>(); }},
-    {"061", [] { return std::make_unique<Extend100601>(); }},
-    {"070", [] { return std::make_unique<Extend100701>(); }},
-    {"150", [] { return std::make_unique<Extend101501>(); }},
-    {"151", [] { return std::make_unique<Extend101501>(); }},
-    {"152", [] { return std::make_unique<Extend101501>(); }},
-    {"160", [] { return std::make_unique<Extend101601>(); }},
-    {"170", [] { return std::make_unique<Extend101701>(); }},
-    {"180", [] { return std::make_unique<Extend101801>(); }},
-    {"181", [] { return std::make_unique<Extend101801>(); }},
-    {"270", [] { return std::make_unique<Extend102701>(); }},
-    {"271", [] { return std::make_unique<Extend102701>(); }},
-    {"280", [] { return std::make_unique<Extend102801>(); }},
-    {"281", [] { return std::make_unique<Extend102801>(); }},
-    {"290", [] { return std::make_unique<Extend102901>(); }},
-    {"291", [] { return std::make_unique<Extend102901>(); }},
-    {"630", [] { return std::make_unique<Extend106301>(); }},
-    {"350", [] { return std::make_unique<Extend103501>(); }},
-    {"351", [] { return std::make_unique<Extend103501>(); }},
-    {"370", [] { return std::make_unique<Extend103701>(); }},
-    {"410", [] { return std::make_unique<Extend104101>(); }},
-    {"417", [] { return std::make_unique<Extend104128>(); }},
-    {"470", [] { return std::make_unique<Extend104701>(); }},
-};
+struct NewOrderTag{};
+using NewOrderMessageFactory = MessageFactory<std::string, codec::BinaryCodec, NewOrderTag>;
+REGISTER_MESSAGE(NewOrderMessageFactory, "010", Extend100101);
+REGISTER_MESSAGE(NewOrderMessageFactory, "020", Extend100201);
+REGISTER_MESSAGE(NewOrderMessageFactory, "030", Extend100301);
+REGISTER_MESSAGE(NewOrderMessageFactory, "051", Extend100501);
+REGISTER_MESSAGE(NewOrderMessageFactory, "052", Extend100501);
+REGISTER_MESSAGE(NewOrderMessageFactory, "060", Extend100601);
+REGISTER_MESSAGE(NewOrderMessageFactory, "061", Extend100601);
+REGISTER_MESSAGE(NewOrderMessageFactory, "070", Extend100701);
+REGISTER_MESSAGE(NewOrderMessageFactory, "150", Extend101501);
+REGISTER_MESSAGE(NewOrderMessageFactory, "151", Extend101501);
+REGISTER_MESSAGE(NewOrderMessageFactory, "152", Extend101501);
+REGISTER_MESSAGE(NewOrderMessageFactory, "160", Extend101601);
+REGISTER_MESSAGE(NewOrderMessageFactory, "170", Extend101701);
+REGISTER_MESSAGE(NewOrderMessageFactory, "180", Extend101801);
+REGISTER_MESSAGE(NewOrderMessageFactory, "181", Extend101801);
+REGISTER_MESSAGE(NewOrderMessageFactory, "270", Extend102701);
+REGISTER_MESSAGE(NewOrderMessageFactory, "271", Extend102701);
+REGISTER_MESSAGE(NewOrderMessageFactory, "280", Extend102801);
+REGISTER_MESSAGE(NewOrderMessageFactory, "281", Extend102801);
+REGISTER_MESSAGE(NewOrderMessageFactory, "290", Extend102901);
+REGISTER_MESSAGE(NewOrderMessageFactory, "291", Extend102901);
+REGISTER_MESSAGE(NewOrderMessageFactory, "630", Extend106301);
+REGISTER_MESSAGE(NewOrderMessageFactory, "350", Extend103501);
+REGISTER_MESSAGE(NewOrderMessageFactory, "351", Extend103501);
+REGISTER_MESSAGE(NewOrderMessageFactory, "370", Extend103701);
+REGISTER_MESSAGE(NewOrderMessageFactory, "410", Extend104101);
+REGISTER_MESSAGE(NewOrderMessageFactory, "417", Extend104128);
+REGISTER_MESSAGE(NewOrderMessageFactory, "470", Extend104701);
+
+
 struct NewOrder : public codec::BinaryCodec {
     std::string applId;
     std::string submittingPbuid;
@@ -1114,12 +1117,7 @@ struct NewOrder : public codec::BinaryCodec {
         ordType = codec::get_fixed_string(buf, 1);
         orderQty = buf.read_i64();
         price = buf.read_i64();
-        auto it = NewOrderApplIDFactoryMap.find(applId);
-        if(it != NewOrderApplIDFactoryMap.end()) {
-            applExtend = it->second();
-        } else {
-            throw std::runtime_error("Unknow match key:" + applId);
-        }
+        applExtend = NewOrderMessageFactory::getInstance().create(applId);
         applExtend->decode(buf);
     }
     
@@ -2192,36 +2190,38 @@ inline std::ostream& operator<<(std::ostream& os, const Extend204702& pkt) {
 }
 
 
-static const std::unordered_map<std::string,std::function<std::unique_ptr<codec::BinaryCodec>()>> ExecutionConfirmApplIDFactoryMap = {
-    {"010", [] { return std::make_unique<Extend200102>(); }},
-    {"020", [] { return std::make_unique<Extend200202>(); }},
-    {"030", [] { return std::make_unique<Extend200302>(); }},
-    {"051", [] { return std::make_unique<Extend200502>(); }},
-    {"052", [] { return std::make_unique<Extend200502>(); }},
-    {"060", [] { return std::make_unique<Extend200602>(); }},
-    {"061", [] { return std::make_unique<Extend200602>(); }},
-    {"070", [] { return std::make_unique<Extend200702>(); }},
-    {"150", [] { return std::make_unique<Extend201502>(); }},
-    {"151", [] { return std::make_unique<Extend201502>(); }},
-    {"152", [] { return std::make_unique<Extend201502>(); }},
-    {"160", [] { return std::make_unique<Extend201602>(); }},
-    {"170", [] { return std::make_unique<Extend201702>(); }},
-    {"180", [] { return std::make_unique<Extend201802>(); }},
-    {"181", [] { return std::make_unique<Extend201802>(); }},
-    {"270", [] { return std::make_unique<Extend202702>(); }},
-    {"271", [] { return std::make_unique<Extend202702>(); }},
-    {"280", [] { return std::make_unique<Extend202802>(); }},
-    {"281", [] { return std::make_unique<Extend202802>(); }},
-    {"290", [] { return std::make_unique<Extend202902>(); }},
-    {"291", [] { return std::make_unique<Extend202902>(); }},
-    {"630", [] { return std::make_unique<Extend206302>(); }},
-    {"350", [] { return std::make_unique<Extend203502>(); }},
-    {"351", [] { return std::make_unique<Extend203502>(); }},
-    {"370", [] { return std::make_unique<Extend203702>(); }},
-    {"410", [] { return std::make_unique<Extend204102>(); }},
-    {"417", [] { return std::make_unique<Extend204129>(); }},
-    {"470", [] { return std::make_unique<Extend204702>(); }},
-};
+struct ExecutionConfirmTag{};
+using ExecutionConfirmMessageFactory = MessageFactory<std::string, codec::BinaryCodec, ExecutionConfirmTag>;
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "010", Extend200102);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "020", Extend200202);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "030", Extend200302);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "051", Extend200502);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "052", Extend200502);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "060", Extend200602);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "061", Extend200602);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "070", Extend200702);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "150", Extend201502);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "151", Extend201502);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "152", Extend201502);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "160", Extend201602);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "170", Extend201702);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "180", Extend201802);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "181", Extend201802);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "270", Extend202702);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "271", Extend202702);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "280", Extend202802);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "281", Extend202802);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "290", Extend202902);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "291", Extend202902);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "630", Extend206302);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "350", Extend203502);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "351", Extend203502);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "370", Extend203702);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "410", Extend204102);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "417", Extend204129);
+REGISTER_MESSAGE(ExecutionConfirmMessageFactory, "470", Extend204702);
+
+
 struct ExecutionConfirm : public codec::BinaryCodec {
     int32_t partitionNo;
     int64_t reportIndex;
@@ -2315,12 +2315,7 @@ struct ExecutionConfirm : public codec::BinaryCodec {
         accountId = codec::get_fixed_string(buf, 12);
         branchId = codec::get_fixed_string(buf, 4);
         orderRestrictions = codec::get_fixed_string(buf, 4);
-        auto it = ExecutionConfirmApplIDFactoryMap.find(applId);
-        if(it != ExecutionConfirmApplIDFactoryMap.end()) {
-            applExtend = it->second();
-        } else {
-            throw std::runtime_error("Unknow match key:" + applId);
-        }
+        applExtend = ExecutionConfirmMessageFactory::getInstance().create(applId);
         applExtend->decode(buf);
     }
     
@@ -3201,27 +3196,29 @@ inline std::ostream& operator<<(std::ostream& os, const Extend204715& pkt) {
 }
 
 
-static const std::unordered_map<std::string,std::function<std::unique_ptr<codec::BinaryCodec>()>> ExecutionReportApplIDFactoryMap = {
-    {"010", [] { return std::make_unique<Extend200115>(); }},
-    {"020", [] { return std::make_unique<Extend200215>(); }},
-    {"030", [] { return std::make_unique<Extend200315>(); }},
-    {"051", [] { return std::make_unique<Extend200515>(); }},
-    {"052", [] { return std::make_unique<Extend200515>(); }},
-    {"056", [] { return std::make_unique<Extend200515>(); }},
-    {"057", [] { return std::make_unique<Extend200515>(); }},
-    {"060", [] { return std::make_unique<Extend200615>(); }},
-    {"061", [] { return std::make_unique<Extend200615>(); }},
-    {"070", [] { return std::make_unique<Extend200715>(); }},
-    {"630", [] { return std::make_unique<Extend206315>(); }},
-    {"370", [] { return std::make_unique<Extend203715>(); }},
-    {"410", [] { return std::make_unique<Extend204115>(); }},
-    {"412", [] { return std::make_unique<Extend204115>(); }},
-    {"413", [] { return std::make_unique<Extend204115>(); }},
-    {"415", [] { return std::make_unique<Extend204115>(); }},
-    {"416", [] { return std::make_unique<Extend204115>(); }},
-    {"417", [] { return std::make_unique<Extend204130>(); }},
-    {"470", [] { return std::make_unique<Extend204715>(); }},
-};
+struct ExecutionReportTag{};
+using ExecutionReportMessageFactory = MessageFactory<std::string, codec::BinaryCodec, ExecutionReportTag>;
+REGISTER_MESSAGE(ExecutionReportMessageFactory, "010", Extend200115);
+REGISTER_MESSAGE(ExecutionReportMessageFactory, "020", Extend200215);
+REGISTER_MESSAGE(ExecutionReportMessageFactory, "030", Extend200315);
+REGISTER_MESSAGE(ExecutionReportMessageFactory, "051", Extend200515);
+REGISTER_MESSAGE(ExecutionReportMessageFactory, "052", Extend200515);
+REGISTER_MESSAGE(ExecutionReportMessageFactory, "056", Extend200515);
+REGISTER_MESSAGE(ExecutionReportMessageFactory, "057", Extend200515);
+REGISTER_MESSAGE(ExecutionReportMessageFactory, "060", Extend200615);
+REGISTER_MESSAGE(ExecutionReportMessageFactory, "061", Extend200615);
+REGISTER_MESSAGE(ExecutionReportMessageFactory, "070", Extend200715);
+REGISTER_MESSAGE(ExecutionReportMessageFactory, "630", Extend206315);
+REGISTER_MESSAGE(ExecutionReportMessageFactory, "370", Extend203715);
+REGISTER_MESSAGE(ExecutionReportMessageFactory, "410", Extend204115);
+REGISTER_MESSAGE(ExecutionReportMessageFactory, "412", Extend204115);
+REGISTER_MESSAGE(ExecutionReportMessageFactory, "413", Extend204115);
+REGISTER_MESSAGE(ExecutionReportMessageFactory, "415", Extend204115);
+REGISTER_MESSAGE(ExecutionReportMessageFactory, "416", Extend204115);
+REGISTER_MESSAGE(ExecutionReportMessageFactory, "417", Extend204130);
+REGISTER_MESSAGE(ExecutionReportMessageFactory, "470", Extend204715);
+
+
 struct ExecutionReport : public codec::BinaryCodec {
     int32_t partitionNo;
     int64_t reportIndex;
@@ -3303,12 +3300,7 @@ struct ExecutionReport : public codec::BinaryCodec {
         side = codec::get_fixed_string(buf, 1);
         accountId = codec::get_fixed_string(buf, 12);
         branchId = codec::get_fixed_string(buf, 4);
-        auto it = ExecutionReportApplIDFactoryMap.find(applId);
-        if(it != ExecutionReportApplIDFactoryMap.end()) {
-            applExtend = it->second();
-        } else {
-            throw std::runtime_error("Unknow match key:" + applId);
-        }
+        applExtend = ExecutionReportMessageFactory::getInstance().create(applId);
         applExtend->decode(buf);
     }
     
@@ -4105,85 +4097,87 @@ inline std::ostream& operator<<(std::ostream& os, const TradingSessionStatus& pk
 }
 
 
-static const std::unordered_map<uint32_t,std::function<std::unique_ptr<codec::BinaryCodec>()>> SzseBinaryMsgTypeFactoryMap = {
-    {1, [] { return std::make_unique<Logon>(); }},
-    {2, [] { return std::make_unique<Logout>(); }},
-    {3, [] { return std::make_unique<Heartbeat>(); }},
-    {4, [] { return std::make_unique<BusinessReject>(); }},
-    {5, [] { return std::make_unique<ReportSynchronization>(); }},
-    {6, [] { return std::make_unique<PlatformStateInfo>(); }},
-    {7, [] { return std::make_unique<ReportFinished>(); }},
-    {9, [] { return std::make_unique<PlatformPartition>(); }},
-    {10, [] { return std::make_unique<TradingSessionStatus>(); }},
-    {100101, [] { return std::make_unique<NewOrder>(); }},
-    {100201, [] { return std::make_unique<NewOrder>(); }},
-    {100301, [] { return std::make_unique<NewOrder>(); }},
-    {100401, [] { return std::make_unique<NewOrder>(); }},
-    {100501, [] { return std::make_unique<NewOrder>(); }},
-    {100601, [] { return std::make_unique<NewOrder>(); }},
-    {100701, [] { return std::make_unique<NewOrder>(); }},
-    {101201, [] { return std::make_unique<NewOrder>(); }},
-    {101301, [] { return std::make_unique<NewOrder>(); }},
-    {101401, [] { return std::make_unique<NewOrder>(); }},
-    {101501, [] { return std::make_unique<NewOrder>(); }},
-    {101601, [] { return std::make_unique<NewOrder>(); }},
-    {101701, [] { return std::make_unique<NewOrder>(); }},
-    {101801, [] { return std::make_unique<NewOrder>(); }},
-    {101901, [] { return std::make_unique<NewOrder>(); }},
-    {102301, [] { return std::make_unique<NewOrder>(); }},
-    {102701, [] { return std::make_unique<NewOrder>(); }},
-    {102801, [] { return std::make_unique<NewOrder>(); }},
-    {102901, [] { return std::make_unique<NewOrder>(); }},
-    {103101, [] { return std::make_unique<NewOrder>(); }},
-    {106301, [] { return std::make_unique<NewOrder>(); }},
-    {103301, [] { return std::make_unique<NewOrder>(); }},
-    {103501, [] { return std::make_unique<NewOrder>(); }},
-    {103701, [] { return std::make_unique<NewOrder>(); }},
-    {104101, [] { return std::make_unique<NewOrder>(); }},
-    {104128, [] { return std::make_unique<NewOrder>(); }},
-    {104701, [] { return std::make_unique<NewOrder>(); }},
-    {200102, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {200202, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {200302, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {200402, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {200502, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {200602, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {200702, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {201202, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {201302, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {201402, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {201502, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {201602, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {201702, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {201802, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {201902, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {202202, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {202302, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {202702, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {202802, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {202902, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {203102, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {206302, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {203302, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {203502, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {203702, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {204102, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {204129, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {204702, [] { return std::make_unique<ExecutionConfirm>(); }},
-    {200115, [] { return std::make_unique<ExecutionReport>(); }},
-    {200215, [] { return std::make_unique<ExecutionReport>(); }},
-    {200315, [] { return std::make_unique<ExecutionReport>(); }},
-    {200415, [] { return std::make_unique<ExecutionReport>(); }},
-    {200515, [] { return std::make_unique<ExecutionReport>(); }},
-    {200615, [] { return std::make_unique<ExecutionReport>(); }},
-    {200715, [] { return std::make_unique<ExecutionReport>(); }},
-    {206315, [] { return std::make_unique<ExecutionReport>(); }},
-    {203715, [] { return std::make_unique<ExecutionReport>(); }},
-    {204115, [] { return std::make_unique<ExecutionReport>(); }},
-    {204130, [] { return std::make_unique<ExecutionReport>(); }},
-    {190007, [] { return std::make_unique<OrderCancelRequest>(); }},
-    {290008, [] { return std::make_unique<CancelReject>(); }},
-};
+struct SzseBinaryTag{};
+using SzseBinaryMessageFactory = MessageFactory<uint32_t, codec::BinaryCodec, SzseBinaryTag>;
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 1, Logon);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 2, Logout);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 3, Heartbeat);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 4, BusinessReject);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 5, ReportSynchronization);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 6, PlatformStateInfo);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 7, ReportFinished);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 9, PlatformPartition);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 10, TradingSessionStatus);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 100101, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 100201, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 100301, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 100401, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 100501, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 100601, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 100701, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 101201, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 101301, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 101401, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 101501, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 101601, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 101701, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 101801, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 101901, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 102301, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 102701, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 102801, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 102901, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 103101, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 106301, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 103301, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 103501, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 103701, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 104101, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 104128, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 104701, NewOrder);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 200102, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 200202, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 200302, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 200402, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 200502, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 200602, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 200702, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 201202, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 201302, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 201402, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 201502, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 201602, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 201702, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 201802, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 201902, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 202202, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 202302, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 202702, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 202802, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 202902, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 203102, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 206302, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 203302, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 203502, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 203702, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 204102, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 204129, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 204702, ExecutionConfirm);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 200115, ExecutionReport);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 200215, ExecutionReport);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 200315, ExecutionReport);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 200415, ExecutionReport);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 200515, ExecutionReport);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 200615, ExecutionReport);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 200715, ExecutionReport);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 206315, ExecutionReport);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 203715, ExecutionReport);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 204115, ExecutionReport);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 204130, ExecutionReport);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 190007, OrderCancelRequest);
+REGISTER_MESSAGE(SzseBinaryMessageFactory, 290008, CancelReject);
+
+
 struct SzseBinary : public codec::BinaryCodec {
     uint32_t msgType;
     uint32_t bodyLength;
@@ -4212,12 +4206,7 @@ struct SzseBinary : public codec::BinaryCodec {
     void decode(ByteBuf& buf) override {
         msgType = buf.read_u32();
         bodyLength = buf.read_u32();
-        auto it = SzseBinaryMsgTypeFactoryMap.find(msgType);
-        if(it != SzseBinaryMsgTypeFactoryMap.end()) {
-            body = it->second();
-        } else {
-            throw std::runtime_error("Unknow match key:" + msgType);
-        }
+        body = SzseBinaryMessageFactory::getInstance().create(msgType);
         body->decode(buf);
         checksum = buf.read_i32();
     }

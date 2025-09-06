@@ -379,7 +379,9 @@ inline std::ostream& operator<<(std::ostream& os, const RiskResult& pkt) {
     return os << pkt.toString();
 }
 
-using RcBinaryMessageFactory = MessageFactory<uint32_t, codec::BinaryCodec>;
+
+struct RcBinaryTag{};
+using RcBinaryMessageFactory = MessageFactory<uint32_t, codec::BinaryCodec, RcBinaryTag>;
 REGISTER_MESSAGE(RcBinaryMessageFactory, 100101, NewOrder);
 REGISTER_MESSAGE(RcBinaryMessageFactory, 200102, OrderConfirm);
 REGISTER_MESSAGE(RcBinaryMessageFactory, 200115, ExecutionReport);
