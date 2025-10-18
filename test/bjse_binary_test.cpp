@@ -1228,7 +1228,6 @@ TEST(BjseBinaryTest, EncodeAndDeocde) {
     original.encode(buf);
     BjseBinary decoded;
     decoded.decode(buf);
-    original.bodyLength = decoded.bodyLength;
 
     EXPECT_TRUE(original == decoded);
 }

@@ -179,20 +179,24 @@ struct StringPacket : public codec::BinaryCodec {
     std::string fieldDynamicString1;
     std::string fieldFixedString1;
     std::string fieldFixedString10;
+    std::string fieldFixedString10Pad;
     std::vector<std::string> fieldDynamicStringList;
     std::vector<std::string> fieldDynamicString1List;
     std::vector<std::string> fieldFixedString1List;
     std::vector<std::string> fieldFixedString10List;
+    std::vector<std::string> fieldFixedString10ListPad;
 
     void encode(ByteBuf& buf) const override {
         codec::put_string_le<uint16_t>(buf, fieldDynamicString);
         codec::put_string_le<uint16_t>(buf, fieldDynamicString1);
         codec::put_fixed_string(buf, fieldFixedString1, 1);
         codec::put_fixed_string(buf, fieldFixedString10, 10);
+        codec::put_fixed_string(buf, fieldFixedString10Pad, 10);
         codec::put_string_list_le<uint16_t,uint16_t>(buf, fieldDynamicStringList);
         codec::put_string_list_le<uint16_t,uint16_t>(buf, fieldDynamicString1List);
         codec::put_fixed_string_list_le<uint16_t>(buf, fieldFixedString1List, 1);
         codec::put_fixed_string_list_le<uint16_t>(buf, fieldFixedString10List, 10);
+        codec::put_fixed_string_list_le<uint16_t>(buf, fieldFixedString10ListPad, 10);
     }
     
 
@@ -201,10 +205,12 @@ struct StringPacket : public codec::BinaryCodec {
         fieldDynamicString1 = codec::get_string_le<uint16_t>(buf);
         fieldFixedString1 = codec::get_fixed_string(buf, 1);
         fieldFixedString10 = codec::get_fixed_string(buf, 10);
+        fieldFixedString10Pad = codec::get_fixed_string(buf, 10);
         fieldDynamicStringList = codec::get_string_list_le<uint16_t,uint16_t>(buf);
         fieldDynamicString1List = codec::get_string_list_le<uint16_t,uint16_t>(buf);
         fieldFixedString1List = codec::get_fixed_string_list_le<uint16_t>(buf, 1);
         fieldFixedString10List = codec::get_fixed_string_list_le<uint16_t>(buf, 10);
+        fieldFixedString10ListPad = codec::get_fixed_string_list_le<uint16_t>(buf, 10);
     }
     
 
@@ -215,10 +221,12 @@ struct StringPacket : public codec::BinaryCodec {
                && fieldDynamicString1 == checkType->fieldDynamicString1
                && fieldFixedString1 == checkType->fieldFixedString1
                && fieldFixedString10 == checkType->fieldFixedString10
+               && fieldFixedString10Pad == checkType->fieldFixedString10Pad
                && fieldDynamicStringList == checkType->fieldDynamicStringList
                && fieldDynamicString1List == checkType->fieldDynamicString1List
                && fieldFixedString1List == checkType->fieldFixedString1List
-               && fieldFixedString10List == checkType->fieldFixedString10List;
+               && fieldFixedString10List == checkType->fieldFixedString10List
+               && fieldFixedString10ListPad == checkType->fieldFixedString10ListPad;
     }
     
     std::string toString() const override {
@@ -232,6 +240,8 @@ struct StringPacket : public codec::BinaryCodec {
         << ", "
         << "fieldFixedString10: " << fieldFixedString10
         << ", "
+        << "fieldFixedString10Pad: " << fieldFixedString10Pad
+        << ", "
         << "fieldDynamicStringList: " << codec::join_vector<std::string>(fieldDynamicStringList)
         << ", "
         << "fieldDynamicString1List: " << codec::join_vector<std::string>(fieldDynamicString1List)
@@ -239,6 +249,8 @@ struct StringPacket : public codec::BinaryCodec {
         << "fieldFixedString1List: " << codec::join_vector<std::string>(fieldFixedString1List)
         << ", "
         << "fieldFixedString10List: " << codec::join_vector<std::string>(fieldFixedString10List)
+        << ", "
+        << "fieldFixedString10ListPad: " << codec::join_vector<std::string>(fieldFixedString10ListPad)
         << " }";
         return oss.str();
     }

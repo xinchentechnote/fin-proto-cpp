@@ -679,21 +679,19 @@ struct Report : public codec::BinaryCodec {
     std::string securityId;
     std::string account;
     uint8_t ownerType;
+    uint64_t orderEntryTime;
+    int64_t lastPx;
+    int64_t lastQty;
+    int64_t grossTradeAmt;
     std::string side;
-    int64_t price;
     int64_t orderQty;
     int64_t leavesQty;
-    int64_t cxlQty;
-    std::string ordType;
-    std::string timeInForce;
     std::string ordStatus;
     std::string creditTag;
-    std::string origClOrdId;
     std::string clearingFirm;
     std::string branchId;
-    uint32_t ordRejReason;
+    std::string trdCnfmId;
     std::string ordCnfmId;
-    std::string origOrdCnfmId;
     uint32_t tradeDate;
     uint64_t transactTime;
     std::string userInfo;
@@ -709,21 +707,19 @@ struct Report : public codec::BinaryCodec {
         codec::put_fixed_string(buf, securityId, 12);
         codec::put_fixed_string(buf, account, 13);
         buf.write_u8(ownerType);
+        buf.write_u64(orderEntryTime);
+        buf.write_i64(lastPx);
+        buf.write_i64(lastQty);
+        buf.write_i64(grossTradeAmt);
         codec::put_fixed_string(buf, side, 1);
-        buf.write_i64(price);
         buf.write_i64(orderQty);
         buf.write_i64(leavesQty);
-        buf.write_i64(cxlQty);
-        codec::put_fixed_string(buf, ordType, 1);
-        codec::put_fixed_string(buf, timeInForce, 1);
         codec::put_fixed_string(buf, ordStatus, 1);
         codec::put_fixed_string(buf, creditTag, 2);
-        codec::put_fixed_string(buf, origClOrdId, 10);
         codec::put_fixed_string(buf, clearingFirm, 8);
         codec::put_fixed_string(buf, branchId, 8);
-        buf.write_u32(ordRejReason);
+        codec::put_fixed_string(buf, trdCnfmId, 16);
         codec::put_fixed_string(buf, ordCnfmId, 16);
-        codec::put_fixed_string(buf, origOrdCnfmId, 16);
         buf.write_u32(tradeDate);
         buf.write_u64(transactTime);
         codec::put_fixed_string(buf, userInfo, 32);
@@ -741,21 +737,19 @@ struct Report : public codec::BinaryCodec {
         securityId = codec::get_fixed_string(buf, 12);
         account = codec::get_fixed_string(buf, 13);
         ownerType = buf.read_u8();
+        orderEntryTime = buf.read_u64();
+        lastPx = buf.read_i64();
+        lastQty = buf.read_i64();
+        grossTradeAmt = buf.read_i64();
         side = codec::get_fixed_string(buf, 1);
-        price = buf.read_i64();
         orderQty = buf.read_i64();
         leavesQty = buf.read_i64();
-        cxlQty = buf.read_i64();
-        ordType = codec::get_fixed_string(buf, 1);
-        timeInForce = codec::get_fixed_string(buf, 1);
         ordStatus = codec::get_fixed_string(buf, 1);
         creditTag = codec::get_fixed_string(buf, 2);
-        origClOrdId = codec::get_fixed_string(buf, 10);
         clearingFirm = codec::get_fixed_string(buf, 8);
         branchId = codec::get_fixed_string(buf, 8);
-        ordRejReason = buf.read_u32();
+        trdCnfmId = codec::get_fixed_string(buf, 16);
         ordCnfmId = codec::get_fixed_string(buf, 16);
-        origOrdCnfmId = codec::get_fixed_string(buf, 16);
         tradeDate = buf.read_u32();
         transactTime = buf.read_u64();
         userInfo = codec::get_fixed_string(buf, 32);
@@ -775,21 +769,19 @@ struct Report : public codec::BinaryCodec {
                && securityId == checkType->securityId
                && account == checkType->account
                && ownerType == checkType->ownerType
+               && orderEntryTime == checkType->orderEntryTime
+               && lastPx == checkType->lastPx
+               && lastQty == checkType->lastQty
+               && grossTradeAmt == checkType->grossTradeAmt
                && side == checkType->side
-               && price == checkType->price
                && orderQty == checkType->orderQty
                && leavesQty == checkType->leavesQty
-               && cxlQty == checkType->cxlQty
-               && ordType == checkType->ordType
-               && timeInForce == checkType->timeInForce
                && ordStatus == checkType->ordStatus
                && creditTag == checkType->creditTag
-               && origClOrdId == checkType->origClOrdId
                && clearingFirm == checkType->clearingFirm
                && branchId == checkType->branchId
-               && ordRejReason == checkType->ordRejReason
+               && trdCnfmId == checkType->trdCnfmId
                && ordCnfmId == checkType->ordCnfmId
-               && origOrdCnfmId == checkType->origOrdCnfmId
                && tradeDate == checkType->tradeDate
                && transactTime == checkType->transactTime
                && userInfo == checkType->userInfo;
@@ -818,35 +810,31 @@ struct Report : public codec::BinaryCodec {
         << ", "
         << "OwnerType: " << static_cast<unsigned>(ownerType)
         << ", "
-        << "Side: " << side
+        << "OrderEntryTime: " << std::to_string(orderEntryTime)
         << ", "
-        << "Price: " << std::to_string(price)
+        << "LastPx: " << std::to_string(lastPx)
+        << ", "
+        << "LastQty: " << std::to_string(lastQty)
+        << ", "
+        << "GrossTradeAmt: " << std::to_string(grossTradeAmt)
+        << ", "
+        << "Side: " << side
         << ", "
         << "OrderQty: " << std::to_string(orderQty)
         << ", "
         << "LeavesQty: " << std::to_string(leavesQty)
         << ", "
-        << "CxlQty: " << std::to_string(cxlQty)
-        << ", "
-        << "OrdType: " << ordType
-        << ", "
-        << "TimeInForce: " << timeInForce
-        << ", "
         << "OrdStatus: " << ordStatus
         << ", "
         << "CreditTag: " << creditTag
-        << ", "
-        << "OrigClOrdID: " << origClOrdId
         << ", "
         << "ClearingFirm: " << clearingFirm
         << ", "
         << "BranchID: " << branchId
         << ", "
-        << "OrdRejReason: " << std::to_string(ordRejReason)
+        << "TrdCnfmID: " << trdCnfmId
         << ", "
         << "OrdCnfmID: " << ordCnfmId
-        << ", "
-        << "OrigOrdCnfmID: " << origOrdCnfmId
         << ", "
         << "TradeDate: " << std::to_string(tradeDate)
         << ", "

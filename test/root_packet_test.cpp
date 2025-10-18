@@ -83,10 +83,12 @@ TEST(StringPacketTest, EncodeAndDeocde) {
     original.fieldDynamicString1 = "hello";
     original.fieldFixedString1 = "x";
     original.fieldFixedString10 = "xxxxxxxxxx";
+    original.fieldFixedString10Pad = "xxxxxxxxxx";
     original.fieldDynamicStringList = {"hello"};
     original.fieldDynamicString1List = {"hello"};
     original.fieldFixedString1List = {"x"};
     original.fieldFixedString10List = {"xxxxxxxxxx"};
+    original.fieldFixedString10ListPad = {"xxxxxxxxxx"};
     
     ByteBuf buf;
     original.encode(buf);
