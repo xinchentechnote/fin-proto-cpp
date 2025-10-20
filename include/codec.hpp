@@ -64,18 +64,18 @@ std::string read_string(ByteBuf& buf) {
 // put/get Fixed-length string
 // ----------------------------
 
-inline void write_fixed_string(ByteBuf& buf, const std::string& s, size_t fixedLen, char padding,
-                             bool fromLeft) {
+inline void write_fixed_string(ByteBuf& buf, const std::string& s, size_t fixedLen, char padChar,
+                             bool padLeft) {
   if (s.size() >= fixedLen) {
     buf.write_bytes(reinterpret_cast<const uint8_t*>(s.data()), fixedLen);
   } else {
-    std::vector<uint8_t> paddingBytes(fixedLen - s.size(), padding);
-    if (fromLeft) {
-      buf.write_bytes(paddingBytes.data(), paddingBytes.size());
+    std::vector<uint8_t> padCharBytes(fixedLen - s.size(), padChar);
+    if (padLeft) {
+      buf.write_bytes(padCharBytes.data(), padCharBytes.size());
     }
     buf.write_bytes(reinterpret_cast<const uint8_t*>(s.data()), s.size());
-    if (!fromLeft) {
-      buf.write_bytes(paddingBytes.data(), paddingBytes.size());
+    if (!padLeft) {
+      buf.write_bytes(padCharBytes.data(), padCharBytes.size());
     }
   }
 }
@@ -84,20 +84,20 @@ inline void write_fixed_string(ByteBuf& buf, const std::string& s, size_t fixedL
   write_fixed_string(buf, s, fixedLen, ' ', false);
 }
 
-inline std::string read_fixed_string(ByteBuf& buf, size_t fixedLen, char trimPadding,
-                                    bool fromLeft) {
+inline std::string read_fixed_string(ByteBuf& buf, size_t fixedLen, char trimPadChar,
+                                    bool padLeft) {
   std::vector<uint8_t> bytes(fixedLen);
   buf.read_bytes(bytes.data(), fixedLen);
   std::string s(reinterpret_cast<char*>(bytes.data()), fixedLen);
 
-  if (fromLeft) {
-    size_t start = s.find_first_not_of(trimPadding);
+  if (padLeft) {
+    size_t start = s.find_first_not_of(trimPadChar);
     if (start != std::string::npos)
       s.erase(0, start);
     else
       s.clear();
   } else {
-    size_t end = s.find_last_not_of(trimPadding);
+    size_t end = s.find_last_not_of(trimPadChar);
     if (end != std::string::npos)
       s.erase(end + 1);
     else
@@ -176,11 +176,11 @@ std::vector<std::string> read_string_list(ByteBuf& buf) {
 
 template <typename T>
 void write_fixed_string_list_le(ByteBuf& buf, const std::vector<std::string>& list, size_t fixedLen,
-                              char padding, bool fromLeft) {
+                              char padChar, bool padLeft) {
   static_assert(std::is_unsigned<T>::value, "T must be unsigned");
   buf.write_le<T>(static_cast<T>(list.size()));
   for (const auto& s : list) {
-    write_fixed_string(buf, s, fixedLen, padding, fromLeft);
+    write_fixed_string(buf, s, fixedLen, padChar, padLeft);
   }
 }
 
@@ -190,14 +190,14 @@ void write_fixed_string_list_le(ByteBuf& buf, const std::vector<std::string>& li
 }
 
 template <typename T>
-std::vector<std::string> read_fixed_string_list_le(ByteBuf& buf, size_t fixedLen, char trimPadding,
-                                                  bool fromLeft) {
+std::vector<std::string> read_fixed_string_list_le(ByteBuf& buf, size_t fixedLen, char trimPadChar,
+                                                  bool padLeft) {
   static_assert(std::is_unsigned<T>::value, "T must be unsigned");
   T count = buf.read_le<T>();
   std::vector<std::string> result;
   result.reserve(count);
   for (size_t i = 0; i < count; ++i) {
-    result.push_back(read_fixed_string(buf, fixedLen, trimPadding, fromLeft));
+    result.push_back(read_fixed_string(buf, fixedLen, trimPadChar, padLeft));
   }
   return result;
 }
@@ -209,11 +209,11 @@ std::vector<std::string> read_fixed_string_list_le(ByteBuf& buf, size_t fixedLen
 
 template <typename T>
 void write_fixed_string_list(ByteBuf& buf, const std::vector<std::string>& list, size_t fixedLen,
-                           char padding, bool fromLeft) {
+                           char padChar, bool padLeft) {
   static_assert(std::is_unsigned<T>::value, "T must be unsigned");
   buf.write<T>(static_cast<T>(list.size()));
   for (const auto& s : list) {
-    write_fixed_string(buf, s, fixedLen, padding, fromLeft);
+    write_fixed_string(buf, s, fixedLen, padChar, padLeft);
   }
 }
 
@@ -223,14 +223,14 @@ void write_fixed_string_list(ByteBuf& buf, const std::vector<std::string>& list,
 }
 
 template <typename T>
-std::vector<std::string> read_fixed_string_list(ByteBuf& buf, size_t fixedLen, char trimPadding,
-                                               bool fromLeft) {
+std::vector<std::string> read_fixed_string_list(ByteBuf& buf, size_t fixedLen, char trimPadChar,
+                                               bool padLeft) {
   static_assert(std::is_unsigned<T>::value, "T must be unsigned");
   T count = buf.read<T>();
   std::vector<std::string> result;
   result.reserve(count);
   for (size_t i = 0; i < count; ++i) {
-    result.push_back(read_fixed_string(buf, fixedLen, trimPadding, fromLeft));
+    result.push_back(read_fixed_string(buf, fixedLen, trimPadChar, padLeft));
   }
   return result;
 }
