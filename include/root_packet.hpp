@@ -43,24 +43,24 @@ struct BasicPacket : public codec::BinaryCodec {
         buf.write_i16_le(fieldI16);
         buf.write_i32_le(fieldI32);
         buf.write_i64_le(fieldI64);
-        codec::put_fixed_string(buf, fieldChar, 1, '0', true);
+        codec::write_fixed_string(buf, fieldChar, 1, '0', true);
         buf.write_u8(fieldU8);
         buf.write_u16_le(fieldU16);
         buf.write_u32_le(fieldU32);
         buf.write_u64_le(fieldU64);
         buf.write_f32_le(fieldF32);
         buf.write_f64_le(fieldF64);
-        codec::put_basic_type_le<uint16_t,int8_t>(buf,fieldI8List);
-        codec::put_basic_type_le<uint16_t,int16_t>(buf,fieldI16List);
-        codec::put_basic_type_le<uint16_t,int32_t>(buf,fieldI32List);
-        codec::put_basic_type_le<uint16_t,int64_t>(buf,fieldI64List);
-        codec::put_fixed_string_list_le<uint16_t>(buf, fieldCharList, 1, '0', true);
-        codec::put_basic_type_le<uint16_t,uint8_t>(buf,fieldU8List);
-        codec::put_basic_type_le<uint16_t,uint16_t>(buf,fieldU16List);
-        codec::put_basic_type_le<uint16_t,uint32_t>(buf,fieldU32List);
-        codec::put_basic_type_le<uint16_t,uint64_t>(buf,fieldU64List);
-        codec::put_basic_type_le<uint16_t,float>(buf,fieldF32List);
-        codec::put_basic_type_le<uint16_t,double>(buf,fieldF64List);
+        codec::write_basic_type_le<uint16_t,int8_t>(buf,fieldI8List);
+        codec::write_basic_type_le<uint16_t,int16_t>(buf,fieldI16List);
+        codec::write_basic_type_le<uint16_t,int32_t>(buf,fieldI32List);
+        codec::write_basic_type_le<uint16_t,int64_t>(buf,fieldI64List);
+        codec::write_fixed_string_list_le<uint16_t>(buf, fieldCharList, 1, '0', true);
+        codec::write_basic_type_le<uint16_t,uint8_t>(buf,fieldU8List);
+        codec::write_basic_type_le<uint16_t,uint16_t>(buf,fieldU16List);
+        codec::write_basic_type_le<uint16_t,uint32_t>(buf,fieldU32List);
+        codec::write_basic_type_le<uint16_t,uint64_t>(buf,fieldU64List);
+        codec::write_basic_type_le<uint16_t,float>(buf,fieldF32List);
+        codec::write_basic_type_le<uint16_t,double>(buf,fieldF64List);
     }
     
 
@@ -69,24 +69,24 @@ struct BasicPacket : public codec::BinaryCodec {
         fieldI16 = buf.read_i16_le();
         fieldI32 = buf.read_i32_le();
         fieldI64 = buf.read_i64_le();
-        fieldChar = codec::get_fixed_string(buf, 1, '0', true);
+        fieldChar = codec::read_fixed_string(buf, 1, '0', true);
         fieldU8 = buf.read_u8();
         fieldU16 = buf.read_u16_le();
         fieldU32 = buf.read_u32_le();
         fieldU64 = buf.read_u64_le();
         fieldF32 = buf.read_f32_le();
         fieldF64 = buf.read_f64_le();
-        fieldI8List = codec::get_basic_type_le<uint16_t,int8_t>(buf);
-        fieldI16List = codec::get_basic_type_le<uint16_t,int16_t>(buf);
-        fieldI32List = codec::get_basic_type_le<uint16_t,int32_t>(buf);
-        fieldI64List = codec::get_basic_type_le<uint16_t,int64_t>(buf);
-        fieldCharList = codec::get_fixed_string_list_le<uint16_t>(buf, 1, '0', true);
-        fieldU8List = codec::get_basic_type_le<uint16_t,uint8_t>(buf);
-        fieldU16List = codec::get_basic_type_le<uint16_t,uint16_t>(buf);
-        fieldU32List = codec::get_basic_type_le<uint16_t,uint32_t>(buf);
-        fieldU64List = codec::get_basic_type_le<uint16_t,uint64_t>(buf);
-        fieldF32List = codec::get_basic_type_le<uint16_t,float>(buf);
-        fieldF64List = codec::get_basic_type_le<uint16_t,double>(buf);
+        fieldI8List = codec::read_basic_type_le<uint16_t,int8_t>(buf);
+        fieldI16List = codec::read_basic_type_le<uint16_t,int16_t>(buf);
+        fieldI32List = codec::read_basic_type_le<uint16_t,int32_t>(buf);
+        fieldI64List = codec::read_basic_type_le<uint16_t,int64_t>(buf);
+        fieldCharList = codec::read_fixed_string_list_le<uint16_t>(buf, 1, '0', true);
+        fieldU8List = codec::read_basic_type_le<uint16_t,uint8_t>(buf);
+        fieldU16List = codec::read_basic_type_le<uint16_t,uint16_t>(buf);
+        fieldU32List = codec::read_basic_type_le<uint16_t,uint32_t>(buf);
+        fieldU64List = codec::read_basic_type_le<uint16_t,uint64_t>(buf);
+        fieldF32List = codec::read_basic_type_le<uint16_t,float>(buf);
+        fieldF64List = codec::read_basic_type_le<uint16_t,double>(buf);
     }
     
 
@@ -187,30 +187,30 @@ struct StringPacket : public codec::BinaryCodec {
     std::vector<std::string> fieldFixedString10ListPad;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_string_le<uint16_t>(buf, fieldDynamicString);
-        codec::put_string_le<uint16_t>(buf, fieldDynamicString1);
-        codec::put_fixed_string(buf, fieldFixedString1, 1, '0', true);
-        codec::put_fixed_string(buf, fieldFixedString10, 10, '0', true);
-        codec::put_fixed_string(buf, fieldFixedString10Pad, 10, ' ', true);
-        codec::put_string_list_le<uint16_t,uint16_t>(buf, fieldDynamicStringList);
-        codec::put_string_list_le<uint16_t,uint16_t>(buf, fieldDynamicString1List);
-        codec::put_fixed_string_list_le<uint16_t>(buf, fieldFixedString1List, 1, '0', true);
-        codec::put_fixed_string_list_le<uint16_t>(buf, fieldFixedString10List, 10, '0', true);
-        codec::put_fixed_string_list_le<uint16_t>(buf, fieldFixedString10ListPad, 10, '0', false);
+        codec::write_string_le<uint16_t>(buf, fieldDynamicString);
+        codec::write_string_le<uint16_t>(buf, fieldDynamicString1);
+        codec::write_fixed_string(buf, fieldFixedString1, 1, '0', true);
+        codec::write_fixed_string(buf, fieldFixedString10, 10, '0', true);
+        codec::write_fixed_string(buf, fieldFixedString10Pad, 10, ' ', true);
+        codec::write_string_list_le<uint16_t,uint16_t>(buf, fieldDynamicStringList);
+        codec::write_string_list_le<uint16_t,uint16_t>(buf, fieldDynamicString1List);
+        codec::write_fixed_string_list_le<uint16_t>(buf, fieldFixedString1List, 1, '0', true);
+        codec::write_fixed_string_list_le<uint16_t>(buf, fieldFixedString10List, 10, '0', true);
+        codec::write_fixed_string_list_le<uint16_t>(buf, fieldFixedString10ListPad, 10, '0', false);
     }
     
 
     void decode(ByteBuf& buf) override {
-        fieldDynamicString = codec::get_string_le<uint16_t>(buf);
-        fieldDynamicString1 = codec::get_string_le<uint16_t>(buf);
-        fieldFixedString1 = codec::get_fixed_string(buf, 1, '0', true);
-        fieldFixedString10 = codec::get_fixed_string(buf, 10, '0', true);
-        fieldFixedString10Pad = codec::get_fixed_string(buf, 10, ' ', true);
-        fieldDynamicStringList = codec::get_string_list_le<uint16_t,uint16_t>(buf);
-        fieldDynamicString1List = codec::get_string_list_le<uint16_t,uint16_t>(buf);
-        fieldFixedString1List = codec::get_fixed_string_list_le<uint16_t>(buf, 1, '0', true);
-        fieldFixedString10List = codec::get_fixed_string_list_le<uint16_t>(buf, 10, '0', true);
-        fieldFixedString10ListPad = codec::get_fixed_string_list_le<uint16_t>(buf, 10, '0', false);
+        fieldDynamicString = codec::read_string_le<uint16_t>(buf);
+        fieldDynamicString1 = codec::read_string_le<uint16_t>(buf);
+        fieldFixedString1 = codec::read_fixed_string(buf, 1, '0', true);
+        fieldFixedString10 = codec::read_fixed_string(buf, 10, '0', true);
+        fieldFixedString10Pad = codec::read_fixed_string(buf, 10, ' ', true);
+        fieldDynamicStringList = codec::read_string_list_le<uint16_t,uint16_t>(buf);
+        fieldDynamicString1List = codec::read_string_list_le<uint16_t,uint16_t>(buf);
+        fieldFixedString1List = codec::read_fixed_string_list_le<uint16_t>(buf, 1, '0', true);
+        fieldFixedString10List = codec::read_fixed_string_list_le<uint16_t>(buf, 10, '0', true);
+        fieldFixedString10ListPad = codec::read_fixed_string_list_le<uint16_t>(buf, 10, '0', false);
     }
     
 
@@ -268,13 +268,13 @@ struct SubPacket : public codec::BinaryCodec {
 
     void encode(ByteBuf& buf) const override {
         buf.write_u32_le(fieldU32);
-        codec::put_basic_type_le<uint16_t,int16_t>(buf,fieldI16List);
+        codec::write_basic_type_le<uint16_t,int16_t>(buf,fieldI16List);
     }
     
 
     void decode(ByteBuf& buf) override {
         fieldU32 = buf.read_u32_le();
-        fieldI16List = codec::get_basic_type_le<uint16_t,int16_t>(buf);
+        fieldI16List = codec::read_basic_type_le<uint16_t,int16_t>(buf);
     }
     
 
@@ -309,13 +309,13 @@ struct InerPacket : public codec::BinaryCodec {
 
     void encode(ByteBuf& buf) const override {
         buf.write_u32_le(fieldU32);
-        codec::put_basic_type_le<uint16_t,int16_t>(buf,fieldI16List);
+        codec::write_basic_type_le<uint16_t,int16_t>(buf,fieldI16List);
     }
     
 
     void decode(ByteBuf& buf) override {
         fieldU32 = buf.read_u32_le();
-        fieldI16List = codec::get_basic_type_le<uint16_t,int16_t>(buf);
+        fieldI16List = codec::read_basic_type_le<uint16_t,int16_t>(buf);
     }
     
 
@@ -350,14 +350,14 @@ struct NestedPacket : public codec::BinaryCodec {
 
     void encode(ByteBuf& buf) const override {
         subPacket.encode(buf);
-        codec::put_object_List_le<uint16_t>(buf,subPacketList);
+        codec::write_object_List_le<uint16_t>(buf,subPacketList);
         inerPacket.encode(buf);
     }
     
 
     void decode(ByteBuf& buf) override {
         subPacket.decode(buf);
-        subPacketList = codec::get_object_List_le<uint16_t,SubPacket>(buf);
+        subPacketList = codec::read_object_List_le<uint16_t,SubPacket>(buf);
         inerPacket.decode(buf);
     }
     

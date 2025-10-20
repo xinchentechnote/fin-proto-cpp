@@ -22,20 +22,20 @@ struct Logon : public codec::BinaryCodec {
     std::string defaultApplVerId;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, senderCompId, 20);
-        codec::put_fixed_string(buf, targetCompId, 20);
+        codec::write_fixed_string(buf, senderCompId, 20);
+        codec::write_fixed_string(buf, targetCompId, 20);
         buf.write_i32(heartBtint);
-        codec::put_fixed_string(buf, password, 16);
-        codec::put_fixed_string(buf, defaultApplVerId, 32);
+        codec::write_fixed_string(buf, password, 16);
+        codec::write_fixed_string(buf, defaultApplVerId, 32);
     }
     
 
     void decode(ByteBuf& buf) override {
-        senderCompId = codec::get_fixed_string(buf, 20);
-        targetCompId = codec::get_fixed_string(buf, 20);
+        senderCompId = codec::read_fixed_string(buf, 20);
+        targetCompId = codec::read_fixed_string(buf, 20);
         heartBtint = buf.read_i32();
-        password = codec::get_fixed_string(buf, 16);
-        defaultApplVerId = codec::get_fixed_string(buf, 32);
+        password = codec::read_fixed_string(buf, 16);
+        defaultApplVerId = codec::read_fixed_string(buf, 32);
     }
     
 
@@ -78,13 +78,13 @@ struct Logout : public codec::BinaryCodec {
 
     void encode(ByteBuf& buf) const override {
         buf.write_i32(sessionStatus);
-        codec::put_fixed_string(buf, text, 200);
+        codec::write_fixed_string(buf, text, 200);
     }
     
 
     void decode(ByteBuf& buf) override {
         sessionStatus = buf.read_i32();
-        text = codec::get_fixed_string(buf, 200);
+        text = codec::read_fixed_string(buf, 200);
     }
     
 
@@ -153,8 +153,8 @@ struct Extend100101 : public codec::BinaryCodec {
         buf.write_i64(stopPx);
         buf.write_i64(minQty);
         buf.write_u16(maxPriceLevels);
-        codec::put_fixed_string(buf, timeInForce, 1);
-        codec::put_fixed_string(buf, cashMargin, 1);
+        codec::write_fixed_string(buf, timeInForce, 1);
+        codec::write_fixed_string(buf, cashMargin, 1);
     }
     
 
@@ -162,8 +162,8 @@ struct Extend100101 : public codec::BinaryCodec {
         stopPx = buf.read_i64();
         minQty = buf.read_i64();
         maxPriceLevels = buf.read_u16();
-        timeInForce = codec::get_fixed_string(buf, 1);
-        cashMargin = codec::get_fixed_string(buf, 1);
+        timeInForce = codec::read_fixed_string(buf, 1);
+        cashMargin = codec::read_fixed_string(buf, 1);
     }
     
 
@@ -210,7 +210,7 @@ struct Extend100201 : public codec::BinaryCodec {
         buf.write_i64(stopPx);
         buf.write_i64(minQty);
         buf.write_u16(maxPriceLevels);
-        codec::put_fixed_string(buf, timeInForce, 1);
+        codec::write_fixed_string(buf, timeInForce, 1);
     }
     
 
@@ -218,7 +218,7 @@ struct Extend100201 : public codec::BinaryCodec {
         stopPx = buf.read_i64();
         minQty = buf.read_i64();
         maxPriceLevels = buf.read_u16();
-        timeInForce = codec::get_fixed_string(buf, 1);
+        timeInForce = codec::read_fixed_string(buf, 1);
     }
     
 
@@ -262,7 +262,7 @@ struct Extend100301 : public codec::BinaryCodec {
         buf.write_i64(stopPx);
         buf.write_i64(minQty);
         buf.write_u16(maxPriceLevels);
-        codec::put_fixed_string(buf, timeInForce, 1);
+        codec::write_fixed_string(buf, timeInForce, 1);
     }
     
 
@@ -270,7 +270,7 @@ struct Extend100301 : public codec::BinaryCodec {
         stopPx = buf.read_i64();
         minQty = buf.read_i64();
         maxPriceLevels = buf.read_u16();
-        timeInForce = codec::get_fixed_string(buf, 1);
+        timeInForce = codec::read_fixed_string(buf, 1);
     }
     
 
@@ -309,14 +309,14 @@ struct Extend100501 : public codec::BinaryCodec {
     std::string cashMargin;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, confirmId, 8);
-        codec::put_fixed_string(buf, cashMargin, 1);
+        codec::write_fixed_string(buf, confirmId, 8);
+        codec::write_fixed_string(buf, cashMargin, 1);
     }
     
 
     void decode(ByteBuf& buf) override {
-        confirmId = codec::get_fixed_string(buf, 8);
-        cashMargin = codec::get_fixed_string(buf, 1);
+        confirmId = codec::read_fixed_string(buf, 8);
+        cashMargin = codec::read_fixed_string(buf, 1);
     }
     
 
@@ -348,12 +348,12 @@ struct Extend100601 : public codec::BinaryCodec {
     std::string cashMargin;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, cashMargin, 1);
+        codec::write_fixed_string(buf, cashMargin, 1);
     }
     
 
     void decode(ByteBuf& buf) override {
-        cashMargin = codec::get_fixed_string(buf, 1);
+        cashMargin = codec::read_fixed_string(buf, 1);
     }
     
 
@@ -386,14 +386,14 @@ struct Extend100701 : public codec::BinaryCodec {
     void encode(ByteBuf& buf) const override {
         buf.write_u16(expirationDays);
         buf.write_u8(expirationType);
-        codec::put_fixed_string(buf, shareProperty, 2);
+        codec::write_fixed_string(buf, shareProperty, 2);
     }
     
 
     void decode(ByteBuf& buf) override {
         expirationDays = buf.read_u16();
         expirationType = buf.read_u8();
-        shareProperty = codec::get_fixed_string(buf, 2);
+        shareProperty = codec::read_fixed_string(buf, 2);
     }
     
 
@@ -428,12 +428,12 @@ struct Extend101501 : public codec::BinaryCodec {
     std::string shareProperty;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, shareProperty, 2);
+        codec::write_fixed_string(buf, shareProperty, 2);
     }
     
 
     void decode(ByteBuf& buf) override {
-        shareProperty = codec::get_fixed_string(buf, 2);
+        shareProperty = codec::read_fixed_string(buf, 2);
     }
     
 
@@ -462,12 +462,12 @@ struct Extend101601 : public codec::BinaryCodec {
     std::string contractAccountCode;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, contractAccountCode, 6);
+        codec::write_fixed_string(buf, contractAccountCode, 6);
     }
     
 
     void decode(ByteBuf& buf) override {
-        contractAccountCode = codec::get_fixed_string(buf, 6);
+        contractAccountCode = codec::read_fixed_string(buf, 6);
     }
     
 
@@ -530,12 +530,12 @@ struct Extend101801 : public codec::BinaryCodec {
     std::string tenderer;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, tenderer, 6);
+        codec::write_fixed_string(buf, tenderer, 6);
     }
     
 
     void decode(ByteBuf& buf) override {
-        tenderer = codec::get_fixed_string(buf, 6);
+        tenderer = codec::read_fixed_string(buf, 6);
     }
     
 
@@ -565,14 +565,14 @@ struct Extend102701 : public codec::BinaryCodec {
     std::string disposalAccountId;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, disposalPbu, 6);
-        codec::put_fixed_string(buf, disposalAccountId, 12);
+        codec::write_fixed_string(buf, disposalPbu, 6);
+        codec::write_fixed_string(buf, disposalAccountId, 12);
     }
     
 
     void decode(ByteBuf& buf) override {
-        disposalPbu = codec::get_fixed_string(buf, 6);
-        disposalAccountId = codec::get_fixed_string(buf, 12);
+        disposalPbu = codec::read_fixed_string(buf, 6);
+        disposalAccountId = codec::read_fixed_string(buf, 12);
     }
     
 
@@ -605,14 +605,14 @@ struct Extend102801 : public codec::BinaryCodec {
     std::string lenderAccountId;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, lenderPbu, 6);
-        codec::put_fixed_string(buf, lenderAccountId, 12);
+        codec::write_fixed_string(buf, lenderPbu, 6);
+        codec::write_fixed_string(buf, lenderAccountId, 12);
     }
     
 
     void decode(ByteBuf& buf) override {
-        lenderPbu = codec::get_fixed_string(buf, 6);
-        lenderAccountId = codec::get_fixed_string(buf, 12);
+        lenderPbu = codec::read_fixed_string(buf, 6);
+        lenderAccountId = codec::read_fixed_string(buf, 12);
     }
     
 
@@ -645,14 +645,14 @@ struct Extend102901 : public codec::BinaryCodec {
     std::string deductionAccountId;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, deductionPbu, 6);
-        codec::put_fixed_string(buf, deductionAccountId, 12);
+        codec::write_fixed_string(buf, deductionPbu, 6);
+        codec::write_fixed_string(buf, deductionAccountId, 12);
     }
     
 
     void decode(ByteBuf& buf) override {
-        deductionPbu = codec::get_fixed_string(buf, 6);
-        deductionAccountId = codec::get_fixed_string(buf, 12);
+        deductionPbu = codec::read_fixed_string(buf, 6);
+        deductionAccountId = codec::read_fixed_string(buf, 12);
     }
     
 
@@ -691,8 +691,8 @@ struct Extend106301 : public codec::BinaryCodec {
         buf.write_i64(stopPx);
         buf.write_i64(minQty);
         buf.write_u16(maxPriceLevels);
-        codec::put_fixed_string(buf, timeInForce, 1);
-        codec::put_fixed_string(buf, lotType, 1);
+        codec::write_fixed_string(buf, timeInForce, 1);
+        codec::write_fixed_string(buf, lotType, 1);
     }
     
 
@@ -700,8 +700,8 @@ struct Extend106301 : public codec::BinaryCodec {
         stopPx = buf.read_i64();
         minQty = buf.read_i64();
         maxPriceLevels = buf.read_u16();
-        timeInForce = codec::get_fixed_string(buf, 1);
-        lotType = codec::get_fixed_string(buf, 1);
+        timeInForce = codec::read_fixed_string(buf, 1);
+        lotType = codec::read_fixed_string(buf, 1);
     }
     
 
@@ -742,12 +742,12 @@ struct Extend103501 : public codec::BinaryCodec {
     std::string contractAccountCode;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, contractAccountCode, 6);
+        codec::write_fixed_string(buf, contractAccountCode, 6);
     }
     
 
     void decode(ByteBuf& buf) override {
-        contractAccountCode = codec::get_fixed_string(buf, 6);
+        contractAccountCode = codec::read_fixed_string(buf, 6);
     }
     
 
@@ -776,12 +776,12 @@ struct Extend103701 : public codec::BinaryCodec {
     std::string cashMargin;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, cashMargin, 1);
+        codec::write_fixed_string(buf, cashMargin, 1);
     }
     
 
     void decode(ByteBuf& buf) override {
-        cashMargin = codec::get_fixed_string(buf, 1);
+        cashMargin = codec::read_fixed_string(buf, 1);
     }
     
 
@@ -817,8 +817,8 @@ struct Extend104101 : public codec::BinaryCodec {
         buf.write_i64(stopPx);
         buf.write_i64(minQty);
         buf.write_u16(maxPriceLevels);
-        codec::put_fixed_string(buf, timeInForce, 1);
-        codec::put_fixed_string(buf, cashMargin, 1);
+        codec::write_fixed_string(buf, timeInForce, 1);
+        codec::write_fixed_string(buf, cashMargin, 1);
     }
     
 
@@ -826,8 +826,8 @@ struct Extend104101 : public codec::BinaryCodec {
         stopPx = buf.read_i64();
         minQty = buf.read_i64();
         maxPriceLevels = buf.read_u16();
-        timeInForce = codec::get_fixed_string(buf, 1);
-        cashMargin = codec::get_fixed_string(buf, 1);
+        timeInForce = codec::read_fixed_string(buf, 1);
+        cashMargin = codec::read_fixed_string(buf, 1);
     }
     
 
@@ -884,12 +884,12 @@ struct Extend104128 : public codec::BinaryCodec {
     std::string memo;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, memberId, 6);
-        codec::put_fixed_string(buf, investorType, 2);
-        codec::put_fixed_string(buf, investorId, 10);
-        codec::put_fixed_string(buf, investorName, 120);
-        codec::put_fixed_string(buf, traderCode, 8);
-        codec::put_fixed_string(buf, secondaryOrderId, 16);
+        codec::write_fixed_string(buf, memberId, 6);
+        codec::write_fixed_string(buf, investorType, 2);
+        codec::write_fixed_string(buf, investorId, 10);
+        codec::write_fixed_string(buf, investorName, 120);
+        codec::write_fixed_string(buf, traderCode, 8);
+        codec::write_fixed_string(buf, secondaryOrderId, 16);
         buf.write_u16(bidTransType);
         buf.write_u16(bidExecInstType);
         buf.write_i64(lowLimitPrice);
@@ -899,18 +899,18 @@ struct Extend104128 : public codec::BinaryCodec {
         buf.write_u16(settlType);
         buf.write_u8(settlPeriod);
         buf.write_u8(preTradeAnonymity);
-        codec::put_fixed_string(buf, cashMargin, 1);
-        codec::put_fixed_string(buf, memo, 160);
+        codec::write_fixed_string(buf, cashMargin, 1);
+        codec::write_fixed_string(buf, memo, 160);
     }
     
 
     void decode(ByteBuf& buf) override {
-        memberId = codec::get_fixed_string(buf, 6);
-        investorType = codec::get_fixed_string(buf, 2);
-        investorId = codec::get_fixed_string(buf, 10);
-        investorName = codec::get_fixed_string(buf, 120);
-        traderCode = codec::get_fixed_string(buf, 8);
-        secondaryOrderId = codec::get_fixed_string(buf, 16);
+        memberId = codec::read_fixed_string(buf, 6);
+        investorType = codec::read_fixed_string(buf, 2);
+        investorId = codec::read_fixed_string(buf, 10);
+        investorName = codec::read_fixed_string(buf, 120);
+        traderCode = codec::read_fixed_string(buf, 8);
+        secondaryOrderId = codec::read_fixed_string(buf, 16);
         bidTransType = buf.read_u16();
         bidExecInstType = buf.read_u16();
         lowLimitPrice = buf.read_i64();
@@ -920,8 +920,8 @@ struct Extend104128 : public codec::BinaryCodec {
         settlType = buf.read_u16();
         settlPeriod = buf.read_u8();
         preTradeAnonymity = buf.read_u8();
-        cashMargin = codec::get_fixed_string(buf, 1);
-        memo = codec::get_fixed_string(buf, 160);
+        cashMargin = codec::read_fixed_string(buf, 1);
+        memo = codec::read_fixed_string(buf, 160);
     }
     
 
@@ -998,12 +998,12 @@ struct Extend104701 : public codec::BinaryCodec {
     std::string secondaryOrderId;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, secondaryOrderId, 16);
+        codec::write_fixed_string(buf, secondaryOrderId, 16);
     }
     
 
     void decode(ByteBuf& buf) override {
-        secondaryOrderId = codec::get_fixed_string(buf, 16);
+        secondaryOrderId = codec::read_fixed_string(buf, 16);
     }
     
 
@@ -1080,20 +1080,20 @@ struct NewOrder : public codec::BinaryCodec {
     std::unique_ptr<codec::BinaryCodec> applExtend;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, applId, 3);
-        codec::put_fixed_string(buf, submittingPbuid, 6);
-        codec::put_fixed_string(buf, securityId, 8);
-        codec::put_fixed_string(buf, securityIdsource, 4);
+        codec::write_fixed_string(buf, applId, 3);
+        codec::write_fixed_string(buf, submittingPbuid, 6);
+        codec::write_fixed_string(buf, securityId, 8);
+        codec::write_fixed_string(buf, securityIdsource, 4);
         buf.write_u16(ownerType);
-        codec::put_fixed_string(buf, clearingFirm, 2);
+        codec::write_fixed_string(buf, clearingFirm, 2);
         buf.write_i64(transactTime);
-        codec::put_fixed_string(buf, userInfo, 8);
-        codec::put_fixed_string(buf, clOrdId, 10);
-        codec::put_fixed_string(buf, accountId, 12);
-        codec::put_fixed_string(buf, branchId, 4);
-        codec::put_fixed_string(buf, orderRestrictions, 4);
-        codec::put_fixed_string(buf, side, 1);
-        codec::put_fixed_string(buf, ordType, 1);
+        codec::write_fixed_string(buf, userInfo, 8);
+        codec::write_fixed_string(buf, clOrdId, 10);
+        codec::write_fixed_string(buf, accountId, 12);
+        codec::write_fixed_string(buf, branchId, 4);
+        codec::write_fixed_string(buf, orderRestrictions, 4);
+        codec::write_fixed_string(buf, side, 1);
+        codec::write_fixed_string(buf, ordType, 1);
         buf.write_i64(orderQty);
         buf.write_i64(price);
         applExtend->encode(buf);
@@ -1101,20 +1101,20 @@ struct NewOrder : public codec::BinaryCodec {
     
 
     void decode(ByteBuf& buf) override {
-        applId = codec::get_fixed_string(buf, 3);
-        submittingPbuid = codec::get_fixed_string(buf, 6);
-        securityId = codec::get_fixed_string(buf, 8);
-        securityIdsource = codec::get_fixed_string(buf, 4);
+        applId = codec::read_fixed_string(buf, 3);
+        submittingPbuid = codec::read_fixed_string(buf, 6);
+        securityId = codec::read_fixed_string(buf, 8);
+        securityIdsource = codec::read_fixed_string(buf, 4);
         ownerType = buf.read_u16();
-        clearingFirm = codec::get_fixed_string(buf, 2);
+        clearingFirm = codec::read_fixed_string(buf, 2);
         transactTime = buf.read_i64();
-        userInfo = codec::get_fixed_string(buf, 8);
-        clOrdId = codec::get_fixed_string(buf, 10);
-        accountId = codec::get_fixed_string(buf, 12);
-        branchId = codec::get_fixed_string(buf, 4);
-        orderRestrictions = codec::get_fixed_string(buf, 4);
-        side = codec::get_fixed_string(buf, 1);
-        ordType = codec::get_fixed_string(buf, 1);
+        userInfo = codec::read_fixed_string(buf, 8);
+        clOrdId = codec::read_fixed_string(buf, 10);
+        accountId = codec::read_fixed_string(buf, 12);
+        branchId = codec::read_fixed_string(buf, 4);
+        orderRestrictions = codec::read_fixed_string(buf, 4);
+        side = codec::read_fixed_string(buf, 1);
+        ordType = codec::read_fixed_string(buf, 1);
         orderQty = buf.read_i64();
         price = buf.read_i64();
         applExtend = NewOrderMessageFactory::getInstance().create(applId);
@@ -1208,11 +1208,11 @@ struct Extend101401 : public codec::BinaryCodec {
         buf.write_i64(stopPx);
         buf.write_i64(minQty);
         buf.write_u16(maxPriceLevels);
-        codec::put_fixed_string(buf, timeInForce, 1);
-        codec::put_fixed_string(buf, positionEffect, 1);
+        codec::write_fixed_string(buf, timeInForce, 1);
+        codec::write_fixed_string(buf, positionEffect, 1);
         buf.write_u8(coveredOrUncovered);
-        codec::put_fixed_string(buf, contractAccountCode, 6);
-        codec::put_fixed_string(buf, secondaryOrderId, 16);
+        codec::write_fixed_string(buf, contractAccountCode, 6);
+        codec::write_fixed_string(buf, secondaryOrderId, 16);
     }
     
 
@@ -1220,11 +1220,11 @@ struct Extend101401 : public codec::BinaryCodec {
         stopPx = buf.read_i64();
         minQty = buf.read_i64();
         maxPriceLevels = buf.read_u16();
-        timeInForce = codec::get_fixed_string(buf, 1);
-        positionEffect = codec::get_fixed_string(buf, 1);
+        timeInForce = codec::read_fixed_string(buf, 1);
+        positionEffect = codec::read_fixed_string(buf, 1);
         coveredOrUncovered = buf.read_u8();
-        contractAccountCode = codec::get_fixed_string(buf, 6);
-        secondaryOrderId = codec::get_fixed_string(buf, 16);
+        contractAccountCode = codec::read_fixed_string(buf, 6);
+        secondaryOrderId = codec::read_fixed_string(buf, 16);
     }
     
 
@@ -1297,8 +1297,8 @@ struct Extend200102 : public codec::BinaryCodec {
         buf.write_i64(stopPx);
         buf.write_i64(minQty);
         buf.write_u16(maxPriceLevels);
-        codec::put_fixed_string(buf, timeInForce, 1);
-        codec::put_fixed_string(buf, cashMargin, 1);
+        codec::write_fixed_string(buf, timeInForce, 1);
+        codec::write_fixed_string(buf, cashMargin, 1);
     }
     
 
@@ -1306,8 +1306,8 @@ struct Extend200102 : public codec::BinaryCodec {
         stopPx = buf.read_i64();
         minQty = buf.read_i64();
         maxPriceLevels = buf.read_u16();
-        timeInForce = codec::get_fixed_string(buf, 1);
-        cashMargin = codec::get_fixed_string(buf, 1);
+        timeInForce = codec::read_fixed_string(buf, 1);
+        cashMargin = codec::read_fixed_string(buf, 1);
     }
     
 
@@ -1354,7 +1354,7 @@ struct Extend200202 : public codec::BinaryCodec {
         buf.write_i64(stopPx);
         buf.write_i64(minQty);
         buf.write_u16(maxPriceLevels);
-        codec::put_fixed_string(buf, timeInForce, 1);
+        codec::write_fixed_string(buf, timeInForce, 1);
     }
     
 
@@ -1362,7 +1362,7 @@ struct Extend200202 : public codec::BinaryCodec {
         stopPx = buf.read_i64();
         minQty = buf.read_i64();
         maxPriceLevels = buf.read_u16();
-        timeInForce = codec::get_fixed_string(buf, 1);
+        timeInForce = codec::read_fixed_string(buf, 1);
     }
     
 
@@ -1406,7 +1406,7 @@ struct Extend200302 : public codec::BinaryCodec {
         buf.write_i64(stopPx);
         buf.write_i64(minQty);
         buf.write_u16(maxPriceLevels);
-        codec::put_fixed_string(buf, timeInForce, 1);
+        codec::write_fixed_string(buf, timeInForce, 1);
     }
     
 
@@ -1414,7 +1414,7 @@ struct Extend200302 : public codec::BinaryCodec {
         stopPx = buf.read_i64();
         minQty = buf.read_i64();
         maxPriceLevels = buf.read_u16();
-        timeInForce = codec::get_fixed_string(buf, 1);
+        timeInForce = codec::read_fixed_string(buf, 1);
     }
     
 
@@ -1453,14 +1453,14 @@ struct Extend200502 : public codec::BinaryCodec {
     std::string cashMargin;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, confirmId, 8);
-        codec::put_fixed_string(buf, cashMargin, 1);
+        codec::write_fixed_string(buf, confirmId, 8);
+        codec::write_fixed_string(buf, cashMargin, 1);
     }
     
 
     void decode(ByteBuf& buf) override {
-        confirmId = codec::get_fixed_string(buf, 8);
-        cashMargin = codec::get_fixed_string(buf, 1);
+        confirmId = codec::read_fixed_string(buf, 8);
+        cashMargin = codec::read_fixed_string(buf, 1);
     }
     
 
@@ -1492,12 +1492,12 @@ struct Extend200602 : public codec::BinaryCodec {
     std::string cashMargin;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, cashMargin, 1);
+        codec::write_fixed_string(buf, cashMargin, 1);
     }
     
 
     void decode(ByteBuf& buf) override {
-        cashMargin = codec::get_fixed_string(buf, 1);
+        cashMargin = codec::read_fixed_string(buf, 1);
     }
     
 
@@ -1530,14 +1530,14 @@ struct Extend200702 : public codec::BinaryCodec {
     void encode(ByteBuf& buf) const override {
         buf.write_u16(expirationDays);
         buf.write_u8(expirationType);
-        codec::put_fixed_string(buf, shareProperty, 2);
+        codec::write_fixed_string(buf, shareProperty, 2);
     }
     
 
     void decode(ByteBuf& buf) override {
         expirationDays = buf.read_u16();
         expirationType = buf.read_u8();
-        shareProperty = codec::get_fixed_string(buf, 2);
+        shareProperty = codec::read_fixed_string(buf, 2);
     }
     
 
@@ -1572,12 +1572,12 @@ struct Extend201502 : public codec::BinaryCodec {
     std::string shareProperty;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, shareProperty, 2);
+        codec::write_fixed_string(buf, shareProperty, 2);
     }
     
 
     void decode(ByteBuf& buf) override {
-        shareProperty = codec::get_fixed_string(buf, 2);
+        shareProperty = codec::read_fixed_string(buf, 2);
     }
     
 
@@ -1606,12 +1606,12 @@ struct Extend201602 : public codec::BinaryCodec {
     std::string contractAccountCode;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, contractAccountCode, 6);
+        codec::write_fixed_string(buf, contractAccountCode, 6);
     }
     
 
     void decode(ByteBuf& buf) override {
-        contractAccountCode = codec::get_fixed_string(buf, 6);
+        contractAccountCode = codec::read_fixed_string(buf, 6);
     }
     
 
@@ -1674,12 +1674,12 @@ struct Extend201802 : public codec::BinaryCodec {
     std::string tenderer;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, tenderer, 6);
+        codec::write_fixed_string(buf, tenderer, 6);
     }
     
 
     void decode(ByteBuf& buf) override {
-        tenderer = codec::get_fixed_string(buf, 6);
+        tenderer = codec::read_fixed_string(buf, 6);
     }
     
 
@@ -1709,14 +1709,14 @@ struct Extend202702 : public codec::BinaryCodec {
     std::string disposalAccountId;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, disposalPbu, 6);
-        codec::put_fixed_string(buf, disposalAccountId, 12);
+        codec::write_fixed_string(buf, disposalPbu, 6);
+        codec::write_fixed_string(buf, disposalAccountId, 12);
     }
     
 
     void decode(ByteBuf& buf) override {
-        disposalPbu = codec::get_fixed_string(buf, 6);
-        disposalAccountId = codec::get_fixed_string(buf, 12);
+        disposalPbu = codec::read_fixed_string(buf, 6);
+        disposalAccountId = codec::read_fixed_string(buf, 12);
     }
     
 
@@ -1749,14 +1749,14 @@ struct Extend202802 : public codec::BinaryCodec {
     std::string lenderAccountId;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, lenderPbu, 6);
-        codec::put_fixed_string(buf, lenderAccountId, 12);
+        codec::write_fixed_string(buf, lenderPbu, 6);
+        codec::write_fixed_string(buf, lenderAccountId, 12);
     }
     
 
     void decode(ByteBuf& buf) override {
-        lenderPbu = codec::get_fixed_string(buf, 6);
-        lenderAccountId = codec::get_fixed_string(buf, 12);
+        lenderPbu = codec::read_fixed_string(buf, 6);
+        lenderAccountId = codec::read_fixed_string(buf, 12);
     }
     
 
@@ -1789,14 +1789,14 @@ struct Extend202902 : public codec::BinaryCodec {
     std::string deductionAccountId;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, deductionPbu, 6);
-        codec::put_fixed_string(buf, deductionAccountId, 12);
+        codec::write_fixed_string(buf, deductionPbu, 6);
+        codec::write_fixed_string(buf, deductionAccountId, 12);
     }
     
 
     void decode(ByteBuf& buf) override {
-        deductionPbu = codec::get_fixed_string(buf, 6);
-        deductionAccountId = codec::get_fixed_string(buf, 12);
+        deductionPbu = codec::read_fixed_string(buf, 6);
+        deductionAccountId = codec::read_fixed_string(buf, 12);
     }
     
 
@@ -1835,26 +1835,26 @@ struct Extend206302 : public codec::BinaryCodec {
     std::string imcrejectText;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, rejectText, 16);
+        codec::write_fixed_string(buf, rejectText, 16);
         buf.write_i64(stopPx);
         buf.write_i64(minQty);
         buf.write_u16(maxPriceLevels);
-        codec::put_fixed_string(buf, timeInForce, 1);
-        codec::put_fixed_string(buf, lotType, 1);
+        codec::write_fixed_string(buf, timeInForce, 1);
+        codec::write_fixed_string(buf, lotType, 1);
         buf.write_u32(imcrejectTextLen);
-        codec::put_string<uint32_t>(buf, imcrejectText);
+        codec::write_string<uint32_t>(buf, imcrejectText);
     }
     
 
     void decode(ByteBuf& buf) override {
-        rejectText = codec::get_fixed_string(buf, 16);
+        rejectText = codec::read_fixed_string(buf, 16);
         stopPx = buf.read_i64();
         minQty = buf.read_i64();
         maxPriceLevels = buf.read_u16();
-        timeInForce = codec::get_fixed_string(buf, 1);
-        lotType = codec::get_fixed_string(buf, 1);
+        timeInForce = codec::read_fixed_string(buf, 1);
+        lotType = codec::read_fixed_string(buf, 1);
         imcrejectTextLen = buf.read_u32();
-        imcrejectText = codec::get_string<uint32_t>(buf);
+        imcrejectText = codec::read_string<uint32_t>(buf);
     }
     
 
@@ -1904,12 +1904,12 @@ struct Extend203502 : public codec::BinaryCodec {
     std::string contractAccountCode;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, contractAccountCode, 6);
+        codec::write_fixed_string(buf, contractAccountCode, 6);
     }
     
 
     void decode(ByteBuf& buf) override {
-        contractAccountCode = codec::get_fixed_string(buf, 6);
+        contractAccountCode = codec::read_fixed_string(buf, 6);
     }
     
 
@@ -1938,12 +1938,12 @@ struct Extend203702 : public codec::BinaryCodec {
     std::string cashMargin;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, cashMargin, 1);
+        codec::write_fixed_string(buf, cashMargin, 1);
     }
     
 
     void decode(ByteBuf& buf) override {
-        cashMargin = codec::get_fixed_string(buf, 1);
+        cashMargin = codec::read_fixed_string(buf, 1);
     }
     
 
@@ -1979,8 +1979,8 @@ struct Extend204102 : public codec::BinaryCodec {
         buf.write_i64(stopPx);
         buf.write_i64(minQty);
         buf.write_u16(maxPriceLevels);
-        codec::put_fixed_string(buf, timeInForce, 1);
-        codec::put_fixed_string(buf, cashMargin, 1);
+        codec::write_fixed_string(buf, timeInForce, 1);
+        codec::write_fixed_string(buf, cashMargin, 1);
     }
     
 
@@ -1988,8 +1988,8 @@ struct Extend204102 : public codec::BinaryCodec {
         stopPx = buf.read_i64();
         minQty = buf.read_i64();
         maxPriceLevels = buf.read_u16();
-        timeInForce = codec::get_fixed_string(buf, 1);
-        cashMargin = codec::get_fixed_string(buf, 1);
+        timeInForce = codec::read_fixed_string(buf, 1);
+        cashMargin = codec::read_fixed_string(buf, 1);
     }
     
 
@@ -2046,12 +2046,12 @@ struct Extend204129 : public codec::BinaryCodec {
     std::string memo;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, memberId, 6);
-        codec::put_fixed_string(buf, investorType, 2);
-        codec::put_fixed_string(buf, investorId, 10);
-        codec::put_fixed_string(buf, investorName, 120);
-        codec::put_fixed_string(buf, traderCode, 8);
-        codec::put_fixed_string(buf, secondaryOrderId, 16);
+        codec::write_fixed_string(buf, memberId, 6);
+        codec::write_fixed_string(buf, investorType, 2);
+        codec::write_fixed_string(buf, investorId, 10);
+        codec::write_fixed_string(buf, investorName, 120);
+        codec::write_fixed_string(buf, traderCode, 8);
+        codec::write_fixed_string(buf, secondaryOrderId, 16);
         buf.write_u16(bidTransType);
         buf.write_u16(bidExecInstType);
         buf.write_i64(lowLimitPrice);
@@ -2061,18 +2061,18 @@ struct Extend204129 : public codec::BinaryCodec {
         buf.write_u16(settlType);
         buf.write_u8(settlPeriod);
         buf.write_u8(preTradeAnonymity);
-        codec::put_fixed_string(buf, cashMargin, 1);
-        codec::put_fixed_string(buf, memo, 160);
+        codec::write_fixed_string(buf, cashMargin, 1);
+        codec::write_fixed_string(buf, memo, 160);
     }
     
 
     void decode(ByteBuf& buf) override {
-        memberId = codec::get_fixed_string(buf, 6);
-        investorType = codec::get_fixed_string(buf, 2);
-        investorId = codec::get_fixed_string(buf, 10);
-        investorName = codec::get_fixed_string(buf, 120);
-        traderCode = codec::get_fixed_string(buf, 8);
-        secondaryOrderId = codec::get_fixed_string(buf, 16);
+        memberId = codec::read_fixed_string(buf, 6);
+        investorType = codec::read_fixed_string(buf, 2);
+        investorId = codec::read_fixed_string(buf, 10);
+        investorName = codec::read_fixed_string(buf, 120);
+        traderCode = codec::read_fixed_string(buf, 8);
+        secondaryOrderId = codec::read_fixed_string(buf, 16);
         bidTransType = buf.read_u16();
         bidExecInstType = buf.read_u16();
         lowLimitPrice = buf.read_i64();
@@ -2082,8 +2082,8 @@ struct Extend204129 : public codec::BinaryCodec {
         settlType = buf.read_u16();
         settlPeriod = buf.read_u8();
         preTradeAnonymity = buf.read_u8();
-        cashMargin = codec::get_fixed_string(buf, 1);
-        memo = codec::get_fixed_string(buf, 160);
+        cashMargin = codec::read_fixed_string(buf, 1);
+        memo = codec::read_fixed_string(buf, 160);
     }
     
 
@@ -2160,12 +2160,12 @@ struct Extend204702 : public codec::BinaryCodec {
     std::string secondaryOrderId;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, secondaryOrderId, 16);
+        codec::write_fixed_string(buf, secondaryOrderId, 16);
     }
     
 
     void decode(ByteBuf& buf) override {
-        secondaryOrderId = codec::get_fixed_string(buf, 16);
+        secondaryOrderId = codec::read_fixed_string(buf, 16);
     }
     
 
@@ -2256,32 +2256,32 @@ struct ExecutionConfirm : public codec::BinaryCodec {
     void encode(ByteBuf& buf) const override {
         buf.write_i32(partitionNo);
         buf.write_i64(reportIndex);
-        codec::put_fixed_string(buf, applId, 3);
-        codec::put_fixed_string(buf, reportingPbuid, 6);
-        codec::put_fixed_string(buf, submittingPbuid, 6);
-        codec::put_fixed_string(buf, securityId, 8);
-        codec::put_fixed_string(buf, securityIdsource, 4);
+        codec::write_fixed_string(buf, applId, 3);
+        codec::write_fixed_string(buf, reportingPbuid, 6);
+        codec::write_fixed_string(buf, submittingPbuid, 6);
+        codec::write_fixed_string(buf, securityId, 8);
+        codec::write_fixed_string(buf, securityIdsource, 4);
         buf.write_u16(ownerType);
-        codec::put_fixed_string(buf, clearingFirm, 2);
+        codec::write_fixed_string(buf, clearingFirm, 2);
         buf.write_i64(transactTime);
-        codec::put_fixed_string(buf, userInfo, 8);
-        codec::put_fixed_string(buf, orderId, 16);
-        codec::put_fixed_string(buf, clOrdId, 10);
-        codec::put_fixed_string(buf, quoteMsgId, 10);
-        codec::put_fixed_string(buf, origClOrdId, 10);
-        codec::put_fixed_string(buf, execId, 16);
-        codec::put_fixed_string(buf, execType, 1);
-        codec::put_fixed_string(buf, ordStatus, 1);
+        codec::write_fixed_string(buf, userInfo, 8);
+        codec::write_fixed_string(buf, orderId, 16);
+        codec::write_fixed_string(buf, clOrdId, 10);
+        codec::write_fixed_string(buf, quoteMsgId, 10);
+        codec::write_fixed_string(buf, origClOrdId, 10);
+        codec::write_fixed_string(buf, execId, 16);
+        codec::write_fixed_string(buf, execType, 1);
+        codec::write_fixed_string(buf, ordStatus, 1);
         buf.write_u16(ordRejReason);
         buf.write_i64(leavesQty);
         buf.write_i64(cumQty);
-        codec::put_fixed_string(buf, side, 1);
-        codec::put_fixed_string(buf, ordType, 1);
+        codec::write_fixed_string(buf, side, 1);
+        codec::write_fixed_string(buf, ordType, 1);
         buf.write_i64(orderQty);
         buf.write_i64(price);
-        codec::put_fixed_string(buf, accountId, 12);
-        codec::put_fixed_string(buf, branchId, 4);
-        codec::put_fixed_string(buf, orderRestrictions, 4);
+        codec::write_fixed_string(buf, accountId, 12);
+        codec::write_fixed_string(buf, branchId, 4);
+        codec::write_fixed_string(buf, orderRestrictions, 4);
         applExtend->encode(buf);
     }
     
@@ -2289,32 +2289,32 @@ struct ExecutionConfirm : public codec::BinaryCodec {
     void decode(ByteBuf& buf) override {
         partitionNo = buf.read_i32();
         reportIndex = buf.read_i64();
-        applId = codec::get_fixed_string(buf, 3);
-        reportingPbuid = codec::get_fixed_string(buf, 6);
-        submittingPbuid = codec::get_fixed_string(buf, 6);
-        securityId = codec::get_fixed_string(buf, 8);
-        securityIdsource = codec::get_fixed_string(buf, 4);
+        applId = codec::read_fixed_string(buf, 3);
+        reportingPbuid = codec::read_fixed_string(buf, 6);
+        submittingPbuid = codec::read_fixed_string(buf, 6);
+        securityId = codec::read_fixed_string(buf, 8);
+        securityIdsource = codec::read_fixed_string(buf, 4);
         ownerType = buf.read_u16();
-        clearingFirm = codec::get_fixed_string(buf, 2);
+        clearingFirm = codec::read_fixed_string(buf, 2);
         transactTime = buf.read_i64();
-        userInfo = codec::get_fixed_string(buf, 8);
-        orderId = codec::get_fixed_string(buf, 16);
-        clOrdId = codec::get_fixed_string(buf, 10);
-        quoteMsgId = codec::get_fixed_string(buf, 10);
-        origClOrdId = codec::get_fixed_string(buf, 10);
-        execId = codec::get_fixed_string(buf, 16);
-        execType = codec::get_fixed_string(buf, 1);
-        ordStatus = codec::get_fixed_string(buf, 1);
+        userInfo = codec::read_fixed_string(buf, 8);
+        orderId = codec::read_fixed_string(buf, 16);
+        clOrdId = codec::read_fixed_string(buf, 10);
+        quoteMsgId = codec::read_fixed_string(buf, 10);
+        origClOrdId = codec::read_fixed_string(buf, 10);
+        execId = codec::read_fixed_string(buf, 16);
+        execType = codec::read_fixed_string(buf, 1);
+        ordStatus = codec::read_fixed_string(buf, 1);
         ordRejReason = buf.read_u16();
         leavesQty = buf.read_i64();
         cumQty = buf.read_i64();
-        side = codec::get_fixed_string(buf, 1);
-        ordType = codec::get_fixed_string(buf, 1);
+        side = codec::read_fixed_string(buf, 1);
+        ordType = codec::read_fixed_string(buf, 1);
         orderQty = buf.read_i64();
         price = buf.read_i64();
-        accountId = codec::get_fixed_string(buf, 12);
-        branchId = codec::get_fixed_string(buf, 4);
-        orderRestrictions = codec::get_fixed_string(buf, 4);
+        accountId = codec::read_fixed_string(buf, 12);
+        branchId = codec::read_fixed_string(buf, 4);
+        orderRestrictions = codec::read_fixed_string(buf, 4);
         applExtend = ExecutionConfirmMessageFactory::getInstance().create(applId);
         applExtend->decode(buf);
     }
@@ -2442,11 +2442,11 @@ struct Extend200402 : public codec::BinaryCodec {
         buf.write_i64(stopPx);
         buf.write_i64(minQty);
         buf.write_u16(maxPriceLevels);
-        codec::put_fixed_string(buf, timeInForce, 1);
-        codec::put_fixed_string(buf, positionEffect, 1);
+        codec::write_fixed_string(buf, timeInForce, 1);
+        codec::write_fixed_string(buf, positionEffect, 1);
         buf.write_u8(coveredOrUncovered);
-        codec::put_fixed_string(buf, contractAccountCode, 6);
-        codec::put_fixed_string(buf, secondaryOrderId, 16);
+        codec::write_fixed_string(buf, contractAccountCode, 6);
+        codec::write_fixed_string(buf, secondaryOrderId, 16);
     }
     
 
@@ -2454,11 +2454,11 @@ struct Extend200402 : public codec::BinaryCodec {
         stopPx = buf.read_i64();
         minQty = buf.read_i64();
         maxPriceLevels = buf.read_u16();
-        timeInForce = codec::get_fixed_string(buf, 1);
-        positionEffect = codec::get_fixed_string(buf, 1);
+        timeInForce = codec::read_fixed_string(buf, 1);
+        positionEffect = codec::read_fixed_string(buf, 1);
         coveredOrUncovered = buf.read_u8();
-        contractAccountCode = codec::get_fixed_string(buf, 6);
-        secondaryOrderId = codec::get_fixed_string(buf, 16);
+        contractAccountCode = codec::read_fixed_string(buf, 6);
+        secondaryOrderId = codec::read_fixed_string(buf, 16);
     }
     
 
@@ -2516,20 +2516,20 @@ struct Extend201202 : public codec::BinaryCodec {
     int64_t substCash;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, insufficientSecurityId, 8);
+        codec::write_fixed_string(buf, insufficientSecurityId, 8);
         buf.write_u32(noSecurity);
-        codec::put_fixed_string(buf, underlyingSecurityId, 8);
-        codec::put_fixed_string(buf, underlyingSecurityIdsource, 4);
+        codec::write_fixed_string(buf, underlyingSecurityId, 8);
+        codec::write_fixed_string(buf, underlyingSecurityIdsource, 4);
         buf.write_i64(deliveryQty);
         buf.write_i64(substCash);
     }
     
 
     void decode(ByteBuf& buf) override {
-        insufficientSecurityId = codec::get_fixed_string(buf, 8);
+        insufficientSecurityId = codec::read_fixed_string(buf, 8);
         noSecurity = buf.read_u32();
-        underlyingSecurityId = codec::get_fixed_string(buf, 8);
-        underlyingSecurityIdsource = codec::get_fixed_string(buf, 4);
+        underlyingSecurityId = codec::read_fixed_string(buf, 8);
+        underlyingSecurityIdsource = codec::read_fixed_string(buf, 4);
         deliveryQty = buf.read_i64();
         substCash = buf.read_i64();
     }
@@ -2586,19 +2586,19 @@ struct Extend203102 : public codec::BinaryCodec {
     int64_t deliveryQty;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, insufficientSecurityId, 8);
+        codec::write_fixed_string(buf, insufficientSecurityId, 8);
         buf.write_u32(noSecurity);
-        codec::put_fixed_string(buf, underlyingSecurityId, 8);
-        codec::put_fixed_string(buf, underlyingSecurityIdsource, 4);
+        codec::write_fixed_string(buf, underlyingSecurityId, 8);
+        codec::write_fixed_string(buf, underlyingSecurityIdsource, 4);
         buf.write_i64(deliveryQty);
     }
     
 
     void decode(ByteBuf& buf) override {
-        insufficientSecurityId = codec::get_fixed_string(buf, 8);
+        insufficientSecurityId = codec::read_fixed_string(buf, 8);
         noSecurity = buf.read_u32();
-        underlyingSecurityId = codec::get_fixed_string(buf, 8);
-        underlyingSecurityIdsource = codec::get_fixed_string(buf, 4);
+        underlyingSecurityId = codec::read_fixed_string(buf, 8);
+        underlyingSecurityIdsource = codec::read_fixed_string(buf, 4);
         deliveryQty = buf.read_i64();
     }
     
@@ -2646,12 +2646,12 @@ struct Extend200115 : public codec::BinaryCodec {
     std::string cashMargin;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, cashMargin, 1);
+        codec::write_fixed_string(buf, cashMargin, 1);
     }
     
 
     void decode(ByteBuf& buf) override {
-        cashMargin = codec::get_fixed_string(buf, 1);
+        cashMargin = codec::read_fixed_string(buf, 1);
     }
     
 
@@ -2749,14 +2749,14 @@ struct Extend200515 : public codec::BinaryCodec {
     std::string cashMargin;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, confirmId, 8);
-        codec::put_fixed_string(buf, cashMargin, 1);
+        codec::write_fixed_string(buf, confirmId, 8);
+        codec::write_fixed_string(buf, cashMargin, 1);
     }
     
 
     void decode(ByteBuf& buf) override {
-        confirmId = codec::get_fixed_string(buf, 8);
-        cashMargin = codec::get_fixed_string(buf, 1);
+        confirmId = codec::read_fixed_string(buf, 8);
+        cashMargin = codec::read_fixed_string(buf, 1);
     }
     
 
@@ -2788,12 +2788,12 @@ struct Extend200615 : public codec::BinaryCodec {
     std::string cashMargin;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, cashMargin, 1);
+        codec::write_fixed_string(buf, cashMargin, 1);
     }
     
 
     void decode(ByteBuf& buf) override {
-        cashMargin = codec::get_fixed_string(buf, 1);
+        cashMargin = codec::read_fixed_string(buf, 1);
     }
     
 
@@ -2828,7 +2828,7 @@ struct Extend200715 : public codec::BinaryCodec {
         buf.write_u16(expirationDays);
         buf.write_u8(expirationType);
         buf.write_u32(maturityDate);
-        codec::put_fixed_string(buf, shareProperty, 2);
+        codec::write_fixed_string(buf, shareProperty, 2);
     }
     
 
@@ -2836,7 +2836,7 @@ struct Extend200715 : public codec::BinaryCodec {
         expirationDays = buf.read_u16();
         expirationType = buf.read_u8();
         maturityDate = buf.read_u32();
-        shareProperty = codec::get_fixed_string(buf, 2);
+        shareProperty = codec::read_fixed_string(buf, 2);
     }
     
 
@@ -2874,12 +2874,12 @@ struct Extend206315 : public codec::BinaryCodec {
     std::string cashMargin;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, cashMargin, 1);
+        codec::write_fixed_string(buf, cashMargin, 1);
     }
     
 
     void decode(ByteBuf& buf) override {
-        cashMargin = codec::get_fixed_string(buf, 1);
+        cashMargin = codec::read_fixed_string(buf, 1);
     }
     
 
@@ -2908,12 +2908,12 @@ struct Extend203715 : public codec::BinaryCodec {
     std::string cashMargin;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, cashMargin, 1);
+        codec::write_fixed_string(buf, cashMargin, 1);
     }
     
 
     void decode(ByteBuf& buf) override {
-        cashMargin = codec::get_fixed_string(buf, 1);
+        cashMargin = codec::read_fixed_string(buf, 1);
     }
     
 
@@ -2949,26 +2949,26 @@ struct Extend204115 : public codec::BinaryCodec {
     std::string counterpartyTraderCode;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, cashMargin, 1);
+        codec::write_fixed_string(buf, cashMargin, 1);
         buf.write_u16(settlType);
         buf.write_u8(settlPeriod);
-        codec::put_fixed_string(buf, counterpartyMemberId, 6);
-        codec::put_fixed_string(buf, counterpartyInvestorType, 2);
-        codec::put_fixed_string(buf, counterpartyInvestorId, 10);
-        codec::put_fixed_string(buf, counterpartyInvestorName, 120);
-        codec::put_fixed_string(buf, counterpartyTraderCode, 8);
+        codec::write_fixed_string(buf, counterpartyMemberId, 6);
+        codec::write_fixed_string(buf, counterpartyInvestorType, 2);
+        codec::write_fixed_string(buf, counterpartyInvestorId, 10);
+        codec::write_fixed_string(buf, counterpartyInvestorName, 120);
+        codec::write_fixed_string(buf, counterpartyTraderCode, 8);
     }
     
 
     void decode(ByteBuf& buf) override {
-        cashMargin = codec::get_fixed_string(buf, 1);
+        cashMargin = codec::read_fixed_string(buf, 1);
         settlType = buf.read_u16();
         settlPeriod = buf.read_u8();
-        counterpartyMemberId = codec::get_fixed_string(buf, 6);
-        counterpartyInvestorType = codec::get_fixed_string(buf, 2);
-        counterpartyInvestorId = codec::get_fixed_string(buf, 10);
-        counterpartyInvestorName = codec::get_fixed_string(buf, 120);
-        counterpartyTraderCode = codec::get_fixed_string(buf, 8);
+        counterpartyMemberId = codec::read_fixed_string(buf, 6);
+        counterpartyInvestorType = codec::read_fixed_string(buf, 2);
+        counterpartyInvestorId = codec::read_fixed_string(buf, 10);
+        counterpartyInvestorName = codec::read_fixed_string(buf, 120);
+        counterpartyTraderCode = codec::read_fixed_string(buf, 8);
     }
     
 
@@ -3034,44 +3034,44 @@ struct Extend204130 : public codec::BinaryCodec {
     std::string memo;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, memberId, 6);
-        codec::put_fixed_string(buf, investorType, 2);
-        codec::put_fixed_string(buf, investorId, 10);
-        codec::put_fixed_string(buf, investorName, 120);
-        codec::put_fixed_string(buf, traderCode, 8);
-        codec::put_fixed_string(buf, counterpartyMemberId, 6);
-        codec::put_fixed_string(buf, counterpartyInvestorType, 2);
-        codec::put_fixed_string(buf, counterpartyInvestorId, 10);
-        codec::put_fixed_string(buf, counterpartyInvestorName, 120);
-        codec::put_fixed_string(buf, counterpartyTraderCode, 8);
-        codec::put_fixed_string(buf, secondaryOrderId, 16);
+        codec::write_fixed_string(buf, memberId, 6);
+        codec::write_fixed_string(buf, investorType, 2);
+        codec::write_fixed_string(buf, investorId, 10);
+        codec::write_fixed_string(buf, investorName, 120);
+        codec::write_fixed_string(buf, traderCode, 8);
+        codec::write_fixed_string(buf, counterpartyMemberId, 6);
+        codec::write_fixed_string(buf, counterpartyInvestorType, 2);
+        codec::write_fixed_string(buf, counterpartyInvestorId, 10);
+        codec::write_fixed_string(buf, counterpartyInvestorName, 120);
+        codec::write_fixed_string(buf, counterpartyTraderCode, 8);
+        codec::write_fixed_string(buf, secondaryOrderId, 16);
         buf.write_u16(bidTransType);
         buf.write_u16(bidExecInstType);
         buf.write_u16(settlType);
         buf.write_u8(settlPeriod);
-        codec::put_fixed_string(buf, cashMargin, 1);
-        codec::put_fixed_string(buf, memo, 160);
+        codec::write_fixed_string(buf, cashMargin, 1);
+        codec::write_fixed_string(buf, memo, 160);
     }
     
 
     void decode(ByteBuf& buf) override {
-        memberId = codec::get_fixed_string(buf, 6);
-        investorType = codec::get_fixed_string(buf, 2);
-        investorId = codec::get_fixed_string(buf, 10);
-        investorName = codec::get_fixed_string(buf, 120);
-        traderCode = codec::get_fixed_string(buf, 8);
-        counterpartyMemberId = codec::get_fixed_string(buf, 6);
-        counterpartyInvestorType = codec::get_fixed_string(buf, 2);
-        counterpartyInvestorId = codec::get_fixed_string(buf, 10);
-        counterpartyInvestorName = codec::get_fixed_string(buf, 120);
-        counterpartyTraderCode = codec::get_fixed_string(buf, 8);
-        secondaryOrderId = codec::get_fixed_string(buf, 16);
+        memberId = codec::read_fixed_string(buf, 6);
+        investorType = codec::read_fixed_string(buf, 2);
+        investorId = codec::read_fixed_string(buf, 10);
+        investorName = codec::read_fixed_string(buf, 120);
+        traderCode = codec::read_fixed_string(buf, 8);
+        counterpartyMemberId = codec::read_fixed_string(buf, 6);
+        counterpartyInvestorType = codec::read_fixed_string(buf, 2);
+        counterpartyInvestorId = codec::read_fixed_string(buf, 10);
+        counterpartyInvestorName = codec::read_fixed_string(buf, 120);
+        counterpartyTraderCode = codec::read_fixed_string(buf, 8);
+        secondaryOrderId = codec::read_fixed_string(buf, 16);
         bidTransType = buf.read_u16();
         bidExecInstType = buf.read_u16();
         settlType = buf.read_u16();
         settlPeriod = buf.read_u8();
-        cashMargin = codec::get_fixed_string(buf, 1);
-        memo = codec::get_fixed_string(buf, 160);
+        cashMargin = codec::read_fixed_string(buf, 1);
+        memo = codec::read_fixed_string(buf, 160);
     }
     
 
@@ -3154,7 +3154,7 @@ struct Extend204715 : public codec::BinaryCodec {
         buf.write_u16(expirationDays);
         buf.write_u8(expirationType);
         buf.write_u32(maturityDate);
-        codec::put_fixed_string(buf, shareProperty, 2);
+        codec::write_fixed_string(buf, shareProperty, 2);
     }
     
 
@@ -3162,7 +3162,7 @@ struct Extend204715 : public codec::BinaryCodec {
         expirationDays = buf.read_u16();
         expirationType = buf.read_u8();
         maturityDate = buf.read_u32();
-        shareProperty = codec::get_fixed_string(buf, 2);
+        shareProperty = codec::read_fixed_string(buf, 2);
     }
     
 
@@ -3249,28 +3249,28 @@ struct ExecutionReport : public codec::BinaryCodec {
     void encode(ByteBuf& buf) const override {
         buf.write_i32(partitionNo);
         buf.write_i64(reportIndex);
-        codec::put_fixed_string(buf, applId, 3);
-        codec::put_fixed_string(buf, reportingPbuid, 6);
-        codec::put_fixed_string(buf, submittingPbuid, 6);
-        codec::put_fixed_string(buf, securityId, 8);
-        codec::put_fixed_string(buf, securityIdsource, 4);
+        codec::write_fixed_string(buf, applId, 3);
+        codec::write_fixed_string(buf, reportingPbuid, 6);
+        codec::write_fixed_string(buf, submittingPbuid, 6);
+        codec::write_fixed_string(buf, securityId, 8);
+        codec::write_fixed_string(buf, securityIdsource, 4);
         buf.write_u16(ownerType);
-        codec::put_fixed_string(buf, clearingFirm, 2);
+        codec::write_fixed_string(buf, clearingFirm, 2);
         buf.write_i64(transactTime);
-        codec::put_fixed_string(buf, userInfo, 8);
-        codec::put_fixed_string(buf, orderId, 16);
-        codec::put_fixed_string(buf, clOrdId, 10);
-        codec::put_fixed_string(buf, quoteMsgId, 10);
-        codec::put_fixed_string(buf, execId, 16);
-        codec::put_fixed_string(buf, execType, 1);
-        codec::put_fixed_string(buf, ordStatus, 1);
+        codec::write_fixed_string(buf, userInfo, 8);
+        codec::write_fixed_string(buf, orderId, 16);
+        codec::write_fixed_string(buf, clOrdId, 10);
+        codec::write_fixed_string(buf, quoteMsgId, 10);
+        codec::write_fixed_string(buf, execId, 16);
+        codec::write_fixed_string(buf, execType, 1);
+        codec::write_fixed_string(buf, ordStatus, 1);
         buf.write_i64(lastPx);
         buf.write_i64(lastQty);
         buf.write_i64(leavesQty);
         buf.write_i64(cumQty);
-        codec::put_fixed_string(buf, side, 1);
-        codec::put_fixed_string(buf, accountId, 12);
-        codec::put_fixed_string(buf, branchId, 4);
+        codec::write_fixed_string(buf, side, 1);
+        codec::write_fixed_string(buf, accountId, 12);
+        codec::write_fixed_string(buf, branchId, 4);
         applExtend->encode(buf);
     }
     
@@ -3278,28 +3278,28 @@ struct ExecutionReport : public codec::BinaryCodec {
     void decode(ByteBuf& buf) override {
         partitionNo = buf.read_i32();
         reportIndex = buf.read_i64();
-        applId = codec::get_fixed_string(buf, 3);
-        reportingPbuid = codec::get_fixed_string(buf, 6);
-        submittingPbuid = codec::get_fixed_string(buf, 6);
-        securityId = codec::get_fixed_string(buf, 8);
-        securityIdsource = codec::get_fixed_string(buf, 4);
+        applId = codec::read_fixed_string(buf, 3);
+        reportingPbuid = codec::read_fixed_string(buf, 6);
+        submittingPbuid = codec::read_fixed_string(buf, 6);
+        securityId = codec::read_fixed_string(buf, 8);
+        securityIdsource = codec::read_fixed_string(buf, 4);
         ownerType = buf.read_u16();
-        clearingFirm = codec::get_fixed_string(buf, 2);
+        clearingFirm = codec::read_fixed_string(buf, 2);
         transactTime = buf.read_i64();
-        userInfo = codec::get_fixed_string(buf, 8);
-        orderId = codec::get_fixed_string(buf, 16);
-        clOrdId = codec::get_fixed_string(buf, 10);
-        quoteMsgId = codec::get_fixed_string(buf, 10);
-        execId = codec::get_fixed_string(buf, 16);
-        execType = codec::get_fixed_string(buf, 1);
-        ordStatus = codec::get_fixed_string(buf, 1);
+        userInfo = codec::read_fixed_string(buf, 8);
+        orderId = codec::read_fixed_string(buf, 16);
+        clOrdId = codec::read_fixed_string(buf, 10);
+        quoteMsgId = codec::read_fixed_string(buf, 10);
+        execId = codec::read_fixed_string(buf, 16);
+        execType = codec::read_fixed_string(buf, 1);
+        ordStatus = codec::read_fixed_string(buf, 1);
         lastPx = buf.read_i64();
         lastQty = buf.read_i64();
         leavesQty = buf.read_i64();
         cumQty = buf.read_i64();
-        side = codec::get_fixed_string(buf, 1);
-        accountId = codec::get_fixed_string(buf, 12);
-        branchId = codec::get_fixed_string(buf, 4);
+        side = codec::read_fixed_string(buf, 1);
+        accountId = codec::read_fixed_string(buf, 12);
+        branchId = codec::read_fixed_string(buf, 4);
         applExtend = ExecutionReportMessageFactory::getInstance().create(applId);
         applExtend->decode(buf);
     }
@@ -3408,18 +3408,18 @@ struct Extend200415 : public codec::BinaryCodec {
     std::string secondaryOrderId;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, positionEffect, 1);
+        codec::write_fixed_string(buf, positionEffect, 1);
         buf.write_u8(coveredOrUncovered);
-        codec::put_fixed_string(buf, contractAccountCode, 6);
-        codec::put_fixed_string(buf, secondaryOrderId, 16);
+        codec::write_fixed_string(buf, contractAccountCode, 6);
+        codec::write_fixed_string(buf, secondaryOrderId, 16);
     }
     
 
     void decode(ByteBuf& buf) override {
-        positionEffect = codec::get_fixed_string(buf, 1);
+        positionEffect = codec::read_fixed_string(buf, 1);
         coveredOrUncovered = buf.read_u8();
-        contractAccountCode = codec::get_fixed_string(buf, 6);
-        secondaryOrderId = codec::get_fixed_string(buf, 16);
+        contractAccountCode = codec::read_fixed_string(buf, 6);
+        secondaryOrderId = codec::read_fixed_string(buf, 16);
     }
     
 
@@ -3477,35 +3477,35 @@ struct OrderCancelRequest : public codec::BinaryCodec {
     int64_t orderQty;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, applId, 3);
-        codec::put_fixed_string(buf, submittingPbuid, 6);
-        codec::put_fixed_string(buf, securityId, 8);
-        codec::put_fixed_string(buf, securityIdsource, 4);
+        codec::write_fixed_string(buf, applId, 3);
+        codec::write_fixed_string(buf, submittingPbuid, 6);
+        codec::write_fixed_string(buf, securityId, 8);
+        codec::write_fixed_string(buf, securityIdsource, 4);
         buf.write_u16(ownerType);
-        codec::put_fixed_string(buf, clearingFirm, 2);
+        codec::write_fixed_string(buf, clearingFirm, 2);
         buf.write_i64(transactTime);
-        codec::put_fixed_string(buf, userInfo, 8);
-        codec::put_fixed_string(buf, clOrdId, 10);
-        codec::put_fixed_string(buf, origClOrdId, 10);
-        codec::put_fixed_string(buf, side, 1);
-        codec::put_fixed_string(buf, orderId, 16);
+        codec::write_fixed_string(buf, userInfo, 8);
+        codec::write_fixed_string(buf, clOrdId, 10);
+        codec::write_fixed_string(buf, origClOrdId, 10);
+        codec::write_fixed_string(buf, side, 1);
+        codec::write_fixed_string(buf, orderId, 16);
         buf.write_i64(orderQty);
     }
     
 
     void decode(ByteBuf& buf) override {
-        applId = codec::get_fixed_string(buf, 3);
-        submittingPbuid = codec::get_fixed_string(buf, 6);
-        securityId = codec::get_fixed_string(buf, 8);
-        securityIdsource = codec::get_fixed_string(buf, 4);
+        applId = codec::read_fixed_string(buf, 3);
+        submittingPbuid = codec::read_fixed_string(buf, 6);
+        securityId = codec::read_fixed_string(buf, 8);
+        securityIdsource = codec::read_fixed_string(buf, 4);
         ownerType = buf.read_u16();
-        clearingFirm = codec::get_fixed_string(buf, 2);
+        clearingFirm = codec::read_fixed_string(buf, 2);
         transactTime = buf.read_i64();
-        userInfo = codec::get_fixed_string(buf, 8);
-        clOrdId = codec::get_fixed_string(buf, 10);
-        origClOrdId = codec::get_fixed_string(buf, 10);
-        side = codec::get_fixed_string(buf, 1);
-        orderId = codec::get_fixed_string(buf, 16);
+        userInfo = codec::read_fixed_string(buf, 8);
+        clOrdId = codec::read_fixed_string(buf, 10);
+        origClOrdId = codec::read_fixed_string(buf, 10);
+        side = codec::read_fixed_string(buf, 1);
+        orderId = codec::read_fixed_string(buf, 16);
         orderQty = buf.read_i64();
     }
     
@@ -3590,44 +3590,44 @@ struct CancelReject : public codec::BinaryCodec {
     void encode(ByteBuf& buf) const override {
         buf.write_i32(partitionNo);
         buf.write_i64(reportIndex);
-        codec::put_fixed_string(buf, applId, 3);
-        codec::put_fixed_string(buf, reportingPbuid, 6);
-        codec::put_fixed_string(buf, submittingPbuid, 6);
-        codec::put_fixed_string(buf, securityId, 8);
-        codec::put_fixed_string(buf, securityIdsource, 4);
+        codec::write_fixed_string(buf, applId, 3);
+        codec::write_fixed_string(buf, reportingPbuid, 6);
+        codec::write_fixed_string(buf, submittingPbuid, 6);
+        codec::write_fixed_string(buf, securityId, 8);
+        codec::write_fixed_string(buf, securityIdsource, 4);
         buf.write_u16(ownerType);
-        codec::put_fixed_string(buf, clearingFirm, 2);
+        codec::write_fixed_string(buf, clearingFirm, 2);
         buf.write_i64(transactTime);
-        codec::put_fixed_string(buf, userInfo, 8);
-        codec::put_fixed_string(buf, clOrdId, 10);
-        codec::put_fixed_string(buf, origClOrdId, 10);
-        codec::put_fixed_string(buf, side, 1);
-        codec::put_fixed_string(buf, ordStatus, 1);
+        codec::write_fixed_string(buf, userInfo, 8);
+        codec::write_fixed_string(buf, clOrdId, 10);
+        codec::write_fixed_string(buf, origClOrdId, 10);
+        codec::write_fixed_string(buf, side, 1);
+        codec::write_fixed_string(buf, ordStatus, 1);
         buf.write_u16(cxlRejReason);
-        codec::put_fixed_string(buf, rejectText, 16);
-        codec::put_fixed_string(buf, orderId, 16);
+        codec::write_fixed_string(buf, rejectText, 16);
+        codec::write_fixed_string(buf, orderId, 16);
     }
     
 
     void decode(ByteBuf& buf) override {
         partitionNo = buf.read_i32();
         reportIndex = buf.read_i64();
-        applId = codec::get_fixed_string(buf, 3);
-        reportingPbuid = codec::get_fixed_string(buf, 6);
-        submittingPbuid = codec::get_fixed_string(buf, 6);
-        securityId = codec::get_fixed_string(buf, 8);
-        securityIdsource = codec::get_fixed_string(buf, 4);
+        applId = codec::read_fixed_string(buf, 3);
+        reportingPbuid = codec::read_fixed_string(buf, 6);
+        submittingPbuid = codec::read_fixed_string(buf, 6);
+        securityId = codec::read_fixed_string(buf, 8);
+        securityIdsource = codec::read_fixed_string(buf, 4);
         ownerType = buf.read_u16();
-        clearingFirm = codec::get_fixed_string(buf, 2);
+        clearingFirm = codec::read_fixed_string(buf, 2);
         transactTime = buf.read_i64();
-        userInfo = codec::get_fixed_string(buf, 8);
-        clOrdId = codec::get_fixed_string(buf, 10);
-        origClOrdId = codec::get_fixed_string(buf, 10);
-        side = codec::get_fixed_string(buf, 1);
-        ordStatus = codec::get_fixed_string(buf, 1);
+        userInfo = codec::read_fixed_string(buf, 8);
+        clOrdId = codec::read_fixed_string(buf, 10);
+        origClOrdId = codec::read_fixed_string(buf, 10);
+        side = codec::read_fixed_string(buf, 1);
+        ordStatus = codec::read_fixed_string(buf, 1);
         cxlRejReason = buf.read_u16();
-        rejectText = codec::get_fixed_string(buf, 16);
-        orderId = codec::get_fixed_string(buf, 16);
+        rejectText = codec::read_fixed_string(buf, 16);
+        orderId = codec::read_fixed_string(buf, 16);
     }
     
 
@@ -3716,30 +3716,30 @@ struct BusinessReject : public codec::BinaryCodec {
     std::string businessRejectText;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, applId, 3);
+        codec::write_fixed_string(buf, applId, 3);
         buf.write_i64(transactTime);
-        codec::put_fixed_string(buf, submittingPbuid, 6);
-        codec::put_fixed_string(buf, securityId, 8);
-        codec::put_fixed_string(buf, securityIdsource, 4);
+        codec::write_fixed_string(buf, submittingPbuid, 6);
+        codec::write_fixed_string(buf, securityId, 8);
+        codec::write_fixed_string(buf, securityIdsource, 4);
         buf.write_i64(refSeqNum);
         buf.write_u32(refMsgType);
-        codec::put_fixed_string(buf, businessRejectRefId, 10);
+        codec::write_fixed_string(buf, businessRejectRefId, 10);
         buf.write_u16(businessRejectReason);
-        codec::put_fixed_string(buf, businessRejectText, 50);
+        codec::write_fixed_string(buf, businessRejectText, 50);
     }
     
 
     void decode(ByteBuf& buf) override {
-        applId = codec::get_fixed_string(buf, 3);
+        applId = codec::read_fixed_string(buf, 3);
         transactTime = buf.read_i64();
-        submittingPbuid = codec::get_fixed_string(buf, 6);
-        securityId = codec::get_fixed_string(buf, 8);
-        securityIdsource = codec::get_fixed_string(buf, 4);
+        submittingPbuid = codec::read_fixed_string(buf, 6);
+        securityId = codec::read_fixed_string(buf, 8);
+        securityIdsource = codec::read_fixed_string(buf, 4);
         refSeqNum = buf.read_i64();
         refMsgType = buf.read_u32();
-        businessRejectRefId = codec::get_fixed_string(buf, 10);
+        businessRejectRefId = codec::read_fixed_string(buf, 10);
         businessRejectReason = buf.read_u16();
-        businessRejectText = codec::get_fixed_string(buf, 50);
+        businessRejectText = codec::read_fixed_string(buf, 50);
     }
     
 
@@ -3835,12 +3835,12 @@ struct ReportSynchronization : public codec::BinaryCodec {
     std::vector<PartitionReport> partitionReport;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_object_List<uint32_t>(buf,partitionReport);
+        codec::write_object_List<uint32_t>(buf,partitionReport);
     }
     
 
     void decode(ByteBuf& buf) override {
-        partitionReport = codec::get_object_List<uint32_t,PartitionReport>(buf);
+        partitionReport = codec::read_object_List<uint32_t,PartitionReport>(buf);
     }
     
 
@@ -3992,13 +3992,13 @@ struct PlatformInfo : public codec::BinaryCodec {
 
     void encode(ByteBuf& buf) const override {
         buf.write_u16(platformId);
-        codec::put_object_List<uint32_t>(buf,platformPartition);
+        codec::write_object_List<uint32_t>(buf,platformPartition);
     }
     
 
     void decode(ByteBuf& buf) override {
         platformId = buf.read_u16();
-        platformPartition = codec::get_object_List<uint32_t,PlatformPartition>(buf);
+        platformPartition = codec::read_object_List<uint32_t,PlatformPartition>(buf);
     }
     
 
@@ -4037,10 +4037,10 @@ struct TradingSessionStatus : public codec::BinaryCodec {
     int64_t tradSesEndTime;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, marketId, 8);
-        codec::put_fixed_string(buf, marketSegmentId, 8);
-        codec::put_fixed_string(buf, tradingSessionId, 4);
-        codec::put_fixed_string(buf, tradingSessionSubId, 4);
+        codec::write_fixed_string(buf, marketId, 8);
+        codec::write_fixed_string(buf, marketSegmentId, 8);
+        codec::write_fixed_string(buf, tradingSessionId, 4);
+        codec::write_fixed_string(buf, tradingSessionSubId, 4);
         buf.write_u16(tradSesStatus);
         buf.write_i64(tradSesStartTime);
         buf.write_i64(tradSesEndTime);
@@ -4048,10 +4048,10 @@ struct TradingSessionStatus : public codec::BinaryCodec {
     
 
     void decode(ByteBuf& buf) override {
-        marketId = codec::get_fixed_string(buf, 8);
-        marketSegmentId = codec::get_fixed_string(buf, 8);
-        tradingSessionId = codec::get_fixed_string(buf, 4);
-        tradingSessionSubId = codec::get_fixed_string(buf, 4);
+        marketId = codec::read_fixed_string(buf, 8);
+        marketSegmentId = codec::read_fixed_string(buf, 8);
+        tradingSessionId = codec::read_fixed_string(buf, 4);
+        tradingSessionSubId = codec::read_fixed_string(buf, 4);
         tradSesStatus = buf.read_u16();
         tradSesStartTime = buf.read_i64();
         tradSesEndTime = buf.read_i64();

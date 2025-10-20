@@ -25,26 +25,26 @@ struct NewOrder : public codec::BinaryCodec {
     std::string account;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_string<uint32_t>(buf, uniqueOrderId);
-        codec::put_string<uint32_t>(buf, clOrdId);
-        codec::put_string<uint32_t>(buf, securityId);
-        codec::put_fixed_string(buf, side, 1);
+        codec::write_string<uint32_t>(buf, uniqueOrderId);
+        codec::write_string<uint32_t>(buf, clOrdId);
+        codec::write_string<uint32_t>(buf, securityId);
+        codec::write_fixed_string(buf, side, 1);
         buf.write_u64(price);
         buf.write_u64(orderQty);
-        codec::put_fixed_string(buf, ordType, 1);
-        codec::put_string<uint32_t>(buf, account);
+        codec::write_fixed_string(buf, ordType, 1);
+        codec::write_string<uint32_t>(buf, account);
     }
     
 
     void decode(ByteBuf& buf) override {
-        uniqueOrderId = codec::get_string<uint32_t>(buf);
-        clOrdId = codec::get_string<uint32_t>(buf);
-        securityId = codec::get_string<uint32_t>(buf);
-        side = codec::get_fixed_string(buf, 1);
+        uniqueOrderId = codec::read_string<uint32_t>(buf);
+        clOrdId = codec::read_string<uint32_t>(buf);
+        securityId = codec::read_string<uint32_t>(buf);
+        side = codec::read_fixed_string(buf, 1);
         price = buf.read_u64();
         orderQty = buf.read_u64();
-        ordType = codec::get_fixed_string(buf, 1);
-        account = codec::get_string<uint32_t>(buf);
+        ordType = codec::read_fixed_string(buf, 1);
+        account = codec::read_string<uint32_t>(buf);
     }
     
 
@@ -99,22 +99,22 @@ struct OrderConfirm : public codec::BinaryCodec {
     std::string ordCnfmId;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_string<uint32_t>(buf, uniqueOrderId);
-        codec::put_string<uint32_t>(buf, uniqueOrigOrderId);
-        codec::put_string<uint32_t>(buf, clOrdId);
-        codec::put_fixed_string(buf, execType, 1);
+        codec::write_string<uint32_t>(buf, uniqueOrderId);
+        codec::write_string<uint32_t>(buf, uniqueOrigOrderId);
+        codec::write_string<uint32_t>(buf, clOrdId);
+        codec::write_fixed_string(buf, execType, 1);
         buf.write_u32(ordRejReason);
-        codec::put_string<uint32_t>(buf, ordCnfmId);
+        codec::write_string<uint32_t>(buf, ordCnfmId);
     }
     
 
     void decode(ByteBuf& buf) override {
-        uniqueOrderId = codec::get_string<uint32_t>(buf);
-        uniqueOrigOrderId = codec::get_string<uint32_t>(buf);
-        clOrdId = codec::get_string<uint32_t>(buf);
-        execType = codec::get_fixed_string(buf, 1);
+        uniqueOrderId = codec::read_string<uint32_t>(buf);
+        uniqueOrigOrderId = codec::read_string<uint32_t>(buf);
+        clOrdId = codec::read_string<uint32_t>(buf);
+        execType = codec::read_fixed_string(buf, 1);
         ordRejReason = buf.read_u32();
-        ordCnfmId = codec::get_string<uint32_t>(buf);
+        ordCnfmId = codec::read_string<uint32_t>(buf);
     }
     
 
@@ -163,22 +163,22 @@ struct ExecutionReport : public codec::BinaryCodec {
     std::string ordStatus;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_string<uint32_t>(buf, uniqueOrderId);
-        codec::put_string<uint32_t>(buf, clOrdId);
-        codec::put_string<uint32_t>(buf, ordCnfmId);
+        codec::write_string<uint32_t>(buf, uniqueOrderId);
+        codec::write_string<uint32_t>(buf, clOrdId);
+        codec::write_string<uint32_t>(buf, ordCnfmId);
         buf.write_u64(lastPx);
         buf.write_u64(lastQty);
-        codec::put_fixed_string(buf, ordStatus, 1);
+        codec::write_fixed_string(buf, ordStatus, 1);
     }
     
 
     void decode(ByteBuf& buf) override {
-        uniqueOrderId = codec::get_string<uint32_t>(buf);
-        clOrdId = codec::get_string<uint32_t>(buf);
-        ordCnfmId = codec::get_string<uint32_t>(buf);
+        uniqueOrderId = codec::read_string<uint32_t>(buf);
+        clOrdId = codec::read_string<uint32_t>(buf);
+        ordCnfmId = codec::read_string<uint32_t>(buf);
         lastPx = buf.read_u64();
         lastQty = buf.read_u64();
-        ordStatus = codec::get_fixed_string(buf, 1);
+        ordStatus = codec::read_fixed_string(buf, 1);
     }
     
 
@@ -226,20 +226,20 @@ struct OrderCancel : public codec::BinaryCodec {
     std::string securityId;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_string<uint32_t>(buf, uniqueOrderId);
-        codec::put_string<uint32_t>(buf, uniqueOrigOrderId);
-        codec::put_string<uint32_t>(buf, clOrdId);
-        codec::put_string<uint32_t>(buf, origClOrdId);
-        codec::put_string<uint32_t>(buf, securityId);
+        codec::write_string<uint32_t>(buf, uniqueOrderId);
+        codec::write_string<uint32_t>(buf, uniqueOrigOrderId);
+        codec::write_string<uint32_t>(buf, clOrdId);
+        codec::write_string<uint32_t>(buf, origClOrdId);
+        codec::write_string<uint32_t>(buf, securityId);
     }
     
 
     void decode(ByteBuf& buf) override {
-        uniqueOrderId = codec::get_string<uint32_t>(buf);
-        uniqueOrigOrderId = codec::get_string<uint32_t>(buf);
-        clOrdId = codec::get_string<uint32_t>(buf);
-        origClOrdId = codec::get_string<uint32_t>(buf);
-        securityId = codec::get_string<uint32_t>(buf);
+        uniqueOrderId = codec::read_string<uint32_t>(buf);
+        uniqueOrigOrderId = codec::read_string<uint32_t>(buf);
+        clOrdId = codec::read_string<uint32_t>(buf);
+        origClOrdId = codec::read_string<uint32_t>(buf);
+        securityId = codec::read_string<uint32_t>(buf);
     }
     
 
@@ -284,19 +284,19 @@ struct CancelReject : public codec::BinaryCodec {
     uint32_t cxlRejReason;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_string<uint32_t>(buf, uniqueOrderId);
-        codec::put_string<uint32_t>(buf, uniqueOrigOrderId);
-        codec::put_string<uint32_t>(buf, clOrdId);
-        codec::put_string<uint32_t>(buf, origClOrdId);
+        codec::write_string<uint32_t>(buf, uniqueOrderId);
+        codec::write_string<uint32_t>(buf, uniqueOrigOrderId);
+        codec::write_string<uint32_t>(buf, clOrdId);
+        codec::write_string<uint32_t>(buf, origClOrdId);
         buf.write_u32(cxlRejReason);
     }
     
 
     void decode(ByteBuf& buf) override {
-        uniqueOrderId = codec::get_string<uint32_t>(buf);
-        uniqueOrigOrderId = codec::get_string<uint32_t>(buf);
-        clOrdId = codec::get_string<uint32_t>(buf);
-        origClOrdId = codec::get_string<uint32_t>(buf);
+        uniqueOrderId = codec::read_string<uint32_t>(buf);
+        uniqueOrigOrderId = codec::read_string<uint32_t>(buf);
+        clOrdId = codec::read_string<uint32_t>(buf);
+        origClOrdId = codec::read_string<uint32_t>(buf);
         cxlRejReason = buf.read_u32();
     }
     
@@ -340,16 +340,16 @@ struct RiskResult : public codec::BinaryCodec {
     std::string riskReason;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_string<uint32_t>(buf, uniqueOrderId);
+        codec::write_string<uint32_t>(buf, uniqueOrderId);
         buf.write_u8(riskStatus);
-        codec::put_string<uint32_t>(buf, riskReason);
+        codec::write_string<uint32_t>(buf, riskReason);
     }
     
 
     void decode(ByteBuf& buf) override {
-        uniqueOrderId = codec::get_string<uint32_t>(buf);
+        uniqueOrderId = codec::read_string<uint32_t>(buf);
         riskStatus = buf.read_u8();
-        riskReason = codec::get_string<uint32_t>(buf);
+        riskReason = codec::read_string<uint32_t>(buf);
     }
     
 

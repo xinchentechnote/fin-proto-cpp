@@ -53,20 +53,20 @@ struct Logon : public codec::BinaryCodec {
     uint32_t qsize;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, senderCompId, 32);
-        codec::put_fixed_string(buf, targetCompId, 32);
+        codec::write_fixed_string(buf, senderCompId, 32);
+        codec::write_fixed_string(buf, targetCompId, 32);
         buf.write_u16(heartBtInt);
-        codec::put_fixed_string(buf, prtclVersion, 8);
+        codec::write_fixed_string(buf, prtclVersion, 8);
         buf.write_u32(tradeDate);
         buf.write_u32(qsize);
     }
     
 
     void decode(ByteBuf& buf) override {
-        senderCompId = codec::get_fixed_string(buf, 32);
-        targetCompId = codec::get_fixed_string(buf, 32);
+        senderCompId = codec::read_fixed_string(buf, 32);
+        targetCompId = codec::read_fixed_string(buf, 32);
         heartBtInt = buf.read_u16();
-        prtclVersion = codec::get_fixed_string(buf, 8);
+        prtclVersion = codec::read_fixed_string(buf, 8);
         tradeDate = buf.read_u32();
         qsize = buf.read_u32();
     }
@@ -114,13 +114,13 @@ struct Logout : public codec::BinaryCodec {
 
     void encode(ByteBuf& buf) const override {
         buf.write_u32(sessionStatus);
-        codec::put_fixed_string(buf, text, 64);
+        codec::write_fixed_string(buf, text, 64);
     }
     
 
     void decode(ByteBuf& buf) override {
         sessionStatus = buf.read_u32();
-        text = codec::get_fixed_string(buf, 64);
+        text = codec::read_fixed_string(buf, 64);
     }
     
 
@@ -168,41 +168,41 @@ struct NewOrderSingle : public codec::BinaryCodec {
 
     void encode(ByteBuf& buf) const override {
         buf.write_u32(bizId);
-        codec::put_fixed_string(buf, bizPbu, 8);
-        codec::put_fixed_string(buf, clOrdId, 10);
-        codec::put_fixed_string(buf, securityId, 12);
-        codec::put_fixed_string(buf, account, 13);
+        codec::write_fixed_string(buf, bizPbu, 8);
+        codec::write_fixed_string(buf, clOrdId, 10);
+        codec::write_fixed_string(buf, securityId, 12);
+        codec::write_fixed_string(buf, account, 13);
         buf.write_u8(ownerType);
-        codec::put_fixed_string(buf, side, 1);
+        codec::write_fixed_string(buf, side, 1);
         buf.write_i64(price);
         buf.write_i64(orderQty);
-        codec::put_fixed_string(buf, ordType, 1);
-        codec::put_fixed_string(buf, timeInForce, 1);
+        codec::write_fixed_string(buf, ordType, 1);
+        codec::write_fixed_string(buf, timeInForce, 1);
         buf.write_u64(transactTime);
-        codec::put_fixed_string(buf, creditTag, 2);
-        codec::put_fixed_string(buf, clearingFirm, 8);
-        codec::put_fixed_string(buf, branchId, 8);
-        codec::put_fixed_string(buf, userInfo, 32);
+        codec::write_fixed_string(buf, creditTag, 2);
+        codec::write_fixed_string(buf, clearingFirm, 8);
+        codec::write_fixed_string(buf, branchId, 8);
+        codec::write_fixed_string(buf, userInfo, 32);
     }
     
 
     void decode(ByteBuf& buf) override {
         bizId = buf.read_u32();
-        bizPbu = codec::get_fixed_string(buf, 8);
-        clOrdId = codec::get_fixed_string(buf, 10);
-        securityId = codec::get_fixed_string(buf, 12);
-        account = codec::get_fixed_string(buf, 13);
+        bizPbu = codec::read_fixed_string(buf, 8);
+        clOrdId = codec::read_fixed_string(buf, 10);
+        securityId = codec::read_fixed_string(buf, 12);
+        account = codec::read_fixed_string(buf, 13);
         ownerType = buf.read_u8();
-        side = codec::get_fixed_string(buf, 1);
+        side = codec::read_fixed_string(buf, 1);
         price = buf.read_i64();
         orderQty = buf.read_i64();
-        ordType = codec::get_fixed_string(buf, 1);
-        timeInForce = codec::get_fixed_string(buf, 1);
+        ordType = codec::read_fixed_string(buf, 1);
+        timeInForce = codec::read_fixed_string(buf, 1);
         transactTime = buf.read_u64();
-        creditTag = codec::get_fixed_string(buf, 2);
-        clearingFirm = codec::get_fixed_string(buf, 8);
-        branchId = codec::get_fixed_string(buf, 8);
-        userInfo = codec::get_fixed_string(buf, 32);
+        creditTag = codec::read_fixed_string(buf, 2);
+        clearingFirm = codec::read_fixed_string(buf, 8);
+        branchId = codec::read_fixed_string(buf, 8);
+        userInfo = codec::read_fixed_string(buf, 32);
     }
     
 
@@ -287,31 +287,31 @@ struct OrderCancel : public codec::BinaryCodec {
 
     void encode(ByteBuf& buf) const override {
         buf.write_u32(bizId);
-        codec::put_fixed_string(buf, bizPbu, 8);
-        codec::put_fixed_string(buf, clOrdId, 10);
-        codec::put_fixed_string(buf, securityId, 12);
-        codec::put_fixed_string(buf, account, 13);
+        codec::write_fixed_string(buf, bizPbu, 8);
+        codec::write_fixed_string(buf, clOrdId, 10);
+        codec::write_fixed_string(buf, securityId, 12);
+        codec::write_fixed_string(buf, account, 13);
         buf.write_u8(ownerType);
-        codec::put_fixed_string(buf, side, 1);
-        codec::put_fixed_string(buf, origClOrdId, 10);
+        codec::write_fixed_string(buf, side, 1);
+        codec::write_fixed_string(buf, origClOrdId, 10);
         buf.write_u64(transactTime);
-        codec::put_fixed_string(buf, branchId, 8);
-        codec::put_fixed_string(buf, userInfo, 32);
+        codec::write_fixed_string(buf, branchId, 8);
+        codec::write_fixed_string(buf, userInfo, 32);
     }
     
 
     void decode(ByteBuf& buf) override {
         bizId = buf.read_u32();
-        bizPbu = codec::get_fixed_string(buf, 8);
-        clOrdId = codec::get_fixed_string(buf, 10);
-        securityId = codec::get_fixed_string(buf, 12);
-        account = codec::get_fixed_string(buf, 13);
+        bizPbu = codec::read_fixed_string(buf, 8);
+        clOrdId = codec::read_fixed_string(buf, 10);
+        securityId = codec::read_fixed_string(buf, 12);
+        account = codec::read_fixed_string(buf, 13);
         ownerType = buf.read_u8();
-        side = codec::get_fixed_string(buf, 1);
-        origClOrdId = codec::get_fixed_string(buf, 10);
+        side = codec::read_fixed_string(buf, 1);
+        origClOrdId = codec::read_fixed_string(buf, 10);
         transactTime = buf.read_u64();
-        branchId = codec::get_fixed_string(buf, 8);
-        userInfo = codec::get_fixed_string(buf, 32);
+        branchId = codec::read_fixed_string(buf, 8);
+        userInfo = codec::read_fixed_string(buf, 32);
     }
     
 
@@ -397,66 +397,66 @@ struct Confirm : public codec::BinaryCodec {
     std::string userInfo;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, pbu, 8);
+        codec::write_fixed_string(buf, pbu, 8);
         buf.write_u32(setId);
         buf.write_u64(reportIndex);
         buf.write_u32(bizId);
-        codec::put_fixed_string(buf, execType, 1);
-        codec::put_fixed_string(buf, bizPbu, 8);
-        codec::put_fixed_string(buf, clOrdId, 10);
-        codec::put_fixed_string(buf, securityId, 12);
-        codec::put_fixed_string(buf, account, 13);
+        codec::write_fixed_string(buf, execType, 1);
+        codec::write_fixed_string(buf, bizPbu, 8);
+        codec::write_fixed_string(buf, clOrdId, 10);
+        codec::write_fixed_string(buf, securityId, 12);
+        codec::write_fixed_string(buf, account, 13);
         buf.write_u8(ownerType);
-        codec::put_fixed_string(buf, side, 1);
+        codec::write_fixed_string(buf, side, 1);
         buf.write_i64(price);
         buf.write_i64(orderQty);
         buf.write_i64(leavesQty);
         buf.write_i64(cxlQty);
-        codec::put_fixed_string(buf, ordType, 1);
-        codec::put_fixed_string(buf, timeInForce, 1);
-        codec::put_fixed_string(buf, ordStatus, 1);
-        codec::put_fixed_string(buf, creditTag, 2);
-        codec::put_fixed_string(buf, origClOrdId, 10);
-        codec::put_fixed_string(buf, clearingFirm, 8);
-        codec::put_fixed_string(buf, branchId, 8);
+        codec::write_fixed_string(buf, ordType, 1);
+        codec::write_fixed_string(buf, timeInForce, 1);
+        codec::write_fixed_string(buf, ordStatus, 1);
+        codec::write_fixed_string(buf, creditTag, 2);
+        codec::write_fixed_string(buf, origClOrdId, 10);
+        codec::write_fixed_string(buf, clearingFirm, 8);
+        codec::write_fixed_string(buf, branchId, 8);
         buf.write_u32(ordRejReason);
-        codec::put_fixed_string(buf, ordCnfmId, 16);
-        codec::put_fixed_string(buf, origOrdCnfmId, 16);
+        codec::write_fixed_string(buf, ordCnfmId, 16);
+        codec::write_fixed_string(buf, origOrdCnfmId, 16);
         buf.write_u32(tradeDate);
         buf.write_u64(transactTime);
-        codec::put_fixed_string(buf, userInfo, 32);
+        codec::write_fixed_string(buf, userInfo, 32);
     }
     
 
     void decode(ByteBuf& buf) override {
-        pbu = codec::get_fixed_string(buf, 8);
+        pbu = codec::read_fixed_string(buf, 8);
         setId = buf.read_u32();
         reportIndex = buf.read_u64();
         bizId = buf.read_u32();
-        execType = codec::get_fixed_string(buf, 1);
-        bizPbu = codec::get_fixed_string(buf, 8);
-        clOrdId = codec::get_fixed_string(buf, 10);
-        securityId = codec::get_fixed_string(buf, 12);
-        account = codec::get_fixed_string(buf, 13);
+        execType = codec::read_fixed_string(buf, 1);
+        bizPbu = codec::read_fixed_string(buf, 8);
+        clOrdId = codec::read_fixed_string(buf, 10);
+        securityId = codec::read_fixed_string(buf, 12);
+        account = codec::read_fixed_string(buf, 13);
         ownerType = buf.read_u8();
-        side = codec::get_fixed_string(buf, 1);
+        side = codec::read_fixed_string(buf, 1);
         price = buf.read_i64();
         orderQty = buf.read_i64();
         leavesQty = buf.read_i64();
         cxlQty = buf.read_i64();
-        ordType = codec::get_fixed_string(buf, 1);
-        timeInForce = codec::get_fixed_string(buf, 1);
-        ordStatus = codec::get_fixed_string(buf, 1);
-        creditTag = codec::get_fixed_string(buf, 2);
-        origClOrdId = codec::get_fixed_string(buf, 10);
-        clearingFirm = codec::get_fixed_string(buf, 8);
-        branchId = codec::get_fixed_string(buf, 8);
+        ordType = codec::read_fixed_string(buf, 1);
+        timeInForce = codec::read_fixed_string(buf, 1);
+        ordStatus = codec::read_fixed_string(buf, 1);
+        creditTag = codec::read_fixed_string(buf, 2);
+        origClOrdId = codec::read_fixed_string(buf, 10);
+        clearingFirm = codec::read_fixed_string(buf, 8);
+        branchId = codec::read_fixed_string(buf, 8);
         ordRejReason = buf.read_u32();
-        ordCnfmId = codec::get_fixed_string(buf, 16);
-        origOrdCnfmId = codec::get_fixed_string(buf, 16);
+        ordCnfmId = codec::read_fixed_string(buf, 16);
+        origOrdCnfmId = codec::read_fixed_string(buf, 16);
         tradeDate = buf.read_u32();
         transactTime = buf.read_u64();
-        userInfo = codec::get_fixed_string(buf, 32);
+        userInfo = codec::read_fixed_string(buf, 32);
     }
     
 
@@ -578,36 +578,36 @@ struct CancelReject : public codec::BinaryCodec {
     std::string userInfo;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, pbu, 8);
+        codec::write_fixed_string(buf, pbu, 8);
         buf.write_u32(setId);
         buf.write_u64(reportIndex);
         buf.write_u32(bizId);
-        codec::put_fixed_string(buf, bizPbu, 8);
-        codec::put_fixed_string(buf, clOrdId, 10);
-        codec::put_fixed_string(buf, securityId, 12);
-        codec::put_fixed_string(buf, origClOrdId, 10);
-        codec::put_fixed_string(buf, branchId, 8);
+        codec::write_fixed_string(buf, bizPbu, 8);
+        codec::write_fixed_string(buf, clOrdId, 10);
+        codec::write_fixed_string(buf, securityId, 12);
+        codec::write_fixed_string(buf, origClOrdId, 10);
+        codec::write_fixed_string(buf, branchId, 8);
         buf.write_u32(cxlRejReason);
         buf.write_u32(tradeDate);
         buf.write_u64(transactTime);
-        codec::put_fixed_string(buf, userInfo, 32);
+        codec::write_fixed_string(buf, userInfo, 32);
     }
     
 
     void decode(ByteBuf& buf) override {
-        pbu = codec::get_fixed_string(buf, 8);
+        pbu = codec::read_fixed_string(buf, 8);
         setId = buf.read_u32();
         reportIndex = buf.read_u64();
         bizId = buf.read_u32();
-        bizPbu = codec::get_fixed_string(buf, 8);
-        clOrdId = codec::get_fixed_string(buf, 10);
-        securityId = codec::get_fixed_string(buf, 12);
-        origClOrdId = codec::get_fixed_string(buf, 10);
-        branchId = codec::get_fixed_string(buf, 8);
+        bizPbu = codec::read_fixed_string(buf, 8);
+        clOrdId = codec::read_fixed_string(buf, 10);
+        securityId = codec::read_fixed_string(buf, 12);
+        origClOrdId = codec::read_fixed_string(buf, 10);
+        branchId = codec::read_fixed_string(buf, 8);
         cxlRejReason = buf.read_u32();
         tradeDate = buf.read_u32();
         transactTime = buf.read_u64();
-        userInfo = codec::get_fixed_string(buf, 32);
+        userInfo = codec::read_fixed_string(buf, 32);
     }
     
 
@@ -697,62 +697,62 @@ struct Report : public codec::BinaryCodec {
     std::string userInfo;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, pbu, 8);
+        codec::write_fixed_string(buf, pbu, 8);
         buf.write_u32(setId);
         buf.write_u64(reportIndex);
         buf.write_u32(bizId);
-        codec::put_fixed_string(buf, execType, 1);
-        codec::put_fixed_string(buf, bizPbu, 8);
-        codec::put_fixed_string(buf, clOrdId, 10);
-        codec::put_fixed_string(buf, securityId, 12);
-        codec::put_fixed_string(buf, account, 13);
+        codec::write_fixed_string(buf, execType, 1);
+        codec::write_fixed_string(buf, bizPbu, 8);
+        codec::write_fixed_string(buf, clOrdId, 10);
+        codec::write_fixed_string(buf, securityId, 12);
+        codec::write_fixed_string(buf, account, 13);
         buf.write_u8(ownerType);
         buf.write_u64(orderEntryTime);
         buf.write_i64(lastPx);
         buf.write_i64(lastQty);
         buf.write_i64(grossTradeAmt);
-        codec::put_fixed_string(buf, side, 1);
+        codec::write_fixed_string(buf, side, 1);
         buf.write_i64(orderQty);
         buf.write_i64(leavesQty);
-        codec::put_fixed_string(buf, ordStatus, 1);
-        codec::put_fixed_string(buf, creditTag, 2);
-        codec::put_fixed_string(buf, clearingFirm, 8);
-        codec::put_fixed_string(buf, branchId, 8);
-        codec::put_fixed_string(buf, trdCnfmId, 16);
-        codec::put_fixed_string(buf, ordCnfmId, 16);
+        codec::write_fixed_string(buf, ordStatus, 1);
+        codec::write_fixed_string(buf, creditTag, 2);
+        codec::write_fixed_string(buf, clearingFirm, 8);
+        codec::write_fixed_string(buf, branchId, 8);
+        codec::write_fixed_string(buf, trdCnfmId, 16);
+        codec::write_fixed_string(buf, ordCnfmId, 16);
         buf.write_u32(tradeDate);
         buf.write_u64(transactTime);
-        codec::put_fixed_string(buf, userInfo, 32);
+        codec::write_fixed_string(buf, userInfo, 32);
     }
     
 
     void decode(ByteBuf& buf) override {
-        pbu = codec::get_fixed_string(buf, 8);
+        pbu = codec::read_fixed_string(buf, 8);
         setId = buf.read_u32();
         reportIndex = buf.read_u64();
         bizId = buf.read_u32();
-        execType = codec::get_fixed_string(buf, 1);
-        bizPbu = codec::get_fixed_string(buf, 8);
-        clOrdId = codec::get_fixed_string(buf, 10);
-        securityId = codec::get_fixed_string(buf, 12);
-        account = codec::get_fixed_string(buf, 13);
+        execType = codec::read_fixed_string(buf, 1);
+        bizPbu = codec::read_fixed_string(buf, 8);
+        clOrdId = codec::read_fixed_string(buf, 10);
+        securityId = codec::read_fixed_string(buf, 12);
+        account = codec::read_fixed_string(buf, 13);
         ownerType = buf.read_u8();
         orderEntryTime = buf.read_u64();
         lastPx = buf.read_i64();
         lastQty = buf.read_i64();
         grossTradeAmt = buf.read_i64();
-        side = codec::get_fixed_string(buf, 1);
+        side = codec::read_fixed_string(buf, 1);
         orderQty = buf.read_i64();
         leavesQty = buf.read_i64();
-        ordStatus = codec::get_fixed_string(buf, 1);
-        creditTag = codec::get_fixed_string(buf, 2);
-        clearingFirm = codec::get_fixed_string(buf, 8);
-        branchId = codec::get_fixed_string(buf, 8);
-        trdCnfmId = codec::get_fixed_string(buf, 16);
-        ordCnfmId = codec::get_fixed_string(buf, 16);
+        ordStatus = codec::read_fixed_string(buf, 1);
+        creditTag = codec::read_fixed_string(buf, 2);
+        clearingFirm = codec::read_fixed_string(buf, 8);
+        branchId = codec::read_fixed_string(buf, 8);
+        trdCnfmId = codec::read_fixed_string(buf, 16);
+        ordCnfmId = codec::read_fixed_string(buf, 16);
         tradeDate = buf.read_u32();
         transactTime = buf.read_u64();
-        userInfo = codec::get_fixed_string(buf, 32);
+        userInfo = codec::read_fixed_string(buf, 32);
     }
     
 
@@ -864,25 +864,25 @@ struct OrderReject : public codec::BinaryCodec {
 
     void encode(ByteBuf& buf) const override {
         buf.write_u32(bizId);
-        codec::put_fixed_string(buf, bizPbu, 8);
-        codec::put_fixed_string(buf, clOrdId, 10);
-        codec::put_fixed_string(buf, securityId, 12);
+        codec::write_fixed_string(buf, bizPbu, 8);
+        codec::write_fixed_string(buf, clOrdId, 10);
+        codec::write_fixed_string(buf, securityId, 12);
         buf.write_u32(ordRejReason);
         buf.write_u32(tradeDate);
         buf.write_u64(transactTime);
-        codec::put_fixed_string(buf, userInfo, 32);
+        codec::write_fixed_string(buf, userInfo, 32);
     }
     
 
     void decode(ByteBuf& buf) override {
         bizId = buf.read_u32();
-        bizPbu = codec::get_fixed_string(buf, 8);
-        clOrdId = codec::get_fixed_string(buf, 10);
-        securityId = codec::get_fixed_string(buf, 12);
+        bizPbu = codec::read_fixed_string(buf, 8);
+        clOrdId = codec::read_fixed_string(buf, 10);
+        securityId = codec::read_fixed_string(buf, 12);
         ordRejReason = buf.read_u32();
         tradeDate = buf.read_u32();
         transactTime = buf.read_u64();
-        userInfo = codec::get_fixed_string(buf, 32);
+        userInfo = codec::read_fixed_string(buf, 32);
     }
     
 
@@ -975,15 +975,15 @@ struct ExecRptInfo : public codec::BinaryCodec {
 
     void encode(ByteBuf& buf) const override {
         buf.write_u16(platformId);
-        codec::put_fixed_string_list<uint16_t>(buf, pbu, 8);
-        codec::put_basic_type<uint16_t,uint32_t>(buf,setId);
+        codec::write_fixed_string_list<uint16_t>(buf, pbu, 8);
+        codec::write_basic_type<uint16_t,uint32_t>(buf,setId);
     }
     
 
     void decode(ByteBuf& buf) override {
         platformId = buf.read_u16();
-        pbu = codec::get_fixed_string_list<uint16_t>(buf, 8);
-        setId = codec::get_basic_type<uint16_t,uint32_t>(buf);
+        pbu = codec::read_fixed_string_list<uint16_t>(buf, 8);
+        setId = codec::read_basic_type<uint16_t,uint32_t>(buf);
     }
     
 
@@ -1020,14 +1020,14 @@ struct SubExecRptSync : public codec::BinaryCodec {
     uint64_t beginReportIndex;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, pbu, 8);
+        codec::write_fixed_string(buf, pbu, 8);
         buf.write_u32(setId);
         buf.write_u64(beginReportIndex);
     }
     
 
     void decode(ByteBuf& buf) override {
-        pbu = codec::get_fixed_string(buf, 8);
+        pbu = codec::read_fixed_string(buf, 8);
         setId = buf.read_u32();
         beginReportIndex = buf.read_u64();
     }
@@ -1064,12 +1064,12 @@ struct ExecRptSync : public codec::BinaryCodec {
     std::vector<SubExecRptSync> subExecRptSync;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_object_List<uint16_t>(buf,subExecRptSync);
+        codec::write_object_List<uint16_t>(buf,subExecRptSync);
     }
     
 
     void decode(ByteBuf& buf) override {
-        subExecRptSync = codec::get_object_List<uint16_t,SubExecRptSync>(buf);
+        subExecRptSync = codec::read_object_List<uint16_t,SubExecRptSync>(buf);
     }
     
 
@@ -1103,22 +1103,22 @@ struct SubExecRptSyncRsp : public codec::BinaryCodec {
     std::string text;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, pbu, 8);
+        codec::write_fixed_string(buf, pbu, 8);
         buf.write_u32(setId);
         buf.write_u64(beginReportIndex);
         buf.write_u64(endReportIndex);
         buf.write_u32(rejReason);
-        codec::put_fixed_string(buf, text, 64);
+        codec::write_fixed_string(buf, text, 64);
     }
     
 
     void decode(ByteBuf& buf) override {
-        pbu = codec::get_fixed_string(buf, 8);
+        pbu = codec::read_fixed_string(buf, 8);
         setId = buf.read_u32();
         beginReportIndex = buf.read_u64();
         endReportIndex = buf.read_u64();
         rejReason = buf.read_u32();
-        text = codec::get_fixed_string(buf, 64);
+        text = codec::read_fixed_string(buf, 64);
     }
     
 
@@ -1162,12 +1162,12 @@ struct ExecRptSyncRsp : public codec::BinaryCodec {
     std::vector<SubExecRptSyncRsp> subExecRptSyncRsp;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_object_List<uint16_t>(buf,subExecRptSyncRsp);
+        codec::write_object_List<uint16_t>(buf,subExecRptSyncRsp);
     }
     
 
     void decode(ByteBuf& buf) override {
-        subExecRptSyncRsp = codec::get_object_List<uint16_t,SubExecRptSyncRsp>(buf);
+        subExecRptSyncRsp = codec::read_object_List<uint16_t,SubExecRptSyncRsp>(buf);
     }
     
 
@@ -1198,14 +1198,14 @@ struct ExecRptEndOfStream : public codec::BinaryCodec {
     uint64_t endReportIndex;
 
     void encode(ByteBuf& buf) const override {
-        codec::put_fixed_string(buf, pbu, 8);
+        codec::write_fixed_string(buf, pbu, 8);
         buf.write_u32(setId);
         buf.write_u64(endReportIndex);
     }
     
 
     void decode(ByteBuf& buf) override {
-        pbu = codec::get_fixed_string(buf, 8);
+        pbu = codec::read_fixed_string(buf, 8);
         setId = buf.read_u32();
         endReportIndex = buf.read_u64();
     }

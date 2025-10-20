@@ -29,14 +29,14 @@ struct BinaryCodec {
 // put/get dynamic string
 // ----------------------------
 template <typename T>
-void put_string_le(ByteBuf& buf, const std::string& s) {
+void write_string_le(ByteBuf& buf, const std::string& s) {
   static_assert(std::is_unsigned<T>::value, "T must be unsigned integral");
   buf.write_le<T>(static_cast<T>(s.size()));
   buf.write_bytes(reinterpret_cast<const uint8_t*>(s.data()), s.size());
 }
 
 template <typename T>
-std::string get_string_le(ByteBuf& buf) {
+std::string read_string_le(ByteBuf& buf) {
   static_assert(std::is_unsigned<T>::value, "T must be unsigned integral");
   T length = buf.read_le<T>();
   std::vector<uint8_t> bytes(length);
@@ -45,14 +45,14 @@ std::string get_string_le(ByteBuf& buf) {
 }
 
 template <typename T>
-void put_string(ByteBuf& buf, const std::string& s) {
+void write_string(ByteBuf& buf, const std::string& s) {
   static_assert(std::is_unsigned<T>::value, "T must be unsigned integral");
   buf.write<T>(static_cast<T>(s.size()));
   buf.write_bytes(reinterpret_cast<const uint8_t*>(s.data()), s.size());
 }
 
 template <typename T>
-std::string get_string(ByteBuf& buf) {
+std::string read_string(ByteBuf& buf) {
   static_assert(std::is_unsigned<T>::value, "T must be unsigned integral");
   T length = buf.read<T>();
   std::vector<uint8_t> bytes(length);
@@ -64,7 +64,7 @@ std::string get_string(ByteBuf& buf) {
 // put/get Fixed-length string
 // ----------------------------
 
-inline void put_fixed_string(ByteBuf& buf, const std::string& s, size_t fixedLen, char padding,
+inline void write_fixed_string(ByteBuf& buf, const std::string& s, size_t fixedLen, char padding,
                              bool fromLeft) {
   if (s.size() >= fixedLen) {
     buf.write_bytes(reinterpret_cast<const uint8_t*>(s.data()), fixedLen);
@@ -80,11 +80,11 @@ inline void put_fixed_string(ByteBuf& buf, const std::string& s, size_t fixedLen
   }
 }
 
-inline void put_fixed_string(ByteBuf& buf, const std::string& s, size_t fixedLen) {
-  put_fixed_string(buf, s, fixedLen, ' ', false);
+inline void write_fixed_string(ByteBuf& buf, const std::string& s, size_t fixedLen) {
+  write_fixed_string(buf, s, fixedLen, ' ', false);
 }
 
-inline std::string get_fixed_string(ByteBuf& buf, size_t fixedLen, char trimPadding,
+inline std::string read_fixed_string(ByteBuf& buf, size_t fixedLen, char trimPadding,
                                     bool fromLeft) {
   std::vector<uint8_t> bytes(fixedLen);
   buf.read_bytes(bytes.data(), fixedLen);
@@ -107,15 +107,15 @@ inline std::string get_fixed_string(ByteBuf& buf, size_t fixedLen, char trimPadd
   return s;
 }
 
-inline std::string get_fixed_string(ByteBuf& buf, size_t fixedLen) {
-  return get_fixed_string(buf, fixedLen, ' ', false);
+inline std::string read_fixed_string(ByteBuf& buf, size_t fixedLen) {
+  return read_fixed_string(buf, fixedLen, ' ', false);
 }
 
 // ----------------------------
 // String List
 // ----------------------------
 template <typename T, typename K>
-void put_string_list_le(ByteBuf& buf, const std::vector<std::string>& list) {
+void write_string_list_le(ByteBuf& buf, const std::vector<std::string>& list) {
   static_assert(std::is_unsigned<T>::value && std::is_unsigned<K>::value,
                 "T and K must be unsigned");
   buf.write_le<T>(static_cast<T>(list.size()));
@@ -126,7 +126,7 @@ void put_string_list_le(ByteBuf& buf, const std::vector<std::string>& list) {
 }
 
 template <typename T, typename K>
-std::vector<std::string> get_string_list_le(ByteBuf& buf) {
+std::vector<std::string> read_string_list_le(ByteBuf& buf) {
   static_assert(std::is_unsigned<T>::value && std::is_unsigned<K>::value,
                 "T and K must be unsigned");
   T count = buf.read_le<T>();
@@ -143,7 +143,7 @@ std::vector<std::string> get_string_list_le(ByteBuf& buf) {
 }
 
 template <typename T, typename K>
-void put_string_list(ByteBuf& buf, const std::vector<std::string>& list) {
+void write_string_list(ByteBuf& buf, const std::vector<std::string>& list) {
   static_assert(std::is_unsigned<T>::value && std::is_unsigned<K>::value,
                 "T and K must be unsigned");
   buf.write<T>(static_cast<T>(list.size()));
@@ -154,7 +154,7 @@ void put_string_list(ByteBuf& buf, const std::vector<std::string>& list) {
 }
 
 template <typename T, typename K>
-std::vector<std::string> get_string_list(ByteBuf& buf) {
+std::vector<std::string> read_string_list(ByteBuf& buf) {
   static_assert(std::is_unsigned<T>::value && std::is_unsigned<K>::value,
                 "T and K must be unsigned");
   T count = buf.read<T>();
@@ -175,76 +175,76 @@ std::vector<std::string> get_string_list(ByteBuf& buf) {
 // ----------------------------
 
 template <typename T>
-void put_fixed_string_list_le(ByteBuf& buf, const std::vector<std::string>& list, size_t fixedLen,
+void write_fixed_string_list_le(ByteBuf& buf, const std::vector<std::string>& list, size_t fixedLen,
                               char padding, bool fromLeft) {
   static_assert(std::is_unsigned<T>::value, "T must be unsigned");
   buf.write_le<T>(static_cast<T>(list.size()));
   for (const auto& s : list) {
-    put_fixed_string(buf, s, fixedLen, padding, fromLeft);
+    write_fixed_string(buf, s, fixedLen, padding, fromLeft);
   }
 }
 
 template <typename T>
-void put_fixed_string_list_le(ByteBuf& buf, const std::vector<std::string>& list, size_t fixedLen) {
-  put_fixed_string_list_le<T>(buf, list, fixedLen, ' ', false);
+void write_fixed_string_list_le(ByteBuf& buf, const std::vector<std::string>& list, size_t fixedLen) {
+  write_fixed_string_list_le<T>(buf, list, fixedLen, ' ', false);
 }
 
 template <typename T>
-std::vector<std::string> get_fixed_string_list_le(ByteBuf& buf, size_t fixedLen, char trimPadding,
+std::vector<std::string> read_fixed_string_list_le(ByteBuf& buf, size_t fixedLen, char trimPadding,
                                                   bool fromLeft) {
   static_assert(std::is_unsigned<T>::value, "T must be unsigned");
   T count = buf.read_le<T>();
   std::vector<std::string> result;
   result.reserve(count);
   for (size_t i = 0; i < count; ++i) {
-    result.push_back(get_fixed_string(buf, fixedLen, trimPadding, fromLeft));
+    result.push_back(read_fixed_string(buf, fixedLen, trimPadding, fromLeft));
   }
   return result;
 }
 
 template <typename T>
-std::vector<std::string> get_fixed_string_list_le(ByteBuf& buf, size_t fixedLen) {
-  return get_fixed_string_list_le<T>(buf, fixedLen, ' ', false);
+std::vector<std::string> read_fixed_string_list_le(ByteBuf& buf, size_t fixedLen) {
+  return read_fixed_string_list_le<T>(buf, fixedLen, ' ', false);
 }
 
 template <typename T>
-void put_fixed_string_list(ByteBuf& buf, const std::vector<std::string>& list, size_t fixedLen,
+void write_fixed_string_list(ByteBuf& buf, const std::vector<std::string>& list, size_t fixedLen,
                            char padding, bool fromLeft) {
   static_assert(std::is_unsigned<T>::value, "T must be unsigned");
   buf.write<T>(static_cast<T>(list.size()));
   for (const auto& s : list) {
-    put_fixed_string(buf, s, fixedLen, padding, fromLeft);
+    write_fixed_string(buf, s, fixedLen, padding, fromLeft);
   }
 }
 
 template <typename T>
-void put_fixed_string_list(ByteBuf& buf, const std::vector<std::string>& list, size_t fixedLen) {
-  put_fixed_string_list<T>(buf, list, fixedLen, ' ', false);
+void write_fixed_string_list(ByteBuf& buf, const std::vector<std::string>& list, size_t fixedLen) {
+  write_fixed_string_list<T>(buf, list, fixedLen, ' ', false);
 }
 
 template <typename T>
-std::vector<std::string> get_fixed_string_list(ByteBuf& buf, size_t fixedLen, char trimPadding,
+std::vector<std::string> read_fixed_string_list(ByteBuf& buf, size_t fixedLen, char trimPadding,
                                                bool fromLeft) {
   static_assert(std::is_unsigned<T>::value, "T must be unsigned");
   T count = buf.read<T>();
   std::vector<std::string> result;
   result.reserve(count);
   for (size_t i = 0; i < count; ++i) {
-    result.push_back(get_fixed_string(buf, fixedLen, trimPadding, fromLeft));
+    result.push_back(read_fixed_string(buf, fixedLen, trimPadding, fromLeft));
   }
   return result;
 }
 
 template <typename T>
-std::vector<std::string> get_fixed_string_list(ByteBuf& buf, size_t fixedLen) {
-  return get_fixed_string_list<T>(buf, fixedLen, ' ', false);
+std::vector<std::string> read_fixed_string_list(ByteBuf& buf, size_t fixedLen) {
+  return read_fixed_string_list<T>(buf, fixedLen, ' ', false);
 }
 
 // ----------------------------
 // basic type List
 // ----------------------------
 template <typename T, typename K>
-void put_basic_type_le(ByteBuf& buf, const std::vector<K>& list) {
+void write_basic_type_le(ByteBuf& buf, const std::vector<K>& list) {
   static_assert(std::is_unsigned<T>::value, "T must be unsigned");
   buf.write_le<T>(static_cast<T>(list.size()));
   for (const auto& v : list) {
@@ -253,7 +253,7 @@ void put_basic_type_le(ByteBuf& buf, const std::vector<K>& list) {
 }
 
 template <typename T, typename K>
-std::vector<K> get_basic_type_le(ByteBuf& buf) {
+std::vector<K> read_basic_type_le(ByteBuf& buf) {
   static_assert(std::is_unsigned<T>::value, "T must be unsigned");
   T count = buf.read_le<T>();
   std::vector<K> result;
@@ -265,7 +265,7 @@ std::vector<K> get_basic_type_le(ByteBuf& buf) {
 }
 
 template <typename T, typename K>
-void put_basic_type(ByteBuf& buf, const std::vector<K>& list) {
+void write_basic_type(ByteBuf& buf, const std::vector<K>& list) {
   static_assert(std::is_unsigned<T>::value, "T must be unsigned");
   buf.write<T>(static_cast<T>(list.size()));
   for (const auto& v : list) {
@@ -274,7 +274,7 @@ void put_basic_type(ByteBuf& buf, const std::vector<K>& list) {
 }
 
 template <typename T, typename K>
-std::vector<K> get_basic_type(ByteBuf& buf) {
+std::vector<K> read_basic_type(ByteBuf& buf) {
   static_assert(std::is_unsigned<T>::value, "T must be unsigned");
   T count = buf.read<T>();
   std::vector<K> result;
@@ -311,7 +311,7 @@ std::string join_vector(const std::vector<T>& vec, const std::string& sep = ", "
 // object List
 // ----------------------------
 template <typename T, typename K>
-void put_object_List(ByteBuf& buf, const std::vector<K>& list) {
+void write_object_List(ByteBuf& buf, const std::vector<K>& list) {
   static_assert(std::is_unsigned<T>::value, "T must be unsigned");
   buf.write<T>(static_cast<T>(list.size()));
   for (const auto& obj : list) {
@@ -320,7 +320,7 @@ void put_object_List(ByteBuf& buf, const std::vector<K>& list) {
 }
 
 template <typename T, typename K>
-std::vector<K> get_object_List(ByteBuf& buf) {
+std::vector<K> read_object_List(ByteBuf& buf) {
   static_assert(std::is_unsigned<T>::value, "T must be unsigned");
   T count = buf.read<T>();
   std::vector<K> result;
@@ -334,7 +334,7 @@ std::vector<K> get_object_List(ByteBuf& buf) {
 }
 
 template <typename T, typename K>
-void put_object_List_le(ByteBuf& buf, const std::vector<K>& list) {
+void write_object_List_le(ByteBuf& buf, const std::vector<K>& list) {
   static_assert(std::is_unsigned<T>::value, "T must be unsigned");
   buf.write_le<T>(static_cast<T>(list.size()));
   for (const auto& obj : list) {
@@ -343,7 +343,7 @@ void put_object_List_le(ByteBuf& buf, const std::vector<K>& list) {
 }
 
 template <typename T, typename K>
-std::vector<K> get_object_List_le(ByteBuf& buf) {
+std::vector<K> read_object_List_le(ByteBuf& buf) {
   static_assert(std::is_unsigned<T>::value, "T must be unsigned");
   T count = buf.read_le<T>();
   std::vector<K> result;
